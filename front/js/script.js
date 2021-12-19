@@ -1,6 +1,4 @@
-const items= document.getElementsByClassName('items')
-
-const ITEMS_PER_PAGE = 8
+const items= document.getElementById('items')
 
 const retrieveItemsData = () =>fetch("http://localhost:3000/api/products")
   .then(res =>{
@@ -8,12 +6,27 @@ const retrieveItemsData = () =>fetch("http://localhost:3000/api/products")
       return res.json();
     }
   })
-  .then (data => console.log(data))
-  .catch (err => console.log('erreur suivante:'+ err));
+  .then (data => {
+    console.log(data);
+    return data;})
+  .catch (err => console.log('erreur suivante:'+ err))
+
+  const calculateIndex = async(item) => { 
+    const itemsData = await retrieveItemsData()
+    
+    let index=1;
+    
+    for (let i = 0; i <itemsData.length; i++) {
+      index++;}
+    
+    return index;
+    }
 
   const createItemLink = item =>{
+    const idx = calculateIndex ()
+  
   const productLink =document.createElement('a')
-  productLink.setAttribute('href','./product.html?id=${itemsData.indexOf(item)+1}')
+  productLink.setAttribute('href','./product.html?id='+ idx +'')
 
   return productLink}
 
@@ -21,14 +34,16 @@ const retrieveItemsData = () =>fetch("http://localhost:3000/api/products")
     const productMain = document.createElement('article')
 
     const productImage = document.createElement('img')
-    productImage.setAttribute('src','${item.imageUrl}')
-    productImage.setAttribute('alt','${item.altText')
+    productImage.setAttribute('src',item.imageUrl)
+    productImage.setAttribute('alt',item.altTxt)
 
     const productName = document.createElement('h3')
     productName.classList.add('productName')
+    productName.textContent = item.name
 
     const productDescription = document.createElement('p')
     productDescription.classList.add('productDescription')
+    productDescription.textContent= item.description
 
     productMain.appendChild(productImage)
     productMain.appendChild(productName)
@@ -38,23 +53,12 @@ const retrieveItemsData = () =>fetch("http://localhost:3000/api/products")
 
   }
 
-  const calculateOffset = () => {
-    const params = new URLSearchParams(window.location.search)
-    const pageParams = params.get('page')
-
-    if (!pageParams || Number(pageParams) === 1) {
-        return 0
-    }
-
-    return (Number(pageParams) - 1) * ITEMS_PER_PAGE
-}
 
 const main = async () => {
-  const itemsData = await retrieveItemsData()
- 
-  const offset = calculateOffset()
 
-  for (let i = offset; i < ITEMS_PER_PAGE + offset; i++) {
+  const itemsData = await retrieveItemsData()
+  
+ for (let i = 0; i < itemsData.length; i++) {
       if (itemsData[i]) {
           items.appendChild(createItemArticle(itemsData[i]))
           items.appendChild(createItemLink(itemsData[i]))
