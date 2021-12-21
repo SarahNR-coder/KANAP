@@ -11,25 +11,7 @@ const retrieveItemsData = () =>fetch("http://localhost:3000/api/products")
     return data;})
   .catch (err => console.log('erreur suivante:'+ err))
 
-  const calculateIndex = async(item) =>{
-  const itemsData = await retrieveItemsData (item)
-    let index=1;
-
-      for(let i = 0 ; i <itemsData.length; i++) {
-      index++;}
-
-      return index;
-    }
-
-  const createItemLink = async(item) =>{
-  const idx= await calculateIndex (item)
-  const productLink = document.createElement('a')
-  productLink.setAttribute('href','./product.html'/**?id='+idx**/)
-
-  return productLink}
-
-  const createItemArticle = async(item) =>{
-    const itemsData = await retrieveItemsData(item)
+  const createItemArticle = (item) =>{
     const productMain = document.createElement('article')
 
     const productImage = document.createElement('img')
@@ -51,25 +33,29 @@ const retrieveItemsData = () =>fetch("http://localhost:3000/api/products")
     return productMain
 
   }
+ 
 
+  const createItemLink = async(item) =>{
 
-const main = async () => {
-
-  const itemsData = await retrieveItemsData()
-  const idx = calculateIndex()
-  const link = createItemLink()
-  const article = createItemArticle()
-
-
+    const article= createItemArticle(item)
   
- for (let i = (idx-1); i < itemsData.length + (idx-1); i++) {
-      if (itemsData[i]) {
-          items.appendChild(article)
-          items.appendChild(link)
-      }
-  }
-}
+    const productLink = document.createElement('a')
+    productLink.setAttribute('href','./product.html?id='+item._id)
 
+    productLink.appendChild(article)
+  
+    return productLink
+  }
+
+
+const main = async (item) => {
+  const itemsData = await retrieveItemsData(item)
+  
+ for (item of itemsData) {
+        const link = await createItemLink(item)
+        items.appendChild(link)
+      }
+}
 main()
 
 
