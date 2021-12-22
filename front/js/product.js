@@ -1,3 +1,5 @@
+//Récupérer les caractéristiques du produit à partir de la valeur id="" dans l'url de la page
+
 const urlIdValue =()=>{
     var str = window.location.href;
     var url = new URL(str);
@@ -46,6 +48,7 @@ const retrieveItemData = () =>
     })
 
 
+//Adapter la page au produit
 const showImage = (item) => {
 
     
@@ -96,9 +99,10 @@ const showDescription = (item) => {
     return productDescription
 };
 
-const showColors = (item) =>{
 
-    const productColors = document.getElementById('colors');
+const productColors = document.getElementById('colors');
+
+const showColors = (item) =>{
 
     let colorsArray = item.colors
 
@@ -106,18 +110,35 @@ const showColors = (item) =>{
 
         let color = colorsArray[i]
 
-        const productSelectedColor = document.createElement('option');
+        const productColorOption = document.createElement('option');
         
-        productSelectedColor.setAttribute('value', color);
+        productColorOption.setAttribute('value', color);
 
-        productSelectedColor.value;
+        productColorOption.value;
 
-        productSelectedColor.textContent = color
+        productColorOption.textContent = color
 
-        productColors.appendChild(productSelectedColor);
+        productColors.appendChild(productColorOption);
+
+        return productColorOption
+    }
+   
+}
+
+const WhatIsSelectedColor =() =>{
+
+    const itemColorsOption = showColors();
+    if(itemColorsOption.selected){
+        return itemColorsOption.value
     }
 
-    return productColors
+}
+
+var quantityElement = document.getElementById('quantity')
+const showQuantity =()=>{
+quantityElement.addEventListener('change',function(event){
+    const newValue = event.quantityElement.value;
+} )
 }
 
 const main = async () => {
@@ -131,3 +152,85 @@ const main = async () => {
     showDescription(item);
 }
 main()
+
+class ProductElements {
+    constructor() {
+        this.id = urlIdValue();
+        this.productColor = WhatIsSelectedColor();
+        /**this.quantity = .value;**/
+    }
+}
+
+let productElements = new ProductElements('id','color'/**,'quantity'**/)
+
+console.log(productElements)
+
+//Stocker les informations d'envoi de produit dans le panier
+
+/**
+
+function storageAvailable(type) {
+    var storage;
+    try {
+        storage = window[type];
+        var x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
+}
+
+if (storageAvailable('localStorage')) {
+    console.log('Yippee! We can use localStorage awesomeness')
+  }
+else {
+    console.log('Too bad, no localStorage for us')
+  }
+
+
+if  (!localStorage.getItem('id', 'color','quantity')) {
+    populateStorage(); //stocker
+} else {
+    setStyles(); //récupérer
+}
+
+// Récupérer les valeur du localStorage
+function setStyles() {
+    var currentId = localStorage.getItem('id');
+    var currentColor = localStorage.getItem('color');
+    var currentQuantity = localStorage.getItem('quantity');
+  
+    document.getElementById('id').value = currentId;
+    document.getElementById('color').value = currentColor;
+    document.getElementById('quantity').value = currentQuantity;
+  
+    htmlElem.style.backgroundColor = '#' + currentColor;
+    pElem.style.fontFamily = currentFont;
+    imgElem.setAttribute('src', currentImage);
+  }
+
+
+//Stocker dans le localStorage
+function populateStorage() {
+    localStorage.setItem('id', urlIdValue() );
+    localStorage.setItem('color', document.getElementById('color').value);
+    localStorage.setItem('quantity', document.getElementById('quantity').value);
+  
+    setStyles();
+  }
+
+  **/
