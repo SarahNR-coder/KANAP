@@ -22,36 +22,38 @@ const retrieveItemData = () =>
       console.log(data);
       return data;
     })
-    /**
-    .then(itemFromId => {
-        let indexItem = data.indexOf(itemFromId)
-        return indexItem
-    })
-    **/
-    .then(data =>{
-        for(let i=0; i<data.lenght; i++){
-            let itemInData = data[i]
-            return itemInData
-        }
-    })
-    .then(idValue => {
-        let id = idValue
-        let itemFromId = {_id : id, ...}
-
-        if(id === urlId)
-        {
-            return itemFromId
-        }
-    })
-    .then (itemFromId =>
-            let id
-        { let itemFromId._id= 
-            return itemWithAllProperties
-        }
-    )
     .catch(err =>{ 
         console.log("erreur suivante:" + err)
     })
+
+    const retrieveItem =()=>{
+        for(let i=0; i<items.length; i++) {
+            //var MatchFound = new Boolean (valueMatchId)
+            let item= items[i];
+            let values = Object.values(item);
+            console.log(values);
+        
+            for(let j=0;j<values.length; j++) {
+                let value = values[j];
+                const id = urlIdValue();
+                if (value === id){
+                    return item;
+                }
+                /*id = "107fb5b75607497b96722bda5b504926";**/
+                //var valueMatchId = new Boolean(value === id);
+            }
+            /*
+            if(valueMatchId = true) {
+                console.log(values);
+                return values;
+            }
+            if(MatchFound = true){
+                console.log(item);
+                return item;  
+            }
+            */     
+        } 
+    }
 
 
     
