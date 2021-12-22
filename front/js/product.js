@@ -162,9 +162,10 @@ const items =
 
 let item0 = {"colors":["Blue","White","Black"],"_id":"107fb5b75607497b96722bda5b504926","name":"Kanap Sinopé","price":1849,"imageUrl":"http://localhost:3000/images/kanap01.jpeg","description":"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.","altTxt":"Photo d'un canapé bleu, deux places"}
 
-const retrieveValuesItem =()=>{
+const retrieveValuesItems =()=>{
   for(let i=0; i<items.length; i++)
       {
+          let returnValue = 0
           let item= items[i]
           let values = Object.values(item)
           console.log(values)
@@ -172,18 +173,21 @@ const retrieveValuesItem =()=>{
           for(let j=0;j<values.length; j++)
               {
                   let value = values[j]
-                  console.log(value)
-                  return value
+                  id = "107fb5b75607497b96722bda5b504926";
+                
+                  if(value === id)
+                     {
+ 
+                       return returnValue = 1
+                     }
+              if(returnValue = true){
+                return values
               }
+         if(returnValue = 1) {
+           return item
+         }
       }
 }
-
-id = "107fb5b75607497b96722bda5b504926";
-
-if(value == id)
-  {
-    let val = value
-    console.log('VALEUR A RETOURNER!!!!!! : '+val)}
-}}
+}
 
  */
