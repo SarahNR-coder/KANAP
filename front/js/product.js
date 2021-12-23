@@ -6,7 +6,7 @@ const urlIdValue =()=>{
     var search_params = new URLSearchParams(url.search);
     if (search_params.has("id")) {
         var id = search_params.get("id");
-        console.log(id)
+        //console.log(id)
         return id;
     }
 }
@@ -22,7 +22,7 @@ const retrieveItemData = () =>
       }
     })
     .then(data => {
-      console.log(data);
+      //console.log(data);
       return data;
     })
     .then(retrieveItem =(data) =>{        
@@ -31,12 +31,12 @@ const retrieveItemData = () =>
 
             let item= data[i];
             let values = Object.values(item);
-            console.log(values);
+            //console.log(values);
         
             for(let j=0;j<values.length; j++) {
                 let value = values[j];
                 if (value === idUrl){
-                    console.log(item);
+                    //console.log(item);
                     return item;
                 }
 
@@ -66,9 +66,9 @@ const fillImageDiv =(item)=>{
 
     const ImageItem = showImage(item);
 
-    if(ImageItem != undefined){
+    /*if(ImageItem != undefined){
         console.log(ImageItem);
-    }
+    }*/
     const productDivImage = document.getElementsByClassName('item__img')[0];
 
     productDivImage.appendChild(ImageItem);
@@ -115,7 +115,6 @@ const showColors = (item) =>{
 
         
         productColorOption.setAttribute('value', color);
-        productColorOption.setAttribute('id', 'op'+i)
 
         productColorOption.textContent = color;
 
@@ -124,22 +123,6 @@ const showColors = (item) =>{
     return productColors
 
 }
-
-/**const createTab =()=>{
-    var change='';
-    var array=[''];
-
-    document.body.addEventListener('change', (event =>{
-        change = event.target.value;
-        var clrchange = WhatIsSelectedColor(change);
-        var qtchange = showQuantity(change);
-        array = retrieveEventElements(clrchange,qtchange)
-        console.log('tableau:'+ array)
-    }))
-
-    return array
-}
-**/
 
 const main = async () => {
 
@@ -154,67 +137,65 @@ const main = async () => {
 
 main();
 
+var arr=new Array(3);
+arr[0]=idUrl;
+console.log('mon tableau au départ,il ne comporte que la case id:'+arr)
+/*donne 415b7cacb65d43b2b5c1ff70f3393ad1,,
+
+donc noter que rien après la première et deuxième virgules, pas de 2ème ni 3eme élément: ni couleur, ni quantité
+*/
+
+var clr='SVP choisissez une couleur';
+console.log("couleur de départ: "+ clr)
+//donne: couleur de départ: SVP choisissez une couleur
+
+arr[1]=clr;
+console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'+arr)
+/*donne : 
+415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,
+
+(donc noter que rien après la deuxième virgule, pas de 3eme élément quantité)
+*/
+
+var qt=0;
+console.log("quantité de départ:"+qt)
+//donne quantité de départ:0
+arr[2]=qt;
+console.log('mon tableau avec la couleur mise à jour et quantité = 0(initial)):'+arr);
+//donne 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,0
+
+productColors.addEventListener('click', function(){
+    for (var i = 0; i < productColors.children.length; i++) {
+        let productColorOption = productColors.children[i]
+
+        if (productColorOption.selected){
+        this.value = productColorOption.getAttribute('value');
+        }
+    }
+    clr= this.value;
+    console.log("la couleur sélectionnée est:" +clr)
+    //je choisi la couleur Black/Yellow dans produit.html=> donne la couleur sélectionnée est:Black/Yellow
+    
+    arr[1]=clr;
+    console.log('mon tableau avec la couleur mise à jour (quantité = 0):'+arr)
+    //je choisi Black/Yellow => donne : 415b7cacb65d43b2b5c1ff70f3393ad1,Black/Yellow,0
+});
 
 const quantityElement  = document.getElementById('quantity') //quantityElement de type <input>
 
+//c'était ici
 
-const showQuantity =() =>{
-    var index = 0;
+quantityElement.addEventListener('change', function(){
+    quantityElement.value =this.value;
+    qt= this.value;
+    console.log("la quantité sélectionnée est:" +qt)
+    //je monte le curseur à 1 => donne :la quantité sélectionnée est:1
 
-    quantityElement.addEventListener('change',(event =>{
-        index = event.target.value;
-        console.log('quantité résultante :'+ index)      
-    }))
+    arr[2]=qt;
+    console.log('mon tableau avec la couleur mise à jour et la quantité mise à jour):'+arr);
+    //je monte le curseur à 1 => 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,1
+});
 
-    console.log('quantité résultante bis :'+ index)
-    return index;
-}
-
-const WhatIsSelectedColor =() =>{
-    var color ='';
-
-    productColors.addEventListener('change', (event => {
-        color = event.target.value;
-        console.log('couleur résultante :'+ color)
-    }))
-
-    console.log('couleur résultante bis :'+ color)
-    return color;
-
-}
-
-
-//
-productColors.addEventListener('change', retrieveNewColor);
-
-function retrieveNewColor(){
-    for (var i = 0; i < productColors.children.length; i++) {
-        if (productColors.children[i].tagName === 'option' && productColors.children[i].selected){
-            var clr= productColors.children[i].value
-            console.log(clr)
-            return clr;
-        }
-    }    
-}
-
-quantityElement.addEventListener('change',(event =>{
-    index = event.target.value;
-    console.log('quantité résultante :'+ index)      
-}))
-
-console.log('quantité résultante bis :'+ index)
-return index;
-//
-const retrieveEventElements =async(event) =>{
-
-    const selectedColor = WhatIsSelectedColor(event);
-    const quantityInput = showQuantity(event);
-    var arr=['',0]
-    arr = [idUrl, selectedColor,quantityInput]
-
-    console.log('tableau résultant:'+arr)
-    return arr
-}
 
 /**const forEvent =async(event)=>{
     const colorForEvent = WhatIsSelectedColor(event);
