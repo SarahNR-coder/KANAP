@@ -136,10 +136,11 @@ const main = async () => {
 }
 
 main();
+//CREATION DU TABLEAU CORRESPONDANT AU PANIER, arrCart
 
-var arr=new Array(3);
-arr[0]=idUrl;
-console.log('mon tableau au départ,il ne comporte que la case id:'+arr)
+var arrCart=new Array(3);
+arrCart[0]=idUrl;
+console.log('mon tableau au départ,il ne comporte que la case id:'+arrCart)
 /*donne 415b7cacb65d43b2b5c1ff70f3393ad1,,
 
 donc noter que rien après la première et deuxième virgules, pas de 2ème ni 3eme élément: ni couleur, ni quantité
@@ -149,8 +150,8 @@ var clr='SVP choisissez une couleur';
 console.log("couleur de départ: "+ clr)
 //donne: couleur de départ: SVP choisissez une couleur
 
-arr[1]=clr;
-console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'+arr)
+arrCart[1]=clr;
+console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'+arrCart)
 /*donne : 
 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,
 
@@ -160,8 +161,8 @@ console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'
 var qt=0;
 console.log("quantité de départ:"+qt)
 //donne quantité de départ:0
-arr[2]=qt;
-console.log('mon tableau avec la couleur mise à jour et quantité = 0(initial)):'+arr);
+arrCart[2]=qt;
+console.log('mon tableau avec la couleur mise à jour et quantité = 0(initial)):'+arrCart);
 //donne 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,0
 
 productColors.addEventListener('click', function(){
@@ -176,14 +177,12 @@ productColors.addEventListener('click', function(){
     console.log("la couleur sélectionnée est:" +clr)
     //je choisi la couleur Black/Yellow dans produit.html=> donne la couleur sélectionnée est:Black/Yellow
     
-    arr[1]=clr;
-    console.log('mon tableau avec la couleur mise à jour (quantité = 0):'+arr)
+    arrCart[1]=clr;
+    console.log('mon tableau avec la couleur mise à jour (quantité = 0):'+arrCart)
     //je choisi Black/Yellow => donne : 415b7cacb65d43b2b5c1ff70f3393ad1,Black/Yellow,0
 });
 
 const quantityElement  = document.getElementById('quantity') //quantityElement de type <input>
-
-//c'était ici
 
 quantityElement.addEventListener('change', function(){
     quantityElement.value =this.value;
@@ -191,89 +190,43 @@ quantityElement.addEventListener('change', function(){
     console.log("la quantité sélectionnée est:" +qt)
     //je monte le curseur à 1 => donne :la quantité sélectionnée est:1
 
-    arr[2]=qt;
-    console.log('mon tableau avec la couleur mise à jour et la quantité mise à jour):'+arr);
+    arrCart[2]=qt;
+    console.log('mon tableau avec la couleur mise à jour et la quantité mise à jour):'+arrCart);
     //je monte le curseur à 1 => 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,1
 });
 
-
-/**const forEvent =async(event)=>{
-    const colorForEvent = WhatIsSelectedColor(event);
-    const quantityForEvent = showQuantity(event);
-
-    retrieveEventElements(colorForEvent, quantityForEvent);
-
+if(!localStorage.getItem('id')) {
+    populateStorage();
+}else{
+    setPurchase();
 }
 
-forEvent();
-**/
-
-//Stocker les informations d'envoi de produit dans le panier
-
-/**
-
-function storageAvailable(type) {
-    var storage;
-    try {
-        storage = window[type];
-        var x = '__storage_test__';
-        storage.setItem(x, x);
-        storage.removeItem(x);
-        return true;
-    }
-    catch(e) {
-        return e instanceof DOMException && (
-            // everything except Firefox
-            e.code === 22 ||
-            // Firefox
-            e.code === 1014 ||
-            // test name field too, because code might not be present
-            // everything except Firefox
-            e.name === 'QuotaExceededError' ||
-            // Firefox
-            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-            // acknowledge QuotaExceededError only if there's something already stored
-            (storage && storage.length !== 0);
-    }
+if(!localStorage.getItem('color')) {
+    populateStorage();
+}else{
+    setPurchase();
 }
 
-if (storageAvailable('localStorage')) {
-    console.log('Yippee! We can use localStorage awesomeness')
-  }
-else {
-    console.log('Too bad, no localStorage for us')
-  }
-
-
-if  (!localStorage.getItem('id', 'color','quantity')) {
-    populateStorage(); //stocker
-} else {
-    setStyles(); //récupérer
+if(!localStorage.getItem('quantity')) {
+    populateStorage();
+}else{
+    setPurchase();
 }
 
-// Récupérer les valeur du localStorage
-function setStyles() {
+function populateStorage() {
+    localStorage.setItem('id', arrCart[0] );
+    localStorage.setItem('color', arrCart[1] );
+    localStorage.setItem('quantity', arrCart[2]);
+}
+//met les valeurs du tableau de panier dans le storage
+
+arrCart.onchange = populateStorage;
+
+function setPurchase() {
     var currentId = localStorage.getItem('id');
     var currentColor = localStorage.getItem('color');
     var currentQuantity = localStorage.getItem('quantity');
-  
-    document.getElementById('id').value = currentId;
-    document.getElementById('color').value = currentColor;
-    document.getElementById('quantity').value = currentQuantity;
-  
-    htmlElem.style.backgroundColor = '#' + currentColor;
-    pElem.style.fontFamily = currentFont;
-    imgElem.setAttribute('src', currentImage);
-  }
 
-
-//Stocker dans le localStorage
-function populateStorage() {
-    localStorage.setItem('id', urlIdValue() );
-    localStorage.setItem('color', document.getElementById('color').value);
-    localStorage.setItem('quantity', document.getElementById('quantity').value);
-  
-    setStyles();
-  }
-
-  **/
+    arrCart = [currentId, currentColor, currentQuantity];
+}
+//retire valeurs du storage => je crée un nouveau tableau (j'actualise le tableau) => ex dans le panier je change la quantité et la couleur d'un produit=> le tableau de panier est différent
