@@ -102,43 +102,64 @@ const showDescription = (item) => {
 
 const productColors = document.getElementById('colors');
 
-const showColors = (item) =>{
+const addColorOptions = (item) =>{
 
-    let colorsArray = item.colors
+    let colorChoice = item.colors
 
-    for(let i=0; i<colorsArray.length; i++){
+    for(let i=0; i<colorChoice.length; i++){
 
-        let color = colorsArray[i]
+        let color = colorChoice[i]
 
         const productColorOption = document.createElement('option');
         
         productColorOption.setAttribute('value', color);
 
-        productColorOption.value;
-
-        productColorOption.textContent = color
-
-        productColors.appendChild(productColorOption);
+        productColorOption.textContent = color;
 
         return productColorOption
     }
-   
+
+    const options = document.querySelectorAll('option')
+    const arr = Array.prototype.slice.call(options)
+    console.log(arr)
+
+    return options
+}
+
+const showColors =(item)=>{
+    const colorOptions = addColorOptions(item)
+    productColors.append(colorOptions)
+
+    return productColors
 }
 
 const WhatIsSelectedColor =() =>{
+    var color ='';
 
-    const itemColorsOption = showColors();
-    if(itemColorsOption.selected){
-        return itemColorsOption.value
-    }
+    productColors.addEventListener('change', (event => {
+        color = event.target.value;
+        console.log('couleur résultante :'+ color)
+    }))
+    return color;
 
 }
+    
 
-var quantityElement = document.getElementById('quantity')
-const showQuantity =()=>{
-quantityElement.addEventListener('change',function(event){
-    const newValue = event.quantityElement.value;
-} )
+    /**if(itemColorsOption.nodeType)
+    itemColorsOption.getAttribute('value')**/
+
+
+const quantityElement  = document.getElementById('quantity') //quantityElement de type <input>
+
+const showQuantity = () =>{
+    var index = 0;
+
+    quantityElement.addEventListener('change',(event =>{
+        index = event.target.value;
+        console.log('quantité résultante :'+ index)        
+    }))
+
+    return index;
 }
 
 const main = async () => {
@@ -148,22 +169,43 @@ const main = async () => {
     fillImageDiv(item);
     showTitle(item);
     showPrice(item);
+    addColorOptions(item);
     showColors(item);
     showDescription(item);
 }
-main()
+main();
 
-class ProductElements {
+/**class ProductElements {
     constructor() {
         this.id = urlIdValue();
         this.productColor = WhatIsSelectedColor();
-        /**this.quantity = .value;**/
+        this.quantity = showQuantity();
     }
 }
 
-let productElements = new ProductElements('id','color'/**,'quantity'**/)
+let productElements = new ProductElements('id','productColor','quantity')**/
+const retrieveEventElements =async() =>{
 
-console.log(productElements)
+    var id = urlIdValue();
+    var productColor = WhatIsSelectedColor();
+    var quantity = showQuantity();
+    var arr = new Array(id, productColor, quantity);
+
+    console.log(arr)
+    return arr
+}
+
+retrieveEventElements();
+/**const forEvent =async(event)=>{
+    const colorForEvent = WhatIsSelectedColor(event);
+    const quantityForEvent = showQuantity(event);
+
+    retrieveEventElements(colorForEvent, quantityForEvent);
+
+}
+
+forEvent();
+**/
 
 //Stocker les informations d'envoi de produit dans le panier
 
