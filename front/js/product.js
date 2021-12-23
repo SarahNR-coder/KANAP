@@ -11,6 +11,8 @@ const urlIdValue =()=>{
     }
 }
 
+const idUrl= urlIdValue();
+
 const retrieveItemData = () =>
     
     fetch("http://localhost:3000/api/products")
@@ -33,8 +35,7 @@ const retrieveItemData = () =>
         
             for(let j=0;j<values.length; j++) {
                 let value = values[j];
-                const id = urlIdValue();
-                if (value === id){
+                if (value === idUrl){
                     console.log(item);
                     return item;
                 }
@@ -102,7 +103,7 @@ const showDescription = (item) => {
 
 const productColors = document.getElementById('colors');
 
-const addColorOptions = (item) =>{
+const showColors = (item) =>{
 
     let colorChoice = item.colors
 
@@ -110,27 +111,63 @@ const addColorOptions = (item) =>{
 
         let color = colorChoice[i]
 
-        const productColorOption = document.createElement('option');
+        var productColorOption = document.createElement('option');
+
         
         productColorOption.setAttribute('value', color);
+        productColorOption.setAttribute('id', 'op'+i)
 
         productColorOption.textContent = color;
 
-        return productColorOption
+        productColors.appendChild(productColorOption)
     }
+    return productColors
 
-    const options = document.querySelectorAll('option')
-    const arr = Array.prototype.slice.call(options)
-    console.log(arr)
-
-    return options
 }
 
-const showColors =(item)=>{
-    const colorOptions = addColorOptions(item)
-    productColors.append(colorOptions)
+/**const createTab =()=>{
+    var change='';
+    var array=[''];
 
-    return productColors
+    document.body.addEventListener('change', (event =>{
+        change = event.target.value;
+        var clrchange = WhatIsSelectedColor(change);
+        var qtchange = showQuantity(change);
+        array = retrieveEventElements(clrchange,qtchange)
+        console.log('tableau:'+ array)
+    }))
+
+    return array
+}
+**/
+
+const main = async () => {
+
+    const item = await retrieveItemData()
+
+    fillImageDiv(item);
+    showTitle(item);
+    showPrice(item);
+    showColors(item);
+    showDescription(item);
+}
+
+main();
+
+
+const quantityElement  = document.getElementById('quantity') //quantityElement de type <input>
+
+
+const showQuantity =() =>{
+    var index = 0;
+
+    quantityElement.addEventListener('change',(event =>{
+        index = event.target.value;
+        console.log('quantité résultante :'+ index)      
+    }))
+
+    console.log('quantité résultante bis :'+ index)
+    return index;
 }
 
 const WhatIsSelectedColor =() =>{
@@ -140,62 +177,45 @@ const WhatIsSelectedColor =() =>{
         color = event.target.value;
         console.log('couleur résultante :'+ color)
     }))
+
+    console.log('couleur résultante bis :'+ color)
     return color;
 
 }
-    
-
-    /**if(itemColorsOption.nodeType)
-    itemColorsOption.getAttribute('value')**/
 
 
-const quantityElement  = document.getElementById('quantity') //quantityElement de type <input>
+//
+productColors.addEventListener('change', retrieveNewColor);
 
-const showQuantity = () =>{
-    var index = 0;
-
-    quantityElement.addEventListener('change',(event =>{
-        index = event.target.value;
-        console.log('quantité résultante :'+ index)        
-    }))
-
-    return index;
+function retrieveNewColor(){
+    for (var i = 0; i < productColors.children.length; i++) {
+        if (productColors.children[i].tagName === 'option' && productColors.children[i].selected){
+            var clr= productColors.children[i].value
+            console.log(clr)
+            return clr;
+        }
+    }    
 }
 
-const main = async () => {
+quantityElement.addEventListener('change',(event =>{
+    index = event.target.value;
+    console.log('quantité résultante :'+ index)      
+}))
 
-    const item = await retrieveItemData()
+console.log('quantité résultante bis :'+ index)
+return index;
+//
+const retrieveEventElements =async(event) =>{
 
-    fillImageDiv(item);
-    showTitle(item);
-    showPrice(item);
-    addColorOptions(item);
-    showColors(item);
-    showDescription(item);
-}
-main();
+    const selectedColor = WhatIsSelectedColor(event);
+    const quantityInput = showQuantity(event);
+    var arr=['',0]
+    arr = [idUrl, selectedColor,quantityInput]
 
-/**class ProductElements {
-    constructor() {
-        this.id = urlIdValue();
-        this.productColor = WhatIsSelectedColor();
-        this.quantity = showQuantity();
-    }
-}
-
-let productElements = new ProductElements('id','productColor','quantity')**/
-const retrieveEventElements =async() =>{
-
-    var id = urlIdValue();
-    var productColor = WhatIsSelectedColor();
-    var quantity = showQuantity();
-    var arr = new Array(id, productColor, quantity);
-
-    console.log(arr)
+    console.log('tableau résultant:'+arr)
     return arr
 }
 
-retrieveEventElements();
 /**const forEvent =async(event)=>{
     const colorForEvent = WhatIsSelectedColor(event);
     const quantityForEvent = showQuantity(event);
