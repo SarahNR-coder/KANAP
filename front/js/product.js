@@ -66,9 +66,6 @@ const fillImageDiv =(item)=>{
 
     const ImageItem = showImage(item);
 
-    /*if(ImageItem != undefined){
-        console.log(ImageItem);
-    }*/
     const productDivImage = document.getElementsByClassName('item__img')[0];
 
     productDivImage.appendChild(ImageItem);
@@ -136,11 +133,11 @@ const main = async () => {
 }
 
 main();
-//CREATION DU TABLEAU CORRESPONDANT AU PANIER, arrCart
+//CREATION DU TABLEAU CORRESPONDANT AU PANIER, arrCartEntry
 
-var arrCart=new Array(3);
-arrCart[0]=idUrl;
-console.log('mon tableau au départ,il ne comporte que la case id:'+arrCart)
+var arrCartEntry=new Array(3);
+arrCartEntry[0]=idUrl;
+console.log('mon tableau au départ,il ne comporte que la case id:'+arrCartEntry)
 /*donne 415b7cacb65d43b2b5c1ff70f3393ad1,,
 
 donc noter que rien après la première et deuxième virgules, pas de 2ème ni 3eme élément: ni couleur, ni quantité
@@ -150,8 +147,8 @@ var clr='SVP choisissez une couleur';
 console.log("couleur de départ: "+ clr)
 //donne: couleur de départ: SVP choisissez une couleur
 
-arrCart[1]=clr;
-console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'+arrCart)
+arrCartEntry[1]=clr;
+console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'+arrCartEntry)
 /*donne : 
 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,
 
@@ -161,8 +158,8 @@ console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'
 var qt=0;
 console.log("quantité de départ:"+qt)
 //donne quantité de départ:0
-arrCart[2]=qt;
-console.log('mon tableau avec la couleur mise à jour et quantité = 0(initial)):'+arrCart);
+arrCartEntry[2]=qt;
+console.log('mon tableau avec la couleur mise à jour et quantité = 0(initial)):'+arrCartEntry);
 //donne 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,0
 
 productColors.addEventListener('click', function(){
@@ -177,8 +174,8 @@ productColors.addEventListener('click', function(){
     console.log("la couleur sélectionnée est:" +clr)
     //je choisi la couleur Black/Yellow dans produit.html=> donne la couleur sélectionnée est:Black/Yellow
     
-    arrCart[1]=clr;
-    console.log('mon tableau avec la couleur mise à jour (quantité = 0):'+arrCart)
+    arrCartEntry[1]=clr;
+    console.log('mon tableau avec la couleur mise à jour (quantité = 0):'+arrCartEntry)
     //je choisi Black/Yellow => donne : 415b7cacb65d43b2b5c1ff70f3393ad1,Black/Yellow,0
 });
 
@@ -190,43 +187,36 @@ quantityElement.addEventListener('change', function(){
     console.log("la quantité sélectionnée est:" +qt)
     //je monte le curseur à 1 => donne :la quantité sélectionnée est:1
 
-    arrCart[2]=qt;
-    console.log('mon tableau avec la couleur mise à jour et la quantité mise à jour):'+arrCart);
+    arrCartEntry[2]=qt;
+    console.log('mon tableau avec la couleur mise à jour et la quantité mise à jour):'+arrCartEntry);
     //je monte le curseur à 1 => 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,1
 });
 
-if(!localStorage.getItem('id')) {
-    populateStorage();
-}else{
-    setPurchase();
-}
-
-if(!localStorage.getItem('color')) {
-    populateStorage();
-}else{
-    setPurchase();
-}
-
-if(!localStorage.getItem('quantity')) {
-    populateStorage();
-}else{
-    setPurchase();
-}
-
-function populateStorage() {
-    localStorage.setItem('id', arrCart[0] );
-    localStorage.setItem('color', arrCart[1] );
-    localStorage.setItem('quantity', arrCart[2]);
-}
-//met les valeurs du tableau de panier dans le storage
-
-arrCart.onchange = populateStorage;
+Button.addEventListener('click', function(){
+        localStorage.setItem('id', arrCartEntry[0]);
+        localStorage.setItem('color', arrCartEntry[1] );
+        localStorage.setItem('quantity', arrCartEntry[2]);
+});
+//à chaque click sur le bouton met les valeurs du tableau de panier dans le storage 
 
 function setPurchase() {
     var currentId = localStorage.getItem('id');
     var currentColor = localStorage.getItem('color');
     var currentQuantity = localStorage.getItem('quantity');
 
-    arrCart = [currentId, currentColor, currentQuantity];
+    arrCartEntry = [currentId, currentColor, currentQuantity];
 }
+
+if(localStorage.getItem('id')) {
+    setPurchase();
+}
+
+if(localStorage.getItem('color')) {
+    setPurchase();
+}
+
+if(localStorage.getItem('quantity')) {
+    setPurchase();
+}
+
 //retire valeurs du storage => je crée un nouveau tableau (j'actualise le tableau) => ex dans le panier je change la quantité et la couleur d'un produit=> le tableau de panier est différent
