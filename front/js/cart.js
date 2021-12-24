@@ -1,3 +1,4 @@
+//récupération du block à remplir par les fiches des produits dans le panier
 const cartItems = document.getElementById('cart__items');
 
 var id ='';
