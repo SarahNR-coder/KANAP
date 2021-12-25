@@ -135,7 +135,7 @@ const options = productColors.querySelectorAll('option');
 
 function getOption(){
 
-    for(let i=0; i<options.length; i++){
+/*    for(let i=0; i<options.length; i++){
         var AucuneCouleurSelectionnée = false;
 
         if(options[i].selected){
@@ -151,7 +151,17 @@ function getOption(){
         optionNumber = -1;
     }
     return optionNumber;
+*/
+    var optionNumber = 0;
+    for(let i=0; i<options.length; i++){
+        if(options[i].selected){
+            optionNumber=i;
+        }
+    }
+    return optionNumber;
 };
+
+getOption();
 
 const optionIndex = getOption();
 //Récupére l'index qui
@@ -163,10 +173,13 @@ const optionIndex = getOption();
 //SOIT si =-1
 //indique qu'il n'y a pas d'HTMLOptionElement sélectionné
 
-var colorIndex = -1;
+/*var colorIndex = -1;
 if(optionIndex >= 0){
     colorIndex = optionIndex;
-}
+}*/
+
+var colorIndex = 0;
+colorIndex = optionIndex;
 //Variable colorIndex 
 //SOIT si >= 0
 //donne la place, à partir de 
@@ -180,12 +193,23 @@ if(optionIndex >= 0){
 //SI optionIndex >=0 
 //ALORS prend sa valeur
 
+var color = 'SVP choisissez une couleur';
+
 function colorChanging(e){
+   
+    getOption();
+
     if(colorIndex >= 0){
         e.target.children[colorIndex].selected;
     }
+    for(let i=0; i<options.length; i++){
+        if(options[i].selected){
+        color = options[i].value;
+        }   
+    }
+//récupère la valeur "couleur" selon l'HTMLOptionElement sélectionné
 
-    getOption();
+    return color;
 }
 
 //Au changement de couleur dans productColors (<select>)selon la valeur "couleur" choisie, selectionner l'element HTMLOptionCorrespondant
@@ -193,15 +217,9 @@ function colorChanging(e){
 
 productColors.addEventListener('change', colorChanging);
 
-var colorChangedInto = 'SVP choisissez une couleur';
-for(let i=0; i<options.length; i++){
-        if(options[i].selected){
-        colorChangedInto = options[i].value;
-    }   
-}
-//récupère la valeur "couleur" selon l'HTMLOptionElement sélectionné
+const colorToCarr = colorChanging();
 
-console.log('colorChangedInto:'+ colorChangedInto);
+console.log('color:'+ colorToCarr);
 
 
 //*******************************************************
@@ -211,23 +229,28 @@ console.log('colorChangedInto:'+ colorChangedInto);
 const InputElements  = document.getElementsByTagName('input');
 const quantityElement = InputElements[0];
 
+var quantity =quantityElement.getAttribute('min');
+
+quantityElement.setAttribute('value', quantity);
+
 function getQuantity(e){
-    e.target.value;   
+    quantity = e.target.value;
+    return quantity; 
 };
 //Au changement (événement 'change')
-//changement de la valeur de e.target => ici quantityElement
+//quantity prend la valeur de e.target 
 
 quantityElement.addEventListener('change',getQuantity);
 
-var quantityChangedInto = parseInt(quantityElement.value);
+const quantityToCarr = getQuantity();
 
-console.log('quantityChangedInto:'+ quantityChangedInto);
+console.log('quantity:'+ quantity);
 
 //*******************************************************
 //***********************PANIER**************************
 //*******************************************************
 
-var arrCartEntry = [idUrl, colorChangedInto,quantityChangedInto];
+var arrCartEntry = [idUrl, colorToCarr,quantityToCarr];
 console.log('tableau issu des choix de couleur et quantité sur cette page:'+ arrCartEntry);
 
 function populateStorage (){
