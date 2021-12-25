@@ -12,26 +12,19 @@ const urlIdValue =()=>{
 
 const idUrl= urlIdValue();
 
-const promise1 = new Promise((resolve, reject) => {
-   setTimeout(() => {
-        resolve('foo');
-     }, 300);
-    });
+const api="http://localhost:3000/api/products";
 
-const promiseRetrieveData = new Promise((resolve,reject) =>{
-    retrieveData (() => {
-        resolve('item');
-    },reject(300));
-})
+const res= fetch(api);
 
-const retrieveItemData =() =>
-    
-    fetch("http://localhost:3000/api/products")
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-    })
+function retrieveFetchResponse (response){
+    if (response.ok) {
+      return response.json();
+  }
+}
+
+const retrieveItemData =(response) =>
+
+    retrieveFetchResponse(response)
     .then(data => {
       return data;
     })
@@ -126,9 +119,10 @@ const showColors = (item) =>{
 
 }
 
-const main = async (item) => {
+const main = async (api) => {
+    const res= fetch(api);
 
-    const item = await retrieveItemData(item)
+    const item = await retrieveItemData(res);
 
     fillImageDiv(item);
     showTitle(item);
@@ -153,12 +147,15 @@ var optionNumber = 0;
     return optionNumber;
 };
 
-productColors.addEventListener('change', colorChanging =async (item) =>{
-    const itemMain = await main(item);
+
+var color='';
+
+productColors.addEventListener('change', colorChanging);
+
+const colorChanging = async (api) =>{
+    const itemMain = await main(api);
     const optionIndex = getOption(itemMain);
     const options = showColors(itemMain).querySelectorAll('option');
-
-    var color='';
 
     if(optionIndex >= 0){
         productColors.children[optionIndex].selected;
@@ -166,11 +163,15 @@ productColors.addEventListener('change', colorChanging =async (item) =>{
     }
 
     return color;
-});
+}
 
-var colorToCarr = colorChanging(item);
+const putColorToArr =async()=>{
+    const colorToArr = await colorChanging(api);
+    return colorToArr;
+}
+putColorToArr();
 
-console.log('color:'+ colorToCarr);
+console.log('putColorToArr:'+ putColorToArr);
 
 
 //*******************************************************
@@ -179,14 +180,14 @@ console.log('color:'+ colorToCarr);
 
 const InputElements  = document.getElementsByTagName('input');
 const quantityElement = InputElements[0];
-var quantityValue = quantityElement.value;
+var quantity = '';
 
 quantityElement.addEventListener('change',function getQuantity(){
-    var quantity = quantityElement.value;
-    quantityValue = quantity;
+    quantity = this.quantityElement.value;
+    return quantity;
 });
 
-
+quantity = this.getQuantity();
 var quantityToCarr = parseInt(quantityValue);
 
 console.log('quantity:'+ quantityToCarr);
@@ -195,7 +196,7 @@ console.log('quantity:'+ quantityToCarr);
 //***********************PANIER**************************
 //*******************************************************
 
-var arrCartEntry = [idUrl, colorToCarr,quantityToCarr];
+var arrCartEntry = [idUrl, colorToArr,quantityToCarr];
 console.log('tableau issu des choix de couleur et quantité sur cette page:'+ arrCartEntry);
 
 function populateStorage (){
