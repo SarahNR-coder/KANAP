@@ -12,19 +12,13 @@ const urlIdValue =()=>{
 
 const idUrl= urlIdValue();
 
-const api="http://localhost:3000/api/products";
+const retrieveItemData =() =>
 
-const res= fetch(api);
-
-function retrieveFetchResponse (response){
-    if (response.ok) {
+    fetch("http://localhost:3000/api/products")
+    .then(res =>{
+        if (res.ok) {
       return response.json();
-  }
-}
-
-const retrieveItemData =(response) =>
-
-    retrieveFetchResponse(response)
+    }})
     .then(data => {
       return data;
     })
@@ -119,25 +113,12 @@ const showColors = (item) =>{
 
 }
 
-const main = async (api) => {
-    const res= fetch(api);
-
-    const item = await retrieveItemData(res);
-
-    fillImageDiv(item);
-    showTitle(item);
-    showPrice(item);
-    showColors(item);
-    showDescription(item);
-}
-
-main();
 
 //***********************COULEURS************************************************************************************
 //********************************************************
 
-function getOption(itemMain){
-const options = showColors(itemMain).querySelectorAll('option');
+function getOption(productColorsItem){
+const options = productColorsItem.querySelectorAll('option');
 var optionNumber = 0;
     for(let i=0; i<options.length; i++){
         if(options[i].selected){
@@ -147,31 +128,20 @@ var optionNumber = 0;
     return optionNumber;
 };
 
-
-var color='';
-
-productColors.addEventListener('change', colorChanging);
-
-const colorChanging = async (api) =>{
-    const itemMain = await main(api);
-    const optionIndex = getOption(itemMain);
-    const options = showColors(itemMain).querySelectorAll('option');
+const colorChanging =(productColorsItem) =>{
+    const optionIndex = getOption(productColorsItem);
+    const options = productColorsItem.querySelectorAll('option');
 
     if(optionIndex >= 0){
         productColors.children[optionIndex].selected;
-        color = options[optionIndex].value;
+        var color = options[optionIndex].value;
     }
 
     return color;
 }
 
-const putColorToArr =async()=>{
-    const colorToArr = await colorChanging(api);
-    return colorToArr;
-}
-putColorToArr();
 
-console.log('putColorToArr:'+ putColorToArr);
+productColors.addEventListener('change', colorChanging);
 
 
 //*******************************************************
@@ -180,33 +150,30 @@ console.log('putColorToArr:'+ putColorToArr);
 
 const InputElements  = document.getElementsByTagName('input');
 const quantityElement = InputElements[0];
-var quantity = '';
 
 quantityElement.addEventListener('change',function getQuantity(){
-    quantity = this.quantityElement.value;
+    var quantity = this.quantityElement.value;
     return quantity;
 });
 
-quantity = this.getQuantity();
+const quantityValue = getQuantity();
 var quantityToCarr = parseInt(quantityValue);
 
 console.log('quantity:'+ quantityToCarr);
 
-//*******************************************************
-//***********************PANIER**************************
-//*******************************************************
 
-var arrCartEntry = [idUrl, colorToArr,quantityToCarr];
-console.log('tableau issu des choix de couleur et quantité sur cette page:'+ arrCartEntry);
+//********************************************************
+//***********************LOCALSTORAGE*********************
+//********************************************************
 
-function populateStorage (){
+function populateStorage (arrEntrySendToCart){
 
-    localStorage.setItem('id', arrCartEntry[0]);
-    localStorage.setItem('color', arrCartEntry[1]);
-    localStorage.setItem('quantity', arrCartEntry[2]);
+    localStorage.setItem('id', arrEntrySendToCart[0]);
+    localStorage.setItem('color', arrEntrySendToCart[1]);
+    localStorage.setItem('quantity', arrEntrySendToCart[2]);
 
     
-    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:'+arrCartEntry[0] +'pour id; arrCartEntry[1]:'+arrCartEntry[1]+'pour color; arrCartEntry[2]:'+arrCartEntry[2]+'pour quantity');
+    console.log('populateStorage marche: AU STORAGE LES VALEURS arrEntrySendToCart[0]:'+arrEntrySendToCart[0] +'pour id; arrEntrySendToCart[1]:'+arrEntrySendToCart[1]+'pour color; arrEntrySendToCart[2]:'+arrEntrySendToCart[2]+'pour quantity');
 
     //TRANSMISSION VALEURS TABLEAU LOCAL=> STORAGE, VALEURS QUI S'AJOUTENT A CELLES TRANSMISES PAR LE PANIER
     setPurchase();
@@ -224,7 +191,7 @@ const button = document.querySelector('button');
 
 button.addEventListener('click', sendToCart);
 
-function sendToCart(){
+function sendToCart(arrCartEntry){
 
     if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){       
         populateStorage();
@@ -240,12 +207,39 @@ function setPurchase() {
     var currentQuantity = localStorage.getItem('quantity');
     var currentQuantityNumber = parseInt(currentQuantity);
 
-    arrCartEntry = [currentId, currentColor, currentQuantityNumber]
+    var arrCartEntry = [currentId, currentColor, currentQuantityNumber];
 
     console.log('setPurchase marche');
+
+    return arrCartEntry;
 
 }
 
 //récupère (get) valeurs du storage => je crée un NOUVEAU TABLEAU (j'actualise le tableau) => ex dans le panier je change la quantité et la couleur d'un produit=> le tableau de panier est différent
 
 //appelée UNIQUEMENT DANS POPULATE STORAGE
+
+//****************************MAIN************************
+
+
+
+const main = async () => {
+
+    const item = await retrieveItemData();
+
+    fillImageDiv(item);
+    showTitle(item);
+    showPrice(item);
+    showColors(item);
+    const productColorsItem = showColors(item);
+    showDescription(item);
+
+
+    const colorToArr = await colorChanging(productColorsItem);
+    var arrCartEntry = [idUrl, colorToArr,quantityToCarr];
+    sendToCart(arrCartEntry);
+}
+
+main();
+
+
