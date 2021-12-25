@@ -6,7 +6,6 @@ const urlIdValue =()=>{
     var search_params = new URLSearchParams(url.search);
     if (search_params.has("id")) {
         var id = search_params.get("id");
-        //console.log(id)
         return id;
     }
 }
@@ -22,27 +21,21 @@ const retrieveItemData = () =>
       }
     })
     .then(data => {
-      //console.log(data);
       return data;
     })
     .then(retrieveItem =(data) =>{        
 
         for(let i=0; i<data.length; i++) {
-
-            let item= data[i];
+            var item= data[i];
             let values = Object.values(item);
-            //console.log(values);
         
             for(let j=0;j<values.length; j++) {
                 let value = values[j];
                 if (value === idUrl){
-                    //console.log(item);
                     return item;
                 }
-
             }
-
-        } 
+        }
     })
     .catch(err =>{ 
         console.log("erreur suivante:" + err)
@@ -133,106 +126,80 @@ const main = async () => {
 }
 
 main();
-//CREATION DU TABLEAU CORRESPONDANT AU PANIER, arrCartEntry
-
-//*******DECLARATION ET INITIALISATION DU PANIER*********
-//******************************************************* //*******************************************************
-
-
-var arrCartEntry=new Array(3);
-arrCartEntry[0]=idUrl;
-console.log('mon tableau au départ,il ne comporte que la case id:'+arrCartEntry)
-/*donne 415b7cacb65d43b2b5c1ff70f3393ad1,,
-
-donc noter que rien après la première et deuxième virgules, pas de 2ème ni 3eme élément: ni couleur, ni quantité
-*/
-
-var clr='SVP choisissez une couleur';
-console.log("couleur de départ: "+ clr)
-//donne: couleur de départ: SVP choisissez une couleur
-
-arrCartEntry[1]=clr;
-console.log('mon tableau au départ,il ne comporte que les cases id et couleur:'+arrCartEntry)
-/*donne : 
-415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,
-
-(donc noter que rien après la deuxième virgule, pas de 3eme élément quantité)
-*/
-
-var qt=0;
-console.log("quantité de départ:"+qt)
-//donne quantité de départ:0
-
-arrCartEntry[2]=qt;
-console.log('mon tableau avec la couleur mise à jour et quantité = 0(initial)):'+arrCartEntry);
-//donne 415b7cacb65d43b2b5c1ff70f3393ad1,SVP choisissez une couleur,0
 
 //***********************COULEURS************************************************************************************
 //********************************************************
 
-var optionNumber=0;
 
 const options = productColors.querySelectorAll('option');
 
 function getOption(){
 
     for(let i=0; i<options.length; i++){
+        var AucuneCouleurSelectionnée = false;
+
         if(options[i].selected){
-            optionNumber=i;
-        }
+            var optionNumberGotten=i;
+        }else{
+            AucuneCouleurSelectionnée = true;
+        };
+    }
+    var optionNumber = 0;
+    if(AucuneCouleurSelectionnée = false){
+        optionNumber = optionNumberGotten;
+    }else{
+        optionNumber = -1;
     }
     return optionNumber;
 };
 
-productColors.onchange = colorChanging;
+const optionIndex = getOption();
 
-function colorChanging(){
-var optionElement = options[optionNumber]
-clr = optionElement.value;
-
-console.log("function appelée si productColors change (productColors.onchange), la couleur sélectionnée est:" +clr)
-//je choisi la couleur Black/Yellow dans produit.html=> donne la couleur sélectionnée est:Black/Yellow
-return clr;
+var colorIndex = -1;
+if(optionIndex >= 0){
+    colorIndex = optionIndex;
 }
+
+var colorChangedInto = 'SVP choisissez une couleur';
+if(colorIndex >= 0){
+    colorChangedInto = options[colorIndex].value;
+}
+
+function colorChanging(e){
+    if(colorIndex >= 0){
+        colorChangedInto= e.target.children[colorIndex].value;
+    }
+}
+
+productColors.addEventListener('change', colorChanging);
+
+
+console.log('colorChangedInto:'+ colorChangedInto);
+
 
 //*******************************************************
 //***********************QUANTITY************************
 //*******************************************************
 
-const quantityElement  = document.getElementById('quantity') //quantityElement de type <input>
+const InputElements  = document.getElementsByTagName('input');
+const quantityElement = InputElements[0];
 
-var quantity=0;
+var quantityChangedInto = parseInt(quantityElement.value);
 
-quantityElement.addEventListener('change', getQuantity);
-
-function getQuantity(){
-    quantity = quantityElement.value;
-    console.log('la quantité de l élement quantité quantityElement:' + quantity);
-    quantity++;
-    return quantity;
+function getQuantity(e){
+    quantityElement.value = e.target.value;   
 };
 
-quantityElement.onchange = quantityChanging;
+quantityElement.addEventListener('change',getQuantity);
 
-function quantityChanging (){
-    qt = quantity;
-    console.log("function appelée si quantityElement change (quantityElement.onchange), la quantité sélectionnée est:" +qt);
-    return qt;
-}
+console.log('quantityChangedInto:'+ quantityChangedInto);
 
 //*******************************************************
 //***********************PANIER**************************
 //*******************************************************
 
-
-var getOptionConst = getOption;
-var colorChangingConst = colorChanging(getOptionConst);
-var getQuantityConst = getQuantity;
-var quantityChangingConst = quantityChanging(getQuantity);
-
-arrCartEntry = [idUrl, colorChangingConst, quantityChangingConst];
-
-console.log('tableau final :'+ arrCartEntry);
+var arrCartEntry = [idUrl, colorChangedInto,quantityChangedInto];
+console.log('tableau issu des choix de couleur et quantité sur cette page:'+ arrCartEntry);
 
 function populateStorage (){
 
@@ -240,10 +207,20 @@ function populateStorage (){
     localStorage.setItem('color', arrCartEntry[1]);
     localStorage.setItem('quantity', arrCartEntry[2]);
 
-    setPurchase();
+    
+    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:'+arrCartEntry[0] +'pour id; arrCartEntry[1]:'+arrCartEntry[1]+'pour color; arrCartEntry[2]:'+arrCartEntry[2]+'pour quantity');
 
-    console.log('populateStorage marche: on ajoute les valeur arrCartEntry[0]:'+arrCartEntry[0] +'pour id; arrCartEntry[1]:'+arrCartEntry[1]+'pour color; arrCartEntry[2]:'+arrCartEntry[2]+'pour quantity');
+    //TRANSMISSION VALEURS TABLEAU LOCAL=> STORAGE, VALEURS QUI S'AJOUTENT A CELLES TRANSMISES PAR LE PANIER
+    setPurchase();
+    //RECUPERATION VALEURS DU STORAGE (VALEURS QUI PROVIENNENT AUSSI DU PANIER ex. change quantité et/ou couleur dans le panier)
+
+    //CREATION NOUVEAU TABLEAU LOCAL
+    //=> retourne nouveau arrCartEntry
+
+    console.log('nouveau tableau après récupération des valeurs du storage par setPurchase:'+arrCartEntry);
+
 }
+//function activée au click bouton
 
 const button = document.querySelector('button');
 
@@ -251,25 +228,26 @@ button.addEventListener('click', sendToCart);
 
 function sendToCart(){
 
-    if(clr !='SVP choisissez une couleur' && qt !=0){       
-        populateStorage(); 
+    if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){       
+        populateStorage();
     }
     console.log('bouton entendu!');
 };
 
-
-//à chaque click sur le bouton met les valeurs du tableau de panier dans le storage 
+//à chaque click sur le bouton TRANSMET LES VALEURS DU TABLEAU de panier dans le storage 
 
 function setPurchase() {
     var currentId = localStorage.getItem('id');
     var currentColor = localStorage.getItem('color');
     var currentQuantity = localStorage.getItem('quantity');
+    var currentQuantityNumber = parseInt(currentQuantity);
 
-    if(arrCartEntry != [currentId, currentColor, currentQuantity]){
-        arrCartEntry = [currentId, currentColor, currentQuantity]
-    }
+    arrCartEntry = [currentId, currentColor, currentQuantityNumber]
 
     console.log('setPurchase marche');
+
 }
 
-//retire valeurs du storage => je crée un nouveau tableau (j'actualise le tableau) => ex dans le panier je change la quantité et la couleur d'un produit=> le tableau de panier est différent
+//récupère (get) valeurs du storage => je crée un NOUVEAU TABLEAU (j'actualise le tableau) => ex dans le panier je change la quantité et la couleur d'un produit=> le tableau de panier est différent
+
+//appelée UNIQUEMENT DANS POPULATE STORAGE
