@@ -12,7 +12,19 @@ const urlIdValue =()=>{
 
 const idUrl= urlIdValue();
 
-const retrieveItemData = () =>
+const promise1 = new Promise((resolve, reject) => {
+   setTimeout(() => {
+        resolve('foo');
+     }, 300);
+    });
+
+const promiseRetrieveData = new Promise((resolve,reject) =>{
+    retrieveData (() => {
+        resolve('item');
+    },reject(300));
+})
+
+const retrieveItemData =() =>
     
     fetch("http://localhost:3000/api/products")
     .then(res => {
@@ -114,9 +126,9 @@ const showColors = (item) =>{
 
 }
 
-const main = async () => {
+const main = async (item) => {
 
-    const item = await retrieveItemData()
+    const item = await retrieveItemData(item)
 
     fillImageDiv(item);
     showTitle(item);
@@ -130,29 +142,9 @@ main();
 //***********************COULEURS************************************************************************************
 //********************************************************
 
-
-const options = productColors.querySelectorAll('option');
-
-function getOption(){
-
-/*    for(let i=0; i<options.length; i++){
-        var AucuneCouleurSelectionnée = false;
-
-        if(options[i].selected){
-            var optionNumberGotten=i;
-        }else{
-            AucuneCouleurSelectionnée = true;
-        };
-    }
-    var optionNumber = 0;
-    if(AucuneCouleurSelectionnée = false){
-        optionNumber = optionNumberGotten;
-    }else{
-        optionNumber = -1;
-    }
-    return optionNumber;
-*/
-    var optionNumber = 0;
+function getOption(itemMain){
+const options = showColors(itemMain).querySelectorAll('option');
+var optionNumber = 0;
     for(let i=0; i<options.length; i++){
         if(options[i].selected){
             optionNumber=i;
@@ -161,63 +153,22 @@ function getOption(){
     return optionNumber;
 };
 
-getOption();
+productColors.addEventListener('change', colorChanging =async (item) =>{
+    const itemMain = await main(item);
+    const optionIndex = getOption(itemMain);
+    const options = showColors(itemMain).querySelectorAll('option');
 
-const optionIndex = getOption();
-//Récupére l'index qui
-//SOIT si >= 0
-//donne la place, à partir de 
-//(index = 0) = 1ère place,
-//de l'element HTMLOptionElement parmi les autres HTMLOptionElements de SelectElement productColors
-//qui est celui sélectionné
-//SOIT si =-1
-//indique qu'il n'y a pas d'HTMLOptionElement sélectionné
+    var color='';
 
-/*var colorIndex = -1;
-if(optionIndex >= 0){
-    colorIndex = optionIndex;
-}*/
-
-var colorIndex = 0;
-colorIndex = optionIndex;
-//Variable colorIndex 
-//SOIT si >= 0
-//donne la place, à partir de 
-//(index = 0) = 1ère place,
-//de l'element HTMLOptionElement parmi les autres HTMLOptionElements de SelectElement productColors
-//qui est celui sélectionné
-//SOIT si =-1
-//indique qu'il n'y a pas d'HTMLOptionElement sélectionné
-
-//CHANGE selon l'index optionIndex (constante)
-//SI optionIndex >=0 
-//ALORS prend sa valeur
-
-var color = 'SVP choisissez une couleur';
-
-function colorChanging(e){
-   
-    getOption();
-
-    if(colorIndex >= 0){
-        e.target.children[colorIndex].selected;
+    if(optionIndex >= 0){
+        productColors.children[optionIndex].selected;
+        color = options[optionIndex].value;
     }
-    for(let i=0; i<options.length; i++){
-        if(options[i].selected){
-        color = options[i].value;
-        }   
-    }
-//récupère la valeur "couleur" selon l'HTMLOptionElement sélectionné
 
     return color;
-}
+});
 
-//Au changement de couleur dans productColors (<select>)selon la valeur "couleur" choisie, selectionner l'element HTMLOptionCorrespondant
-//lance getOtion pour trouver le nouvel index
-
-productColors.addEventListener('change', colorChanging);
-
-const colorToCarr = colorChanging();
+var colorToCarr = colorChanging(item);
 
 console.log('color:'+ colorToCarr);
 
@@ -228,23 +179,17 @@ console.log('color:'+ colorToCarr);
 
 const InputElements  = document.getElementsByTagName('input');
 const quantityElement = InputElements[0];
+var quantityValue = quantityElement.value;
 
-var quantity =quantityElement.getAttribute('min');
+quantityElement.addEventListener('change',function getQuantity(){
+    var quantity = quantityElement.value;
+    quantityValue = quantity;
+});
 
-quantityElement.setAttribute('value', quantity);
 
-function getQuantity(e){
-    quantity = e.target.value;
-    return quantity; 
-};
-//Au changement (événement 'change')
-//quantity prend la valeur de e.target 
+var quantityToCarr = parseInt(quantityValue);
 
-quantityElement.addEventListener('change',getQuantity);
-
-const quantityToCarr = getQuantity();
-
-console.log('quantity:'+ quantity);
+console.log('quantity:'+ quantityToCarr);
 
 //*******************************************************
 //***********************PANIER**************************
