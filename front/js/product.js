@@ -154,25 +154,52 @@ function getOption(){
 };
 
 const optionIndex = getOption();
+//Récupére l'index qui
+//SOIT si >= 0
+//donne la place, à partir de 
+//(index = 0) = 1ère place,
+//de l'element HTMLOptionElement parmi les autres HTMLOptionElements de SelectElement productColors
+//qui est celui sélectionné
+//SOIT si =-1
+//indique qu'il n'y a pas d'HTMLOptionElement sélectionné
 
 var colorIndex = -1;
 if(optionIndex >= 0){
     colorIndex = optionIndex;
 }
+//Variable colorIndex 
+//SOIT si >= 0
+//donne la place, à partir de 
+//(index = 0) = 1ère place,
+//de l'element HTMLOptionElement parmi les autres HTMLOptionElements de SelectElement productColors
+//qui est celui sélectionné
+//SOIT si =-1
+//indique qu'il n'y a pas d'HTMLOptionElement sélectionné
 
-var colorChangedInto = 'SVP choisissez une couleur';
-if(colorIndex >= 0){
-    colorChangedInto = options[colorIndex].value;
-}
+//CHANGE selon l'index optionIndex (constante)
+//SI optionIndex >=0 
+//ALORS prend sa valeur
 
 function colorChanging(e){
     if(colorIndex >= 0){
-        colorChangedInto= e.target.children[colorIndex].value;
+        e.target.children[colorIndex].selected;
     }
+
+    getOption();
 }
+
+//Au changement de couleur dans productColors (<select>)selon la valeur "couleur" choisie, selectionner l'element HTMLOptionCorrespondant
+//lance getOtion pour trouver le nouvel index
 
 productColors.addEventListener('change', colorChanging);
 
+var colorChangedInto = 'SVP choisissez une couleur';
+for(let i=0; i<options.length; i++){
+        if(options[i].selected){
+        colorChangedInto = options[i].value;
+    }   
+}
+//récupère la valeur "couleur" selon l'HTMLOptionElement sélectionné
 
 console.log('colorChangedInto:'+ colorChangedInto);
 
@@ -184,13 +211,15 @@ console.log('colorChangedInto:'+ colorChangedInto);
 const InputElements  = document.getElementsByTagName('input');
 const quantityElement = InputElements[0];
 
-var quantityChangedInto = parseInt(quantityElement.value);
-
 function getQuantity(e){
-    quantityElement.value = e.target.value;   
+    e.target.value;   
 };
+//Au changement (événement 'change')
+//changement de la valeur de e.target => ici quantityElement
 
 quantityElement.addEventListener('change',getQuantity);
+
+var quantityChangedInto = parseInt(quantityElement.value);
 
 console.log('quantityChangedInto:'+ quantityChangedInto);
 
