@@ -40,20 +40,18 @@ const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
         console.log("erreur suivante:" + err)
     })
 
-
+var productImage = document.createElement("img");
 //Adapter la page au produit
-var setImageAttributes = (item) => {
-
-    var productImage = document.createElement("img");
+function setImageAttributes (item){
+  
     productImage.setAttribute("src", item.imageUrl);
     productImage.setAttribute("alt", item.altTxt);
 
-    return productImage;
 };
 
 const fillImageDiv =(item)=>{
 
-    var productImage = setImageAttributes (item);
+    setImageAttributes(item);
     var productDivImage = document.querySelector('div.item__img');
 
     productDivImage.appendChild(productImage);
@@ -113,31 +111,25 @@ const setColorsElement=(item)=>{
     var productColors  = showColors(item);
     var options = productColors.querySelector('option');
 
-    if(retrieveArrCartEntry(productColors,quantityElement)){
-        var arrCartEntry = retrieveArrCartEntry(productColors, quantityElement);
+    if(retrieveArrCartEntry(productColors)){
+        var arrCartEntry = retrieveArrCartEntry(productColors);
         var value = arrCartEntry[1]
         for(let i=0; i<options.length; i++){
-        var option = options[i];
-        var val =option.getAttribute('value');
-        if(value = val){
-            option.selected;
-        ;}
-        
-    return quantityElement;
+            var option = options[i];
+            var val =option.getAttribute('value');
+            if(value = val){
+                option.selected;
+            ;}
+        }    
+    }
+
+    return productColors;
 }
 
 
-const setQuantityElement=()=>{
+function setQuantityElement (){
 
-    var quantityElement  = document.querySelector('input');
-    if(retrieveArrCartEntry(productColors,quantityElement)){
-        var arrCartEntry = retrieveArrCartEntry(productColors, quantityElement);
-        quantityElement.setAttribute('value',arrCartEntry[2]);
-    }else{
-        var min = quantityElement.getAttribute('min');
-        quantityElement.setAttribute('value',min);
-    }
-        
+    var quantityElement  = document.querySelector('input');        
     return quantityElement;
 }
 
@@ -187,21 +179,20 @@ var arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
 
 const retrieveArrCartEntry =(productColors,quantityElement)=>{
 
-
+    var quantityElement = setQuantityElement();
     var arrCartEntry = new Array(3);
     var arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry);
 
     arrCartEntry[0] = idUrl;
 
     var options = productColors.querySelectorAll('option');
-    for(let i=0; i<options.length; i++){
-        var option = options[i];
-        if(option.selected){
-            arrCartEntry[1]= option.value;
-        }
+    var index=0;
+    options[index].selected;
+    for(index of options.length){
+        arrCartEntry[1]= options[index].getAttribute('value');
     }
 
-    arrCartEntry[2] = quantityElement.value;
+    arrCartEntry[2] = quantityElement.getAttribute('value');
 
     return arrCartEntry;
 }
@@ -229,7 +220,7 @@ const main = async () => {
 
     const item = await retrieveItemData();
 
-    setImageAttributes = (item)
+    setImageAttributes(item);
     fillImageDiv(item);
     showTitle(item);
     showPrice(item);
