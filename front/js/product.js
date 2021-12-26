@@ -104,33 +104,34 @@ var showColors = (item) =>{
         productColors.appendChild(productColorOption)
     }
     return productColors
-
 }
-const setColorsElement=(item)=>{
+
+//retourne var ou const
+function setColorsElement(item){
 
     var productColors  = showColors(item);
-    var options = productColors.querySelector('option');
+    var options = productColors.querySelectorAll('option');
 
-    if(retrieveArrCartEntry(productColors)){
-        var arrCartEntry = retrieveArrCartEntry(productColors);
-        var value = arrCartEntry[1]
-        for(let i=0; i<options.length; i++){
-            var option = options[i];
-            var val =option.getAttribute('value');
-            if(value = val){
-                option.selected;
-            ;}
-        }    
-    }
+    var quantityElement = setQuantityElement();
+    if(retrieveArrCartEntry(productColors, quantityElement)){
+        var arrCartEntry = retrieveArrCartEntry(productColors, quantityElement);
 
-    return productColors;
+        let index=0;
+        var color = options[index].getAttribute('value');
+        for(index of options.length){
+            if(color === arrCartEntry[1]){
+                options[index].selected;
+            }
+        }
+
+    return productColors;// var ou const productColors
 }
 
-
+//return var ou const
 function setQuantityElement (){
 
     var quantityElement  = document.querySelector('input');        
-    return quantityElement;
+    return quantityElement; // var ou const quantityElement
 }
 
 //********************************************************
@@ -153,48 +154,63 @@ var setPurchase=()=> {
     }
     console.log('setPurchase marche');
 
-    return arr;
+    return arr;//var
 
 }
 
 //soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
 //soit ne retourne pas de tableau
 
+//----------------------var param (165)
 var arrCartEntryChange=(arrCartEntry)=>{
-    var arr = setPurchase();
-    var arrCartEntry;
+    var arr = setPurchase();//var
+    var arrCartEntry; //var param
     if( arr !='setPurchase n a pas retourné de tableau' && arr!= arrCartEntry  ){
         arrCartEntry = arr;
     }
-    return arrCartEntry;
+    return arrCartEntry;//var arrCartEntryPossiblyChanged
 }
 
+//-----------------------------------var param (175)
 var arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
-    var arrCartEntryPossiblyChanged = arrCartEntryChange(arrCartEntry);
-    var arrCartEntry;
+    var arrCartEntry; //var param
+    var arrCartEntryPossiblyChanged = arrCartEntryChange(arrCartEntry);// var _ _ _ = _ _ _ _ _(var param)
+
     arrCartEntry = arrCartEntryPossiblyChanged;
 
-    return arrCartEntry;
+    return arrCartEntry;//var arrCartEntry
 }
+//----------- = (any param item, var param(voir 187)-) =>{
+const retrieveArrCartEntry =(item, quantityElement)=>{
 
-const retrieveArrCartEntry =(productColors,quantityElement)=>{
-
+    //var param
     var quantityElement = setQuantityElement();
+    // (retourne var ou const quantityElement)
+    // ici (187) quantityElement définit var
+    //setQuantityElement a pour type de valeur de retour un HTMLInputElement ===> quantityElement prendra ce type
+
     var arrCartEntry = new Array(3);
-    var arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry);
+    //local var arrCartEntry any[]
+    
+    arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry); 
+    // arrCartEntryAfterPossibleChange avec pour paramètre de fonction (local var arrCartEntry: any[]) retourne local var any[](variable 1)
+    //arrCartEntry prend la valeur de variable1, arrCartEntry qui aurait pu prendre de nouvelles valeurs
 
     arrCartEntry[0] = idUrl;
 
+    var productColors =setColorsElement(item);
     var options = productColors.querySelectorAll('option');
-    var index=0;
+    let index=0;
     options[index].selected;
     for(index of options.length){
         arrCartEntry[1]= options[index].getAttribute('value');
     }
 
-    arrCartEntry[2] = quantityElement.getAttribute('value');
+    //--------------- var param HTMLInputElement
+    arrCartEntry[2] = quantityElement.getAttribute('value');// 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
 
-    return arrCartEntry;
+
+    return arrCartEntry;//const
 }
 
 function populateStorage (arrCartEntry){
