@@ -165,11 +165,11 @@ const setPurchase=()=> {
     var currentQuantity = localStorage.getItem('quantity');
     var currentQuantityNumber = parseInt(currentQuantity);
 
-    var arrCartEntryBis = [currentId, currentColor, currentQuantityNumber];
+    var arrCartEntry = [currentId, currentColor, currentQuantityNumber];
 
     console.log('setPurchase marche');
 
-    return arrCartEntryBis;
+    return arrCartEntry;
 
 }
 
@@ -178,17 +178,17 @@ const setPurchase=()=> {
 //appelée UNIQUEMENT DANS POPULATE STORAGE dans cette page
 
 
-const populateStorage =(arrCartEntryBis)=>{
+const populateStorage =(arrCartEntry)=>{
 
-    localStorage.setItem('id', arrCartEntryBis[0]);
-    localStorage.setItem('color', arrCartEntryBis[1]);
-    localStorage.setItem('quantity', arrCartEntryBis[2]);
+    localStorage.setItem('id', arrCartEntry[0]);
+    localStorage.setItem('color', arrCartEntry[1]);
+    localStorage.setItem('quantity', arrCartEntry[2]);
 
     
-    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntryBis[0]:'+arrCartEntryBis[0] +'pour id; arrCartEntryBis[1]:'+arrCartEntryBis[1]+'pour color; arrCartEntryBis[2]:'+arrCartEntryBis[2]+'pour quantity');
+    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:'+arrCartEntry[0] +'pour id; arrCartEntry[1]:'+arrCartEntry[1]+'pour color; arrCartEntry[2]:'+arrCartEntry[2]+'pour quantity');
 
     //TRANSMISSION VALEURS TABLEAU LOCAL=> STORAGE, VALEURS QUI S'AJOUTENT A CELLES TRANSMISES PAR LE PANIER
-    setPurchase();
+    arrCartEntry = setPurchase();
     //RECUPERATION VALEURS DU STORAGE (VALEURS QUI PROVIENNENT AUSSI DU PANIER ex. change quantité et/ou couleur dans le panier)
 
     //CREATION NOUVEAU TABLEAU LOCAL
@@ -212,40 +212,58 @@ const main = async () => {
     showTitle(item);
     showPrice(item);
     const productColorsItem = showColors(item);
+
     showDescription(item);
 
 
-    const colorToArr = await colorChanging(productColorsItem);
-    const quantityValue = getQuantity();
-    const quantityToArr = parseInt(quantityValue);
-    const arrCartEntry = [idUrl, colorToArr,quantityToArr];
+    colorChanging(productColorsItem);
+    getQuantity();
 
-    productColors.addEventListener('change',function(e){
-        colorChanging(productColorsItem);
-        return e.target.value;
+    productColorsItem.addEventListener('change', function changeEventHandlerColor(event){
+        console.log('changeEventHandlerColor event.target.value'+event.target.value);
     });
 
-    quantityElement.addEventListener('change', function(e){
-        getQuantity();
-        return e.target.value;
+    quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
+        console.log('changeEventHandlerQuantity event.target.value '+event.target.value);
+        var quantityToArr= event.target.value;
+        return quantityToArr
     });
 
-    const button = document.getElementsByTagName('button')[0];
-    button.addEventListener('click', function(e){
-        function sendToCart(arrCartEntry){
+    const button= document.querySelector('button');
 
-            if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){       
-                populateStorage();
-            }
-            arrCartEntryBis = arrCartEntry;
-            console.log('bouton entendu!');
-        };
-        sendToCart(arrCartEntry);  
-        return e.target.value;
-    });
+    button.addEventListener('click', 
+    function sendToCart(event){
+
+        if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){       
+            populateStorage(arrCartEntry);
+        }
+        console.log('bouton entendu!');
+        console.log( 'sendToCart event.target.value'+event.target.value);
+        var arrToCart = event.target.value;
+        return arrToCart;
+    });      
+
+    const colorToArr = changeEventHandlerColor();
+    const quantityToArr = changeEventHandlerQuantity();
+    const arrToCart = sendToCart();
+
+    /*var arrCartEntryParam = sendToCart();
+    var colorToArrParam = changeEventHandlerColor();
+    var quantityToArrParam = changeEventHandlerQuantity();
+
+    const createNewArr =()=>{
+        arrCartEntry = arrCartEntryParam;
+        arrCartEntry[1] = colorToArrParam;
+        arrCartEntry[2] = quantityToArrParam;
+    }
+    const newArrCartEntry = createNewArr();
+    console.log('nawCartEntry: ' +newArrCartEntry);
+    */
+   console.log('colorToArr:'+colorToArr +' ; quantityToArr:'+quantityToArr+'  ; arrToCart:  '+arrToCart+';');
 
 }
 
 main();
+
 
 
