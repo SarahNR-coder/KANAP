@@ -42,21 +42,21 @@ const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
 
 
 //Adapter la page au produit
-const setImageAttributes = (item) => {
+var setImageAttributes = (item) => {
 
-    const productImage = document.createElement("img");
+    var productImage = document.createElement("img");
     productImage.setAttribute("src", item.imageUrl);
     productImage.setAttribute("alt", item.altTxt);
 
     return productImage;
 };
 
-const fillImageDiv =(productImageWithAttributes)=>{
+const fillImageDiv =(item)=>{
 
-    const ImageItem = productImageWithAttributes;
-    const productDivImage = document.querySelector('div.item__img');
+    var productImage = setImageAttributes (item);
+    var productDivImage = document.querySelector('div.item__img');
 
-    productDivImage.appendChild(ImageItem);
+    productDivImage.appendChild(productImage);
 
     return productDivImage;
 };
@@ -86,9 +86,9 @@ const showDescription = (item) => {
 };
 
 
-const productColors = document.getElementById('colors');
 
 const showColors = (item) =>{
+    var productColors = document.querySelector('select');
 
     let colorChoice = item.colors
 
@@ -110,21 +110,11 @@ const showColors = (item) =>{
 }
 
 
-//***********************COULEURS************************************************************************************
-//********************************************************
-
-let optionElement =productColors.querySelector('option');
-optionElement.selected = true;
-//dans le tableau la valeur couleur aura la valeur =====>  optionElement.value ( fonction retrieveArrCartEntry avec  pour paramètres productColors et quantityElement)
 
 
-
-//*******************************************************
-//***********************QUANTITY************************
-//*******************************************************
+//********************ELEMENT QUANTITE********************
 
 const quantityElement  = document.querySelector('input');
-//dans le tableau la valeur quantité aura la valeur =======> quantityElement.value;
 
 //********************************************************
 //***********************LOCALSTORAGE*********************
@@ -187,10 +177,10 @@ const retrieveArrCartEntry =(productColors,quantityElement)=>{
     arrCartEntry[2] = quantityElement.value;
 
     return arrCartEntry;
-
 }
 
 function populateStorage (arrCartEntry){
+    var arrCartEntry = retrieveArrCartEntry(productColors,quantityElement);
 
     localStorage.setItem('id', arrCartEntry[0]);
     localStorage.setItem('color', arrCartEntry[1]);
@@ -212,16 +202,16 @@ const main = async () => {
 
     const item = await retrieveItemData();
 
-    const productImageWithAttributes = setImageAttributes(item);
-    const NewproductImage= productImageWithAttributes;
-    fillImageDiv(NewproductImage);
+    fillImageDiv(item);
     showTitle(item);
     showPrice(item);
-    const productColorsItem = showColors(item);
+    const productColors = showColors(item);
 
     showDescription(item);
 
-    productColorsItem.addEventListener('change', function(event){
+    const arrCartEntry = retrieveArrCartEntry(productColors,quantityElement);
+
+    productColors.addEventListener('change', function(event){
         console.log('productColorsItem change ==> event.target.value = '+event.target.value);;
     });
 
@@ -232,9 +222,10 @@ const main = async () => {
     const button= document.querySelector('button');
 
     button.addEventListener('click', function(event){
-        sendToCart(arrCartEntryPossiblyChanged);
+        sendToCart(arrCartEntry);
         console.log('bouton entendu!');
-    });      
+        console.log('Pour le click du bouton =====>event.target.value ='+event.target.value);
+    });
 }
 
 main();
