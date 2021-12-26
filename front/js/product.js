@@ -184,20 +184,41 @@ const populateStorage =(arrCartEntry)=>{
     localStorage.setItem('color', arrCartEntry[1]);
     localStorage.setItem('quantity', arrCartEntry[2]);
 
-    
     console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:'+arrCartEntry[0] +'pour id; arrCartEntry[1]:'+arrCartEntry[1]+'pour color; arrCartEntry[2]:'+arrCartEntry[2]+'pour quantity');
 
     //TRANSMISSION VALEURS TABLEAU LOCAL=> STORAGE, VALEURS QUI S'AJOUTENT A CELLES TRANSMISES PAR LE PANIER
-    arrCartEntry = setPurchase();
+    var arr = setPurchase();
     //RECUPERATION VALEURS DU STORAGE (VALEURS QUI PROVIENNENT AUSSI DU PANIER ex. change quantité et/ou couleur dans le panier)
 
     //CREATION NOUVEAU TABLEAU LOCAL
     //=> retourne nouveau arrCartEntry
+    // const newArrCartEntry = setPurchase();
 
     console.log('nouveau tableau après récupération des valeurs du storage par setPurchase:'+arrCartEntry);
 
+    if(arr!= arrCartEntry){//si le tableau généré n'est pas arrCartEntry
+        var newArrCartEntry = arr;//on nomme ce tableau newArrCartEntry
+    }
+    
+    if(newArrCartEntry){
+        arrCartEntry = newArrCartEntry;//si un nouveau tableau nommé newArrCartEntry existe
+        localStorage.setItem('id', arrCartEntry[0]);
+        localStorage.setItem('color', arrCartEntry[1]);
+        localStorage.setItem('quantity', arrCartEntry[2]);
+    }
 }
+
+const  sendToCart=(arrCartEntry)=>{
+
+    var arrCartEntry = new Array(3);
+    if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){          
+        populateStorage(arrCartEntry);//retourne le tableau, qu'il soit le même, donc arrCartEntry ou un nouveau, donc newArrCartEntry;
+        return arrCartEntry
+    }
+}
+
 //function activée au click bouton
+//const StorageArray = populateStorage(newArrCartEntry)
 
 
 //****************************MAIN************************
@@ -215,51 +236,33 @@ const main = async () => {
 
     showDescription(item);
 
-
-    colorChanging(productColorsItem);
-    getQuantity();
-
     productColorsItem.addEventListener('change', function changeEventHandlerColor(event){
         console.log('changeEventHandlerColor event.target.value'+event.target.value);
+        colorChanging(productColorsItem);
     });
 
     quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
         console.log('changeEventHandlerQuantity event.target.value '+event.target.value);
-        var quantityToArr= event.target.value;
-        return quantityToArr
+        getQuantity();
     });
 
     const button= document.querySelector('button');
 
-    button.addEventListener('click', 
-    function sendToCart(event){
+    const colorToArr = colorChanging(productColorsItem);
+    const quantityToArr =getQuantity();
 
-        if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){       
-            populateStorage(arrCartEntry);
-        }
+    const arrCartEntry =[idUrl, colorToArr, quantityToArr];
+
+    const newArrCartEntrySendToCart = sendToCart(arrCartEntry);
+    console.log('newArrCartEntrySendToCart: ' +newArrCartEntrySendToCart);
+
+    button.addEventListener('click', function(event){
+        sendToCart();
         console.log('bouton entendu!');
-        console.log( 'sendToCart event.target.value'+event.target.value);
-        var arrToCart = event.target.value;
-        return arrToCart;
+        console.log( 'button.addEventListener event.target.value : '+event.target.value);
     });      
 
-    const colorToArr = changeEventHandlerColor();
-    const quantityToArr = changeEventHandlerQuantity();
-    const arrToCart = sendToCart();
-
-    /*var arrCartEntryParam = sendToCart();
-    var colorToArrParam = changeEventHandlerColor();
-    var quantityToArrParam = changeEventHandlerQuantity();
-
-    const createNewArr =()=>{
-        arrCartEntry = arrCartEntryParam;
-        arrCartEntry[1] = colorToArrParam;
-        arrCartEntry[2] = quantityToArrParam;
-    }
-    const newArrCartEntry = createNewArr();
-    console.log('nawCartEntry: ' +newArrCartEntry);
-    */
-   console.log('colorToArr:'+colorToArr +' ; quantityToArr:'+quantityToArr+'  ; arrToCart:  '+arrToCart+';');
+    
 
 }
 
