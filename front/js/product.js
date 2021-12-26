@@ -236,14 +236,12 @@ const main = async () => {
 
     showDescription(item);
 
-    productColorsItem.addEventListener('change', function changeEventHandlerColor(event){
-        console.log('changeEventHandlerColor event.target.value'+event.target.value);
-        colorChanging(productColorsItem);
+    productColorsItem.addEventListener('change', function(event){
+        console.log('productColorsItem change ==> event.target.value = '+event.target.value);;
     });
 
     quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
-        console.log('changeEventHandlerQuantity event.target.value '+event.target.value);
-        getQuantity();
+        console.log('quantityElementChange ==> event.target.value = '+event.target.value);
     });
 
     const button= document.querySelector('button');
