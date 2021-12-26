@@ -87,7 +87,7 @@ const showDescription = (item) => {
 
 
 
-const showColors = (item) =>{
+var showColors = (item) =>{
     var productColors = document.querySelector('select');
 
     let colorChoice = item.colors
@@ -108,13 +108,38 @@ const showColors = (item) =>{
     return productColors
 
 }
+const setColorsElement=(item)=>{
+
+    var productColors  = showColors(item);
+    var options = productColors.querySelector('option');
+
+    if(retrieveArrCartEntry(productColors,quantityElement)){
+        var arrCartEntry = retrieveArrCartEntry(productColors, quantityElement);
+        var value = arrCartEntry[1]
+        for(let i=0; i<options.length; i++){
+        var option = options[i];
+        var val =option.getAttribute('value');
+        if(value = val){
+            option.selected;
+        ;}
+        
+    return quantityElement;
+}
 
 
+const setQuantityElement=()=>{
 
-
-//********************ELEMENT QUANTITE********************
-
-const quantityElement  = document.querySelector('input');
+    var quantityElement  = document.querySelector('input');
+    if(retrieveArrCartEntry(productColors,quantityElement)){
+        var arrCartEntry = retrieveArrCartEntry(productColors, quantityElement);
+        quantityElement.setAttribute('value',arrCartEntry[2]);
+    }else{
+        var min = quantityElement.getAttribute('min');
+        quantityElement.setAttribute('value',min);
+    }
+        
+    return quantityElement;
+}
 
 //********************************************************
 //***********************LOCALSTORAGE*********************
@@ -129,7 +154,7 @@ var setPurchase=()=> {
     var currentQuantity = localStorage.getItem('quantity');
 
     var arr;
-    if(currentId !=null && currentColor != null && currentQuantityNumber != null){
+    if(currentId !=null && currentColor != null && currentQuantity != null){
         arr = [currentId, currentColor, currentQuantity];
     }else{
         arr = 'setPurchase n a pas retourné de tableau'
@@ -168,10 +193,12 @@ const retrieveArrCartEntry =(productColors,quantityElement)=>{
 
     arrCartEntry[0] = idUrl;
 
-    var color ='';
-    var optionElement = productColors.querySelectorAll('option[value = '+color+']');
-    if(optionElement.selected = true){
-        arrCartEntry[1] = color;
+    var options = productColors.querySelectorAll('option');
+    for(let i=0; i<options.length; i++){
+        var option = options[i];
+        if(option.selected){
+            arrCartEntry[1]= option.value;
+        }
     }
 
     arrCartEntry[2] = quantityElement.value;
@@ -202,15 +229,19 @@ const main = async () => {
 
     const item = await retrieveItemData();
 
+    setImageAttributes = (item)
     fillImageDiv(item);
     showTitle(item);
     showPrice(item);
-    const productColors = showColors(item);
+    showColors(item);
+    const productColors = setColorsElement(item);
 
     showDescription(item);
 
-    const arrCartEntry = retrieveArrCartEntry(productColors,quantityElement);
+    const quantityElement =setQuantityElement();
 
+    const arrCartEntry = retrieveArrCartEntry(productColors,quantityElement);
+    
     productColors.addEventListener('change', function(event){
         console.log('productColorsItem change ==> event.target.value = '+event.target.value);;
     });
@@ -229,6 +260,5 @@ const main = async () => {
 }
 
 main();
-
 
 
