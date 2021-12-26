@@ -140,7 +140,7 @@ var setPurchase=()=> {
 
     var arr;
     if(currentId !=null && currentColor != null && currentQuantityNumber != null){
-        arr = [currentId, currentColor, currentQuantityNumber];
+        arr = [currentId, currentColor, currentQuantity];
     }else{
         arr = 'setPurchase n a pas retourné de tableau'
     }
@@ -150,27 +150,47 @@ var setPurchase=()=> {
 
 }
 
-//soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau
+//soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
+//soit ne retourne pas de tableau
 
+var arrCartEntryChange=(arrCartEntry)=>{
+    var arr = setPurchase();
+    var arrCartEntry;
+    if( arr !='setPurchase n a pas retourné de tableau' && arr!= arrCartEntry  ){
+        arrCartEntry = arr;
+    }
+    return arrCartEntry;
+}
 
-const populateStorage =(arrCartEntry)=>{
+const arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
+    var arrCartEntryPossiblyChanged = arrCartEntryChange(arrCartEntry);
+    var arrCartEntry;
+    arrCartEntry = arrCartEntryPossiblyChanged;
+
+    return arrCartEntry;
+}
+
+const retrieveArrCartEntry =(productColors,quantityElement, arrCartEntry){
+
+    arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry);
+
+    var arrCartEntry = new Array(3);
+    arrCartEntry[0] = idUrl;
+    arrCartEntry[1] =
+
+}
+
+function populateStorage (arrCartEntry){
 
     localStorage.setItem('id', arrCartEntry[0]);
     localStorage.setItem('color', arrCartEntry[1]);
     localStorage.setItem('quantity', arrCartEntry[2]);
 
-    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:'+arrCartEntry[0] +'pour id; arrCartEntry[1]:'+arrCartEntry[1]+'pour color; arrCartEntry[2]:'+arrCartEntry[2]+'pour quantity');
-
-    //TRANSMISSION VALEURS TABLEAU LOCAL=> STORAGE, VALEURS QUI S'AJOUTENT A CELLES TRANSMISES PAR LE PANIER
-
-
-    if(arr!= arrCartEntry){//si le tableau généré n'est pas arrCartEntry
-        var newArrCartEntry = arr;//on nomme ce tableau newArrCartEntry
-    }
+    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:  '+arrCartEntry[0] +' pour id; arrCartEntry[1]:  '+arrCartEntry[1]+'  pour color; arrCartEntry[2]:  '+arrCartEntry[2]+' pour quantity');
 
 }
 
-const  sendToCart=(arrCartEntry)=>{
+function  sendToCart(arrCartEntry){
     if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){          
         populateStorage(arrCartEntry);
     }
