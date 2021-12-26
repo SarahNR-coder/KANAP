@@ -162,7 +162,7 @@ var arrCartEntryChange=(arrCartEntry)=>{
     return arrCartEntry;
 }
 
-const arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
+var arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
     var arrCartEntryPossiblyChanged = arrCartEntryChange(arrCartEntry);
     var arrCartEntry;
     arrCartEntry = arrCartEntryPossiblyChanged;
@@ -170,13 +170,23 @@ const arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
     return arrCartEntry;
 }
 
-const retrieveArrCartEntry =(productColors,quantityElement, arrCartEntry){
+const retrieveArrCartEntry =(productColors,quantityElement)=>{
 
-    arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry);
 
     var arrCartEntry = new Array(3);
+    var arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry);
+
     arrCartEntry[0] = idUrl;
-    arrCartEntry[1] =
+
+    var color ='';
+    var optionElement = productColors.querySelectorAll('option[value = '+color+']');
+    if(optionElement.selected = true){
+        arrCartEntry[1] = color;
+    }
+
+    arrCartEntry[2] = quantityElement.value;
+
+    return arrCartEntry;
 
 }
 
