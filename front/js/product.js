@@ -155,69 +155,45 @@ var setPurchase=()=> {
 //soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
 //soit ne retourne rien;
 
-//----------------------var param (ligne relative +2)
-var arrCartEntryChange=(arr)=>{
-    var arr = setPurchase();//var param
-    var arrCartEntry = ["","",""];
-    
-    arrCartEntry = arr;
 
-    return arrCartEntry;//var arrCartEntryPossiblyChanged string [];
-}
-
-//-----------------------------------arr param (ligne relative +3)
-var arrCartEntryAfterPossibleChange =(arr)=>{
-    var arrCartEntry =["","",""]; //var
-    var arrCartEntryPossiblyChanged = arrCartEntryChange(arr);// local var_ _ _ = _ _ _ _ _(param)
-
-    arrCartEntry = arrCartEntryPossiblyChanged;
-
-    return arrCartEntry;
-    //var arrCartEntry (avec NOUVELLES VALEURS possiblement)
-    
-    //ces NOUVELLES VALEURS résulteraient de la comparaison avec les *****valeurs obtenues par setPurchase*****,
-
-    // comparaison <=> arrCartEntryChange retourne des valeurs === NOUVELLES VALEURS
-
-    //******valeurs obtenues par setPurchase***********
-
-    //setPurchase retourne un tableau de valeurs (arr) correspondant à l'id, la couleur et la quantité indiqués dans le localStorage, valeurs qu'il a récupéré par localStorage.getItem ==> "NOUVELLES VALEURS"
-}
-
-var retrieveArrCartEntry =(productColors, quantityElement)=>{
-    var arrCartEntry = ["","",""];
-    //local var arrCartEntry any[] avec 3 entrées
-    
-    var variableUpDate = arrCartEntryAfterPossibleChange(arrCartEntry);
-    arrCartEntry = variableUpDate;
-
-    //arrCartEntryAfterPossibleChange, avec pour paramètre de fonction (local var arrCartEntry any[]), retourne local var any[](variableUpDate)
-    //arrCartEntry prend la valeur de variableUpDate, une variable arrCartEntry (qui aurait pu prendre de nouvelles valeurs ===> voir commentaire (à ligne relative -20 à -12)
-
-    //****************************************************
-    //*Conclusion :  local var arrCartEntry = [any,any,any]**************************************************
-
-    arrCartEntry[0] = idUrl;//idUrl const string
-    //donc local var arrCartEntry[0] devient const string quand retourné
+var retrieveColor =(productColors)=>{
+    //*1    
+    var arr = setPurchase();
+    var  color = arr[1];
 
     var productColors = document.querySelector('select');
-    var options = productColors.querySelectorAll('option');
+    var options = productColors.getElementsByTagName('option');
 
     for(let i=0; i<options.length; i++){
         var option = options[i];
 
         if(option.selected){
-            arrCartEntry[1]= option.value;
-            console.log( 'arrCartEntry[1] : '+arrCartEntry[1])
+            color= option.value;
+            console.log( 'color : '+color)
+            return color;
         }
     }
-    //--------------- var param HTMLInputElement
-    var quantityElement = document.querySelector('input');
-    arrCartEntry[2] = quantityElement.value;
-    console.log( 'arrCartEntry[2] : '+arrCartEntry[2])
-
-    return arrCartEntry;//const arrCartEntry
 }
+
+var retrieveQuantity =(quantityElement)=>{
+    //*4 
+    var quantityElement = document.querySelector('input');
+    var quantity = quantityElement.value;
+    console.log( 'quantity : '+quantity)
+
+    return quantity;//*5 
+}
+
+//commentaires
+//*1 local var arrCartEntry any[] avec 3 entrées
+//*2arrCartEntryAfterPossibleChange, avec pour paramètre de fonction (local var arrCartEntry any[]), retourne local var any[](variableUpDate)
+//arrCartEntry prend la valeur de variableUpDate, une variable arrCartEntry (qui aurait pu prendre de nouvelles valeurs ===> voir commentaire (à ligne relative -20 à -12)
+//****************************************************
+//*Conclusion :  local var arrCartEntry = [any,any,any]**************************************************
+//*3 idUrl const string
+//donc local var arrCartEntry[0] devient const string quand retourné
+//*4--------------- var param HTMLInputElement
+//*5 const arrCartEntry
 
 function populateStorage (arrCartEntry){
 
@@ -261,42 +237,48 @@ const main = async () => {
 
 main(); //la page HTML de l'item est créée
 
-//rappel const productColors = document.querySelector('select')
-const options = productColors.getElementsByTagName('option');
+function retrieveArr (){
+    
+    var options = productColors.querySelectorAll('option');
+    function colorChange(){
+        var clr="";
+        for(let i=0; i<options.length; i++){
+            var option = options[i];
+            if(option.selected){
+                clr = option.value;
+            }
+        }
+        console.log('click clr: ' + clr);
+        return clr;
+    }
 
-var arrCartEntry =["","",""];
+    productColors.onchange = colorChange;
+    
+    var color = colorChange();
 
-function colorChange(event){
-    console.log('productColorsItem change ==> event.target.value = '+event.target.value);
-    quantityElement.addEventListener('change',quantityChange);
-    arrCartEntry[1] = event.target.value;
-    arrCartEntry[0] = idUrl;
-    console.log('après changement de quantité arrCartEntry ='+arrCartEntry);
-    return arrCartEntry;  
-}
+    //rappel const quantityElement  = document.querySelector('input');
+    function quantityChange(){
+        var qt = quantityElement.value;
+        console.log('click qt: ' + qt);
+        return qt
+    };
 
-//rappel const quantityElement  = document.querySelector('input');
-retrieveArrCartEntry(productColors, quantityElement);
+    quantityElement.onchange= quantityChange;
 
-quantityElement.addEventListener('change',quantityChange );
+    var quantity= quantityChange();
 
-function quantityChange (event){
-    console.log('quantityElementChange ==> event.target.value = '+event.target.value);
-    //quantityElement.value
-    productColors.addEventListener('change', colorChange);    
-    arrCartEntry[2] = event.target.value;
-    arrCartEntry[0] = idUrl;
-    console.log('après changement de quantité arrCartEntry ='+arrCartEntry);
+    var arrCartEntry = [idUrl, color, quantity];
+
+    console.log('///////var arrCartEntry = '+arrCartEntry);
+
     return arrCartEntry;
-}
+};
 
-console.log('///////var arrCartEntry = '+arrCartEntry);
+var arrCartEntry = retrieveArr();
+console.log('arrCartEntry : ' +arrCartEntry);
 
 button.addEventListener('click', function(_event){
-    if(arrCartEntry[1]!="" && arrCartEntry[2] !=""){      
+    if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
         populateStorage(arrCartEntry);
     }
 });
-
-
-
