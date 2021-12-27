@@ -184,8 +184,7 @@ var arrCartEntryAfterPossibleChange =(arr)=>{
     //setPurchase retourne un tableau de valeurs (arr) correspondant à l'id, la couleur et la quantité indiqués dans le localStorage, valeurs qu'il a récupéré par localStorage.getItem ==> "NOUVELLES VALEURS"
 }
 
-var retrieveArrCartEntry =()=>{
-
+var retrieveArrCartEntry =(productColors, quantityElement)=>{
     var arrCartEntry = ["","",""];
     //local var arrCartEntry any[] avec 3 entrées
     
@@ -201,21 +200,21 @@ var retrieveArrCartEntry =()=>{
     arrCartEntry[0] = idUrl;//idUrl const string
     //donc local var arrCartEntry[0] devient const string quand retourné
 
-    var optionCollection = productColors.querySelectorAll('option');
+    var productColors = document.querySelector('select');
+    var options = productColors.querySelectorAll('option');
 
-    for(let i=0; i<optionCollection.length; i++){
-        var option = optionCollection[i];
+    for(let i=0; i<options.length; i++){
+        var option = options[i];
 
         if(option.selected){
-            var color = option.getAttribute('value');
-            arrCartEntry[1]= color;
+            arrCartEntry[1]= option.value;
             console.log( 'arrCartEntry[1] : '+arrCartEntry[1])
         }
     }
-
     //--------------- var param HTMLInputElement
-    arrCartEntry[2] = quantityElement.getAttribute('value');
-    // 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
+    var quantityElement = document.querySelector('input');
+    arrCartEntry[2] = quantityElement.value;
+    console.log( 'arrCartEntry[2] : '+arrCartEntry[2])
 
     return arrCartEntry;//const arrCartEntry
 }
@@ -235,6 +234,7 @@ const button= document.querySelector('button');
 const main = async () => {
 
     const item = await retrieveItemData();
+    //l'item est récupéré
 
     //rappel const productImage = document.createElement('img');
     setImageAttributes(item);
@@ -255,45 +255,45 @@ const main = async () => {
     //ajuste à item
 
     //rappel const productColors = document.querySelector('select')
-    const productColors = showColors(item);
-    //ajuste à item retourne const productColors
-
-    productColors.addEventListener('change', function(event){
-        console.log('productColorsItem change ==> event.target.value = '+event.target.value);
-        var color = event.target.value;
-        //productColors.value
-        var options = productColors.getElementsByTagName('option');
-        for(let i=0; i<options.length; i++){
-            var option=options[i];
-            if(option.getAttribute('value') === color){
-                option.selected = true;
-            }
-        }
-    });
-
-    //rappel const quantityElement  = document.querySelector('input');
-
-    quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
-        console.log('quantityElementChange ==> event.target.value = '+event.target.value);
-
-        var quantity = event.target.value;
-        //quantityElement.value
-        //var quantity porte la valeur et la met en attribut de quantityElement
-        quantityElement.getAttribute('value') = quantity;
-
-    });
+    showColors(item);
+    //ajuste à item    
 }
 
-main();
+main(); //la page HTML de l'item est créée
 
-const arrCartEntry = retrieveArrCartEntry();
+//rappel const productColors = document.querySelector('select')
+const options = productColors.getElementsByTagName('option');
 
-console.log('const arrCartEntry = retrieveArrCartEntry(item) = '+arrCartEntry);
+var arrCartEntry =["","",""];
 
-button.addEventListener('click', function(event){
-    console.log('event.target.value  de button : '+event.target.value);
+function colorChange(event){
+    console.log('productColorsItem change ==> event.target.value = '+event.target.value);
+    quantityElement.addEventListener('change',quantityChange);
+    arrCartEntry[1] = event.target.value;
+    arrCartEntry[0] = idUrl;
+    console.log('après changement de quantité arrCartEntry ='+arrCartEntry);
+    return arrCartEntry;  
+}
 
-    if(arrCartEntry[1]!="" && arrCartEntry[2] !="0"){      
+//rappel const quantityElement  = document.querySelector('input');
+retrieveArrCartEntry(productColors, quantityElement);
+
+quantityElement.addEventListener('change',quantityChange );
+
+function quantityChange (event){
+    console.log('quantityElementChange ==> event.target.value = '+event.target.value);
+    //quantityElement.value
+    productColors.addEventListener('change', colorChange);    
+    arrCartEntry[2] = event.target.value;
+    arrCartEntry[0] = idUrl;
+    console.log('après changement de quantité arrCartEntry ='+arrCartEntry);
+    return arrCartEntry;
+}
+
+console.log('///////var arrCartEntry = '+arrCartEntry);
+
+button.addEventListener('click', function(_event){
+    if(arrCartEntry[1]!="" && arrCartEntry[2] !=""){      
         populateStorage(arrCartEntry);
     }
 });
