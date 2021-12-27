@@ -87,22 +87,40 @@ const showDescription =(item)=>{
 
 const productColors = document.querySelector('select');
 const productColorOptionBlank = productColors.querySelector('option');
-productColorOptionBlank.getAttribute('value', "");
 
 const showColors = (item) =>{
     
-    let colorChoice = item.colors;
+    var colorChoice = new Array(); 
+    colorChoice = item.colors;
     var options = productColors.querySelectorAll('option')
 
     for(let i=0; i<colorChoice.length + 1; i++){
 
-        productColorOptionBlank = options[0] //options [i=0]
+        let color = colorChoice[i];
+       // productColorOptionBlank = options[0] //options [i=0] 
 
         var option = options[i+1]//let i=0 donne let i+1 = 1;
-        // comme si pour let i=1   (htmloptionelement) option = options[i];
+        // comme si pour let j=i+1   (htmloptionelement) option = options[j];
         // option est une des options de couleur dans le tableau colorChoice
         //ça n'inclue pas options[0] qui ne correspond à aucune couleur dans le tableau colorChoice;
-        let color = colorChoice[i];
+        
+
+        // i=0 => j=1 donc je fais correspondre colorChoice[0] à options[1]
+
+        /*<select name="color-select" id="colors">
+            options[0]
+            <option value="">--SVP, choisissez une couleur -</option>
+
+            item avec "colors" :["vert","blanc"]
+            colorechoice[0] = "vert";
+            options[1]=<option value="vert">vert</option>
+            
+            <option value="vert">vert</option>
+            <option value="blanc">blanc</option>
+         </select>
+        */
+
+        //colorChoice[0] dans tableau "colors" de item [couleur item 1, couleur item 2] ==> ça retourne couleur1 ===> 1ère option ajoutée 
        
         option = document.createElement('option');
         option.setAttribute('value', color);
@@ -116,8 +134,9 @@ const showColors = (item) =>{
 }
 
 //retourne var ou const
-function setColorsElement(){
+function setColorsElement(item){
 
+    var productColors = showColors(item);
     var options = productColors.querySelectorAll('option');
     for(let i=0; i<options.length; i++){
         var option =options[i];
@@ -199,7 +218,7 @@ var arrCartEntryAfterPossibleChange =(arr)=>{
 
 }
 
-const retrieveArrCartEntry =()=>{
+const retrieveArrCartEntry =(item)=>{
 
     var arrCartEntry = ["","",""];
     //local var arrCartEntry any[] avec 3 entrées
@@ -215,13 +234,41 @@ const retrieveArrCartEntry =()=>{
     arrCartEntry[0] = idUrl;//idUrl const string
     //donc local var arrCartEntry[0] devient const string quand retourné
 
-    var productColors = setColorsElement();
-    var options = productColors.querySelectorAll('option');
+    var productColors = setColorsElement(item);
+    var optionCollection = productColors.querySelectorAll('option');
 
-    for(let i=0; i<options.length; i++){
-        var option = options[i];
-        option.selected;
-        arrCartEntry[1]= option.getAttribute('value');
+    /*
+    On sélectionne une couleur: ici soit "", soit "vert" soit "blanc"
+
+    productColors: correspond à
+    <select name="color-select" id="colors">
+        <option value="">--SVP, choisissez une couleur --</option>
+        <option value="vert">vert</option>
+        <option value="blanc">blanc</option> -->
+    </select>
+
+    on sélectionne :
+
+    1 <option value="">--SVP, choisissez une couleur --</option> =  optionCollection[0] 
+    2 <option value="vert">vert</option>
+    3 <option value="blanc">blanc</option> -->
+    ce sera la collection (il y'en plusieurs 3) d'elements options, que l'on nomme optionCollection
+
+    <select name="color-select" id="colors">
+        <option value="">--SVP, choisissez une couleur --</option>
+        <option value="vert">vert</option>
+        <option value="blanc">blanc</option> -->
+    </select>
+    */
+
+    for(let i=0; i<optionCollection.length; i++){
+        var option = optionCollection[i];
+
+        if(option.selected){
+        var color = option.getAttribute('value')
+        arrCartEntry[1]= color;
+        console.log( 'arrCartEntry[1] : '+arrCartEntry[1])
+        }
     }
 
     var quantityElement = setQuantityElement();
@@ -271,7 +318,7 @@ const main = async () => {
 
     
 
-    const productColors=setColorsElement();
+    const productColors=setColorsElement(item);
     // selon la valeur de productColors, l'HTMLOptionElement de productColors a une couleur (ici color) qui correspond à cette valeur est celui sélectionné
     //if(color === productColors.value){
     //   option.selected;
