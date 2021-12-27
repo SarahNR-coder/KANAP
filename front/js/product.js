@@ -174,8 +174,16 @@ const main = async () => {
 
 main(); //la page HTML de l'item est créée
 
+productColors.addEventListener('input', function updateValue(e) {
+  productColors.value = e.target.value;
+});
+
 let selectedOption = productColors.options[productColors.selectedIndex];
 var color = selectedOption.value;
+
+quantityElement.addEventListener('input', function updateValue(e) {
+    quantityElement.value = e.target.value;
+});
 
 var quantity= quantityElement.value;
 
@@ -183,7 +191,6 @@ var arrCartEntry = [idUrl, color, quantity];
 console.log('setPurchase : '+setPurchase());
 
 console.log('///////var arrCartEntry = '+arrCartEntry);
-console.log('///////var arr = '+arr);
 
 function sendToCart(){
     if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
