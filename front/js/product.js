@@ -172,45 +172,45 @@ function populateStorage (arrCartEntry){
     localStorage.setItem('quantity', arrCartEntry[2]);
 
 }
-
 //********************************************************
 
+//const productColors = document.querySelector('select');
 
 var selectedOption = productColors.options[productColors.selectedIndex];
-
-productColors.addEventListener('input', function (e) {
-  productColors.value = e.target.value;
-  console.log('input => e.target.element :'+ e.target.element);
-});
-productColors.addEventListener('change', function(e){
-    console.log('change => e.target.element :'+ e.target.element);
-})
-
 var color = selectedOption.value;
 
-const quantityElement  = document.querySelector('input');
-quantityElement.addEventListener('input', function (e) {
-    console.log('input => e.target.element :'+ e.target.element);
-    quantityElement.value = e.target.value;
+productColors.addEventListener('change',function (event){
+    this.value = event.target.value;
+    for(let i = 0; i<productColors.options; i++){
+        if(productColors.options[i].selected){
+            i = document.productColors.selectedIndex;
+            var color = document.productColors.options[i].value;
+            parent.location.value = color;
+        }      
+    }
 });
 
-quantityElement.addEventListener('change', function(e){
-    console.log('change => e.target.element :'+ e.target.element);
+const quantityElement  = document.querySelector('input');
+var quantity= quantityElement.getAttribute('value');
+
+quantityElement.addEventListener('change',function (event){
+    this.value = event.target.value;
+    var quantity= document.quantityElement.value;
+    event.target.getAttribute('value')=quantity;
 })
 
-
-
-var quantity= quantityElement.value;
-
-var arrCartEntry = [idUrl, color, quantity];
 console.log('setPurchase : '+setPurchase());
 
-console.log('///////var arrCartEntry = '+arrCartEntry);
+console.log('color :'+color);
+console.log('quantity :'+quantity);
+var arrCartEntry = [idUrl, color, quantity];
+
+console.log('color définie///////quantité définie///////var arrCartEntry = '+arrCartEntry);
 
 const button= document.querySelector('button'); 
 
 button.addEventListener('click', function(e){
-    console.log('e.taget.value :'+e.target.value)
+    console.log('button e.taget.value :'+e.target.value)
     if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
         populateStorage(arrCartEntry);
     }
