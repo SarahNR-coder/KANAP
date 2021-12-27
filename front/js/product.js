@@ -75,9 +75,9 @@ const showPrice = (item) => {
     return productPrice;
 };
 
-const showDescription = (item) => {
+const showDescription =(item)=>{
 
-    const productDescription = document.getElementById('description')
+    const productDescription = document.getElementById('description');
     productDescription.textContent = item.description
 
     return productDescription
@@ -241,7 +241,7 @@ function populateStorage (item){
 
 function  sendToCart(item){
 
-    var arrCartEntry = 
+    var arrCartEntry = retrieveArrCartEntry(item);
     if(arrCartEntry[1]!="" && arrCartEntry[2] !="0"){          
         populateStorage(item);
     }
@@ -269,12 +269,14 @@ const main = async () => {
         console.log('productColorsItem change ==> event.target.value = '+event.target.value);;
         retrieveArrCartEntry(item);
         setColorsElement(item);
+        stopPropagation();
     });
 
     quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
         console.log('quantityElementChange ==> event.target.value = '+event.target.value);
         retrieveArrCartEntry(item);
         setQuantityElement(item);
+        stopPropagation();
     });
 
     const button= document.querySelector('button');
@@ -282,6 +284,7 @@ const main = async () => {
     button.addEventListener('click', function(event){
         retrieveArrCartEntry(item);
         sendToCart(item);
+        stopPropagation();
         console.log('bouton entendu!');
         console.log('Pour le click du bouton =====>event.target.value ='+event.target.value);
         console.log('arrCartEntry au click du bouton'+ arrCartEntry);
