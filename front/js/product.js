@@ -175,29 +175,36 @@ function populateStorage (arrCartEntry){
 //********************************************************
 
 //const productColors = document.querySelector('select');
+const quantityElement  = document.querySelector('input');
+
+const changeHandler = () => main()
+.then(function (productColors) {
+productColors.addEventListener('change',function (event){
+    productColors.value = event.target.value;
+    var selectedOption = productColors.options[productColors.selectedIndex];
+    var color = selectedOption.getAttribute('value');
+    for(let i = 0; i<productColors.options; i++){
+        if(productColors.options[i].selected){
+            i = productColors.selectedIndex;
+            selectedOption = productColors.options[i];
+            productColors.options[i].setAttribute('value', color);
+        }      
+    }
+})})
+.then(function (quantityElement){ 
+    quantityElement.addEventListener('change',function (event){
+        quantityElement.value = event.target.value;
+        var quantity= quantityElement.value;
+        quantityElement.setAttribute('value', quantity);
+    })
+})
+
+changeHandler();
 
 var selectedOption = productColors.options[productColors.selectedIndex];
 var color = selectedOption.value;
-
-productColors.addEventListener('change',function (event){
-    this.value = event.target.value;
-    for(let i = 0; i<productColors.options; i++){
-        if(productColors.options[i].selected){
-            i = document.productColors.selectedIndex;
-            var color = document.productColors.options[i].value;
-            parent.location.value = color;
-        }      
-    }
-});
-
-const quantityElement  = document.querySelector('input');
 var quantity= quantityElement.getAttribute('value');
 
-quantityElement.addEventListener('change',function (event){
-    this.value = event.target.value;
-    var quantity= document.quantityElement.value;
-    event.target.getAttribute('value')=quantity;
-})
 
 console.log('setPurchase : '+setPurchase());
 
