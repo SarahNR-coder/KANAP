@@ -112,35 +112,27 @@ var setColorsElement=(item)=>{
 
     var productColors  = showColors(item);
     var options = productColors.querySelectorAll('option');
-    var arrCartEntry = retrieveArrCartEntry(item);
-
-    if(arrCartEntry != null){
-        let index=0;
-        var color = options[index].getAttribute('value');
-        for(index of options.length){
-            if(color === arrCartEntry[1]){
-                options[index].selected;
-            }
+    for(let i=0; i<options.length; i++){
+        var option =options[i];
+        var color = option.getAttribute('value');
+        if(color === productColors.value){
+            option.selected;
         }
+    }
+    
     return productColors;// var productColors, car change, 
     // la couleur change,elle donne la valeur que doit avoir l'attribut de l' HTMLOptionElement qui est celui qui est sélectionné
     //l'HTMLOptionElement sélectionné change
     //l'HTMLSelectElement change
-    }
 }
 
 //return var ou const
-var setQuantityElement=(item)=>{
+var setQuantityElement=()=>{
 
     var quantityElement  = document.querySelector('input');
-    var qt = quantityElement.getAttribute('value');
-
-    var arrCartEntry= retrieveArrCartEntry(item);
-    if(arrCartEntry != null){
-        qt = arrCartEntry[2]
-        quantityElement.setAttribute('value',qt)
-    }
-       
+    var qt=quantityElement.value;
+    qt = quantityElement.getAttribute('value');
+      
     return quantityElement; // var quantityElement car change,
     //la quantité change (voir addEventListener dans main)
     //ce qui fait que la valeur de son attribut 'value' change 
@@ -158,12 +150,8 @@ var setPurchase=()=> {
     var arr;
     if(currentId !=null && currentColor != null && currentQuantity != null){
         arr = [currentId, currentColor, currentQuantity];
-    }else{
-        arr = 'setPurchase n a pas retourné de tableau'
+        return arr
     }
-    console.log('setPurchase marche');
-
-    return arr;//var arr [string,string,string] ou string = 'setPurchase n a pas retourné de tableau'
 
 }
 
@@ -174,9 +162,9 @@ var setPurchase=()=> {
 var arrCartEntryChange=(arr)=>{
     var arr = setPurchase();//var param
     var arrCartEntry = ["","",""];
-    if( arr !='setPurchase n a pas retourné de tableau' && arr!= arrCartEntry  ){
-        arrCartEntry = arr;
-    }
+    
+    arrCartEntry = arr;
+
     return arrCartEntry;//var arrCartEntryPossiblyChanged string [];
 }
 
@@ -200,7 +188,7 @@ var arrCartEntryAfterPossibleChange =(arr)=>{
 
 }
 //----------- = (any param item) =>{
-var retrieveArrCartEntry =(item)=>{
+const retrieveArrCartEntry =(item)=>{
 
     var arrCartEntry = ["","",""];
     //local var arrCartEntry any[] avec 3 entrées
@@ -219,9 +207,11 @@ var retrieveArrCartEntry =(item)=>{
     var productColors =setColorsElement(item);
     var options = productColors.querySelectorAll('option');
 
-    let option=options[index];
-    option.selected;
-    arrCartEntry[1]= option.getAttribute('value');
+    for(let i=0; i<options.length; i++){
+        var option = options[i];
+        option.selected;
+        arrCartEntry[1]= option.getAttribute('value');
+    }
 
     //--------------- var param HTMLInputElement
     arrCartEntry[2] = setQuantityElement().getAttribute('value');// 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
@@ -240,13 +230,6 @@ function populateStorage (item){
 
 }
 
-function  sendToCart(item){
-
-    var arrCartEntry = retrieveArrCartEntry(item);
-    if(arrCartEntry[1]!="" && arrCartEntry[2] !="0"){          
-        populateStorage(item);
-    }
-}
 
 //****************************MAIN************************
 
@@ -254,7 +237,6 @@ const main = async () => {
 
     const item = await retrieveItemData();
 
-    var arrCartEntry = [idUrl,"","0"];
     setImageAttributes(item);
     fillImageDiv(item);
     showTitle(item);
@@ -263,41 +245,47 @@ const main = async () => {
     showDescription(item);
 
     setColorsElement(item);
-    setQuantityElement(item);
+    setQuantityElement();
     
-    arrCartEntry =retrieveArrCartEntry(item);
     var productColors=setColorsElement(item);
-    var quantityElement = setQuantityElement(item);
+    var quantityElement = setQuantityElement();
 
     productColors.addEventListener('change', function(event){
         console.log('productColorsItem change ==> event.target.value = '+event.target.value);
 
         var color = event.target.value;
-        let options = document.getElementsByTagName('option');
-        let option=options[index];
-        option.value = color;
-
-        productColors = option.parentElement;
+        //productColors.value
+        let options = productColors.querySelector('option');
+        for(let i=0; i<options.length; i++){
+            var option=options[i];
+            if(option.getAttribute('value') === color){
+                option.selected
+            }
+        }
     });
 
     quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
         console.log('quantityElementChange ==> event.target.value = '+event.target.value);
 
-        var quantity= event.target.value;
-        quantityElement.setAttribute('value', quantity);
+        var quantity = event.target.value;
+        //quantityElement.value
+        quantity =quantityElement.getAttribute('value');
+
     });
 
     const button= document.querySelector('button');
 
+    const arrCartEntry = retrieveArrCartEntry(item);
+    console.log('const arrCartEntry = retrieveArrCartEntry(item) = '+arrCartEntry);
+
     button.addEventListener('click', function(event){
+        console.log('event.target.value  de button : '+event.target.value);
 
-        sendToCart(item);
-
+        if(arrCartEntry[1]!="" && arrCartEntry[2] !="0"){          
+            populateStorage(item);
+        }
     });
 
-    
-    console.log('arrCartEntry à la fin :'+ arrCartEntry);
-    return arrCartEntry;
 }
 
 main();
