@@ -40,7 +40,8 @@ const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
         console.log("erreur suivante:" + err)
     })
 
-var productImage = document.createElement("img");
+const productImage = document.createElement("img");
+
 //Adapter la page au produit
 function setImageAttributes (item){
   
@@ -52,7 +53,7 @@ function setImageAttributes (item){
 const fillImageDiv =(item)=>{
 
     setImageAttributes(item);
-    var productDivImage = document.querySelector('div.item__img');
+    const productDivImage = document.querySelector('div.item__img');
 
     productDivImage.appendChild(productImage);
 
@@ -84,33 +85,39 @@ const showDescription =(item)=>{
     return productDescription;
 };
 
+const productColors = document.querySelector('select');
+const productColorOptionBlank = productColors.querySelector('option');
+productColorOptionBlank.getAttribute('value', "");
 
+const showColors = (item) =>{
+    
+    let colorChoice = item.colors;
+    var options = productColors.querySelectorAll('option')
 
-var showColors = (item) =>{
-    var productColors = document.querySelector('select');
+    for(let i=0; i<colorChoice.length + 1; i++){
 
-    let colorChoice = item.colors
+        productColorOptionBlank = options[0] //options [i=0]
 
-    for(let i=0; i<colorChoice.length; i++){
+        var option = options[i+1]//let i=0 donne let i+1 = 1;
+        // comme si pour let i=1   (htmloptionelement) option = options[i];
+        // option est une des options de couleur dans le tableau colorChoice
+        //ça n'inclue pas options[0] qui ne correspond à aucune couleur dans le tableau colorChoice;
+        let color = colorChoice[i];
+       
+        option = document.createElement('option');
+        option.setAttribute('value', color);
 
-        let color = colorChoice[i]
+        option.textContent = color;
 
-        var productColorOption = document.createElement('option');
-
-        
-        productColorOption.setAttribute('value', color);
-
-        productColorOption.textContent = color;
-
-        productColors.appendChild(productColorOption)
+        productColors.appendChild(option);
     }
-    return productColors//var
+
+    return productColors//CONST PRODUCTCOLORS
 }
 
 //retourne var ou const
-var setColorsElement=(item)=>{
+function setColorsElement(){
 
-    var productColors  = showColors(item);
     var options = productColors.querySelectorAll('option');
     for(let i=0; i<options.length; i++){
         var option =options[i];
@@ -124,18 +131,22 @@ var setColorsElement=(item)=>{
     // la couleur change,elle donne la valeur que doit avoir l'attribut de l' HTMLOptionElement qui est celui qui est sélectionné
     //l'HTMLOptionElement sélectionné change
     //l'HTMLSelectElement change
+    //VAR PRODUCTCOLORS dans RETRIEVEARRCARTENTRY
+    //CONST PRODUCTCOLORS dans MAIN
 }
 
 //return var ou const
-var setQuantityElement=()=>{
+function setQuantityElement(){
 
     var quantityElement  = document.querySelector('input');
-    var qt=quantityElement.value;
-    qt = quantityElement.getAttribute('value');
+    var qt = quantityElement.getAttribute('value');
+    qt=quantityElement.value;
       
-    return quantityElement; // var quantityElement car change,
+    return quantityElement; //retourne var quantityElement car change,
     //la quantité change (voir addEventListener dans main)
     //ce qui fait que la valeur de son attribut 'value' change 
+    //VAR QUANTITYELEMENT dans RETRIEVEARRCARTENTRY(ligne relative +53)
+    //CONST QUANTITYELEMENT DANS MAIN
 }
 
 //********************************************************
@@ -156,7 +167,7 @@ var setPurchase=()=> {
 }
 
 //soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
-//soit ne retourne pas de tableau
+//soit ne retourne rien;
 
 //----------------------var param (ligne relative +2)
 var arrCartEntryChange=(arr)=>{
@@ -168,7 +179,7 @@ var arrCartEntryChange=(arr)=>{
     return arrCartEntry;//var arrCartEntryPossiblyChanged string [];
 }
 
-//-----------------------------------var param (ligne relative +2)
+//-----------------------------------arr param (ligne relative +3)
 var arrCartEntryAfterPossibleChange =(arr)=>{
     var arrCartEntry =["","",""]; //var
     var arrCartEntryPossiblyChanged = arrCartEntryChange(arr);// local var_ _ _ = _ _ _ _ _(param)
@@ -187,8 +198,8 @@ var arrCartEntryAfterPossibleChange =(arr)=>{
     //setPurchase retourne un tableau de valeurs (arr) correspondant à l'id, la couleur et la quantité indiqués dans le localStorage, valeurs qu'il a récupéré par localStorage.getItem ==> "NOUVELLES VALEURS"
 
 }
-//----------- = (any param item) =>{
-const retrieveArrCartEntry =(item)=>{
+
+const retrieveArrCartEntry =()=>{
 
     var arrCartEntry = ["","",""];
     //local var arrCartEntry any[] avec 3 entrées
@@ -204,7 +215,7 @@ const retrieveArrCartEntry =(item)=>{
     arrCartEntry[0] = idUrl;//idUrl const string
     //donc local var arrCartEntry[0] devient const string quand retourné
 
-    var productColors =setColorsElement(item);
+    var productColors = setColorsElement();
     var options = productColors.querySelectorAll('option');
 
     for(let i=0; i<options.length; i++){
@@ -213,20 +224,19 @@ const retrieveArrCartEntry =(item)=>{
         arrCartEntry[1]= option.getAttribute('value');
     }
 
-    //--------------- var param HTMLInputElement
-    arrCartEntry[2] = setQuantityElement().getAttribute('value');// 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
+    var quantityElement = setQuantityElement();
 
-    return arrCartEntry;//var arrCartEntry
+    //--------------- var param HTMLInputElement
+    arrCartEntry[2] = quantityElement.getAttribute('value');// 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
+
+    return arrCartEntry;//const arrCartEntry
 }
 
-function populateStorage (item){
-    var arrCartEntry = retrieveArrCartEntry(item);
+function populateStorage (arrCartEntry){
 
     localStorage.setItem('id', arrCartEntry[0]);
     localStorage.setItem('color', arrCartEntry[1]);
     localStorage.setItem('quantity', arrCartEntry[2]);
-
-    console.log('populateStorage marche: AU STORAGE LES VALEURS arrCartEntry[0]:  '+arrCartEntry[0] +' pour id; arrCartEntry[1]:  '+arrCartEntry[1]+'  pour color; arrCartEntry[2]:  '+arrCartEntry[2]+' pour quantity');
 
 }
 
@@ -237,25 +247,46 @@ const main = async () => {
 
     const item = await retrieveItemData();
 
+    //rappel const productImage = document.createElement('img');
     setImageAttributes(item);
+    //ajuste à item
     fillImageDiv(item);
-    showTitle(item);
-    showPrice(item);
-    showColors(item);
-    showDescription(item);
+    // ajuste la div supérieure à productImage (donc à item)
 
-    setColorsElement(item);
-    setQuantityElement();
+    //rappel const productTitle = document.getElementById('title')
+    showTitle(item);
+    //ajuste à item
+
+    //rappel const productPrice = document.getElementById('price');
+    showPrice(item);
+    //ajuste à item
+
+    //rappel const productDescription = document.getElementById('description')
+    showDescription(item);
+    //ajuste à item
+
+    //rappel const productColors = document.querySelector('select')
+    showColors(item);
+    //ajuste à item
+
     
-    var productColors=setColorsElement(item);
-    var quantityElement = setQuantityElement();
+
+    const productColors=setColorsElement();
+    // selon la valeur de productColors, l'HTMLOptionElement de productColors a une couleur (ici color) qui correspond à cette valeur est celui sélectionné
+    //if(color === productColors.value){
+    //   option.selected;
+    //marche même quand productColors est sur la valeur ""(texte "--SVP, choisissez une couleur --")
+    //retourne la valeur constante productColors correspondante
+
+    const quantityElement = setQuantityElement();
+    //selon la valeur de quantityElement, on change la valeur de l'attribut "value" de ce quantityElement
 
     productColors.addEventListener('change', function(event){
         console.log('productColorsItem change ==> event.target.value = '+event.target.value);
 
         var color = event.target.value;
         //productColors.value
-        let options = productColors.querySelector('option');
+        let options = productColors.querySelectorAll('option');
         for(let i=0; i<options.length; i++){
             var option=options[i];
             if(option.getAttribute('value') === color){
@@ -275,17 +306,17 @@ const main = async () => {
 
     const button= document.querySelector('button');
 
-    const arrCartEntry = retrieveArrCartEntry(item);
+    const arrCartEntry = retrieveArrCartEntry();
+
     console.log('const arrCartEntry = retrieveArrCartEntry(item) = '+arrCartEntry);
 
     button.addEventListener('click', function(event){
         console.log('event.target.value  de button : '+event.target.value);
 
         if(arrCartEntry[1]!="" && arrCartEntry[2] !="0"){          
-            populateStorage(item);
+            populateStorage(arrCartEntry);
         }
     });
-
 }
 
 main();
