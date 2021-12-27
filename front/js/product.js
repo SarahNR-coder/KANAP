@@ -69,18 +69,19 @@ const showTitle = (item) => {
 const showPrice = (item) => {
 
     const productPrice = document.getElementById(
-        'price');
+    'price');
     productPrice.textContent = item.price;
 
     return productPrice;
 };
+
 
 const showDescription =(item)=>{
 
     const productDescription = document.getElementById('description');
     productDescription.textContent = item.description
 
-    return productDescription
+    return productDescription;
 };
 
 
@@ -259,36 +260,42 @@ const main = async () => {
     showTitle(item);
     showPrice(item);
     showColors(item);
-    setColorsElement(item);
-
     showDescription(item);
 
+    setColorsElement(item);
     setQuantityElement(item);
+    
+    arrCartEntry =retrieveArrCartEntry(item);
+    var productColors=setColorsElement(item);
+    var quantityElement = setQuantityElement(item);
 
     productColors.addEventListener('change', function(event){
-        console.log('productColorsItem change ==> event.target.value = '+event.target.value);;
-        retrieveArrCartEntry(item);
-        setColorsElement(item);
-        stopPropagation();
+        console.log('productColorsItem change ==> event.target.value = '+event.target.value);
+
+        var color = event.target.value;
+        let options = document.getElementsByTagName('option');
+        let option=options[index];
+        option.value = color;
+
+        productColors = option.parentElement;
     });
 
     quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
         console.log('quantityElementChange ==> event.target.value = '+event.target.value);
-        retrieveArrCartEntry(item);
-        setQuantityElement(item);
-        stopPropagation();
+
+        var quantity= event.target.value;
+        quantityElement.setAttribute('value', quantity);
     });
 
     const button= document.querySelector('button');
 
     button.addEventListener('click', function(event){
-        retrieveArrCartEntry(item);
+
         sendToCart(item);
-        stopPropagation();
-        console.log('bouton entendu!');
-        console.log('Pour le click du bouton =====>event.target.value ='+event.target.value);
-        console.log('arrCartEntry au click du bouton'+ arrCartEntry);
+
     });
+
+    
     console.log('arrCartEntry à la fin :'+ arrCartEntry);
     return arrCartEntry;
 }
