@@ -112,35 +112,7 @@ const showColors = (item) =>{
 }
 
 
-const quantityElement  = document.querySelector('input');
 
-//********************************************************
-//***********************LOCALSTORAGE*********************
-//********************************************************
-
-function setPurchase() {
-    var currentId = localStorage.getItem('id');
-    var currentColor = localStorage.getItem('color');
-    var currentQuantity = localStorage.getItem('quantity');
-
-    if(currentId !=undefined && currentColor != undefined && currentQuantity != NaN){
-        var arr = [currentId, currentColor, currentQuantity];
-        return arr
-    }
-}
-
-//soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
-//soit ne retourne rien;
-
-function populateStorage (arrCartEntry){
-
-    localStorage.setItem('id', arrCartEntry[0]);
-    localStorage.setItem('color', arrCartEntry[1]);
-    localStorage.setItem('quantity', arrCartEntry[2]);
-
-}
-
-const button= document.querySelector('button'); 
 
 //****************************MAIN************************
 
@@ -174,16 +146,59 @@ const main = async () => {
 
 main(); //la page HTML de l'item est créée
 
-productColors.addEventListener('input', function updateValue(e) {
-  productColors.value = e.target.value;
-});
 
-let selectedOption = productColors.options[productColors.selectedIndex];
+//********************************************************
+//***********************LOCALSTORAGE*********************
+//********************************************************
+
+function setPurchase() {
+    var currentId = localStorage.getItem('id');
+    var currentColor = localStorage.getItem('color');
+    var currentQuantity = localStorage.getItem('quantity');
+
+    if(currentId !=undefined && currentColor != undefined && currentQuantity != NaN){
+        var arr = [currentId, currentColor, currentQuantity];
+        return arr
+    }
+}
+
+//soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
+//soit ne retourne rien;
+
+function populateStorage (arrCartEntry){
+
+    localStorage.setItem('id', arrCartEntry[0]);
+    localStorage.setItem('color', arrCartEntry[1]);
+    localStorage.setItem('quantity', arrCartEntry[2]);
+
+}
+
+//********************************************************
+
+
+var selectedOption = productColors.options[productColors.selectedIndex];
+
+productColors.addEventListener('input', function (e) {
+  productColors.value = e.target.value;
+  console.log('input => e.target.element :'+ e.target.element);
+});
+productColors.addEventListener('change', function(e){
+    console.log('change => e.target.element :'+ e.target.element);
+})
+
 var color = selectedOption.value;
 
-quantityElement.addEventListener('input', function updateValue(e) {
+const quantityElement  = document.querySelector('input');
+quantityElement.addEventListener('input', function (e) {
+    console.log('input => e.target.element :'+ e.target.element);
     quantityElement.value = e.target.value;
 });
+
+quantityElement.addEventListener('change', function(e){
+    console.log('change => e.target.element :'+ e.target.element);
+})
+
+
 
 var quantity= quantityElement.value;
 
@@ -192,10 +207,12 @@ console.log('setPurchase : '+setPurchase());
 
 console.log('///////var arrCartEntry = '+arrCartEntry);
 
-function sendToCart(){
+const button= document.querySelector('button'); 
+
+button.addEventListener('click', function(e){
+    console.log('e.taget.value :'+e.target.value)
     if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
         populateStorage(arrCartEntry);
     }
-}
+})
 
-button.onclick= sendToCart();
