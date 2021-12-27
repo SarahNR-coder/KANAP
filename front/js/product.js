@@ -103,19 +103,17 @@ var showColors = (item) =>{
 
         productColors.appendChild(productColorOption)
     }
-    return productColors
+    return productColors//var
 }
 
 //retourne var ou const
-function setColorsElement(item){
+var setColorsElement=(item)=>{
 
     var productColors  = showColors(item);
     var options = productColors.querySelectorAll('option');
+    var arrCartEntry = retrieveArrCartEntry(item);
 
-    var quantityElement = setQuantityElement();
-    if(retrieveArrCartEntry(productColors, quantityElement)){
-        var arrCartEntry = retrieveArrCartEntry(productColors, quantityElement);
-
+    if(arrCartEntry != null){
         let index=0;
         var color = options[index].getAttribute('value');
         for(index of options.length){
@@ -123,23 +121,33 @@ function setColorsElement(item){
                 options[index].selected;
             }
         }
-
-    return productColors;// var ou const productColors
+    return productColors;// var productColors, car change, 
+    // la couleur change,elle donne la valeur que doit avoir l'attribut de l' HTMLOptionElement qui est celui qui est sélectionné
+    //l'HTMLOptionElement sélectionné change
+    //l'HTMLSelectElement change
+    }
 }
 
 //return var ou const
-function setQuantityElement (){
+var setQuantityElement=(item)=>{
 
-    var quantityElement  = document.querySelector('input');        
-    return quantityElement; // var ou const quantityElement
+    var quantityElement  = document.querySelector('input');
+    var qt = quantityElement.getAttribute('value');
+
+    var arrCartEntry= retrieveArrCartEntry(item);
+    if(arrCartEntry != null){
+        qt = arrCartEntry[2]
+        quantityElement.setAttribute('value',qt)
+    }
+       
+    return quantityElement; // var quantityElement car change,
+    //la quantité change (voir addEventListener dans main)
+    //ce qui fait que la valeur de son attribut 'value' change 
 }
 
 //********************************************************
 //***********************LOCALSTORAGE*********************
 //********************************************************
-
-
-
 
 var setPurchase=()=> {
     var currentId = localStorage.getItem('id');
@@ -154,67 +162,74 @@ var setPurchase=()=> {
     }
     console.log('setPurchase marche');
 
-    return arr;//var
+    return arr;//var arr [string,string,string] ou string = 'setPurchase n a pas retourné de tableau'
 
 }
 
 //soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
 //soit ne retourne pas de tableau
 
-//----------------------var param (165)
-var arrCartEntryChange=(arrCartEntry)=>{
-    var arr = setPurchase();//var
-    var arrCartEntry; //var param
+//----------------------var param (ligne relative +2)
+var arrCartEntryChange=(arr)=>{
+    var arr = setPurchase();//var param
+    var arrCartEntry = ["","",""];
     if( arr !='setPurchase n a pas retourné de tableau' && arr!= arrCartEntry  ){
         arrCartEntry = arr;
     }
-    return arrCartEntry;//var arrCartEntryPossiblyChanged
+    return arrCartEntry;//var arrCartEntryPossiblyChanged string [];
 }
 
-//-----------------------------------var param (175)
-var arrCartEntryAfterPossibleChange =(arrCartEntry)=>{
-    var arrCartEntry; //var param
-    var arrCartEntryPossiblyChanged = arrCartEntryChange(arrCartEntry);// var _ _ _ = _ _ _ _ _(var param)
+//-----------------------------------var param (ligne relative +2)
+var arrCartEntryAfterPossibleChange =(arr)=>{
+    var arrCartEntry =["","",""]; //var
+    var arrCartEntryPossiblyChanged = arrCartEntryChange(arr);// local var_ _ _ = _ _ _ _ _(param)
 
     arrCartEntry = arrCartEntryPossiblyChanged;
 
-    return arrCartEntry;//var arrCartEntry
-}
-//----------- = (any param item, var param(voir 187)-) =>{
-const retrieveArrCartEntry =(item, quantityElement)=>{
-
-    //var param
-    var quantityElement = setQuantityElement();
-    // (retourne var ou const quantityElement)
-    // ici (187) quantityElement définit var
-    //setQuantityElement a pour type de valeur de retour un HTMLInputElement ===> quantityElement prendra ce type
-
-    var arrCartEntry = new Array(3);
-    //local var arrCartEntry any[]
+    return arrCartEntry;
+    //var arrCartEntry (avec NOUVELLES VALEURS possiblement)
     
-    arrCartEntry = arrCartEntryAfterPossibleChange(arrCartEntry); 
-    // arrCartEntryAfterPossibleChange avec pour paramètre de fonction (local var arrCartEntry: any[]) retourne local var any[](variable 1)
-    //arrCartEntry prend la valeur de variable1, arrCartEntry qui aurait pu prendre de nouvelles valeurs
+    //ces NOUVELLES VALEURS résulteraient de la comparaison avec les *****valeurs obtenues par setPurchase*****,
 
-    arrCartEntry[0] = idUrl;
+    // comparaison <=> arrCartEntryChange retourne des valeurs === NOUVELLES VALEURS
+
+    //******valeurs obtenues par setPurchase***********
+
+    //setPurchase retourne un tableau de valeurs (arr) correspondant à l'id, la couleur et la quantité indiqués dans le localStorage, valeurs qu'il a récupéré par localStorage.getItem ==> "NOUVELLES VALEURS"
+
+}
+//----------- = (any param item) =>{
+var retrieveArrCartEntry =(item)=>{
+
+    var arrCartEntry = ["","",""];
+    //local var arrCartEntry any[] avec 3 entrées
+    
+    var variableUpDate = arrCartEntryAfterPossibleChange(arrCartEntry);
+    arrCartEntry = variableUpDate;
+    //arrCartEntryAfterPossibleChange, avec pour paramètre de fonction (local var arrCartEntry any[]), retourne local var any[](variableUpDate)
+    //arrCartEntry prend la valeur de variableUpDate, une variable arrCartEntry (qui aurait pu prendre de nouvelles valeurs ===> voir commentaire (à ligne relative -20 à -12)
+
+    //****************************************************
+    //*Conclusion :  local var arrCartEntry = [any,any,any]**************************************************
+
+    arrCartEntry[0] = idUrl;//idUrl const string
+    //donc local var arrCartEntry[0] devient const string quand retourné
 
     var productColors =setColorsElement(item);
     var options = productColors.querySelectorAll('option');
-    let index=0;
-    options[index].selected;
-    for(index of options.length){
-        arrCartEntry[1]= options[index].getAttribute('value');
-    }
+
+    let option=options[index];
+    option.selected;
+    arrCartEntry[1]= option.getAttribute('value');
 
     //--------------- var param HTMLInputElement
-    arrCartEntry[2] = quantityElement.getAttribute('value');// 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
+    arrCartEntry[2] = setQuantityElement().getAttribute('value');// 'value' est associé à un string       =>  HTMLInputElement.getAttribute('value') donne un string => arrCartEntry[2] est local var  string 
 
-
-    return arrCartEntry;//const
+    return arrCartEntry;//var arrCartEntry
 }
 
-function populateStorage (arrCartEntry){
-    var arrCartEntry = retrieveArrCartEntry(productColors,quantityElement);
+function populateStorage (item){
+    var arrCartEntry = retrieveArrCartEntry(item);
 
     localStorage.setItem('id', arrCartEntry[0]);
     localStorage.setItem('color', arrCartEntry[1]);
@@ -224,9 +239,11 @@ function populateStorage (arrCartEntry){
 
 }
 
-function  sendToCart(arrCartEntry){
-    if(arrCartEntry[1]!='SVP choisissez une couleur' && arrCartEntry[2] !=0){          
-        populateStorage(arrCartEntry);
+function  sendToCart(item){
+
+    var arrCartEntry = 
+    if(arrCartEntry[1]!="" && arrCartEntry[2] !="0"){          
+        populateStorage(item);
     }
 }
 
@@ -236,34 +253,41 @@ const main = async () => {
 
     const item = await retrieveItemData();
 
+    var arrCartEntry = [idUrl,"","0"];
     setImageAttributes(item);
     fillImageDiv(item);
     showTitle(item);
     showPrice(item);
     showColors(item);
-    const productColors = setColorsElement(item);
+    setColorsElement(item);
 
     showDescription(item);
 
-    const quantityElement =setQuantityElement();
+    setQuantityElement(item);
 
-    const arrCartEntry = retrieveArrCartEntry(productColors,quantityElement);
-    
     productColors.addEventListener('change', function(event){
         console.log('productColorsItem change ==> event.target.value = '+event.target.value);;
+        retrieveArrCartEntry(item);
+        setColorsElement(item);
     });
 
     quantityElement.addEventListener('change',function changeEventHandlerQuantity (event){
         console.log('quantityElementChange ==> event.target.value = '+event.target.value);
+        retrieveArrCartEntry(item);
+        setQuantityElement(item);
     });
 
     const button= document.querySelector('button');
 
     button.addEventListener('click', function(event){
-        sendToCart(arrCartEntry);
+        retrieveArrCartEntry(item);
+        sendToCart(item);
         console.log('bouton entendu!');
         console.log('Pour le click du bouton =====>event.target.value ='+event.target.value);
+        console.log('arrCartEntry au click du bouton'+ arrCartEntry);
     });
+    console.log('arrCartEntry à la fin :'+ arrCartEntry);
+    return arrCartEntry;
 }
 
 main();
