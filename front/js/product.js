@@ -85,10 +85,10 @@ const showDescription =(item)=>{
     return productDescription;
 };
 
-var productColors = document.querySelector('select');
 
- var showColors = (item) =>{
-    
+
+const showColors = (item) =>{
+    const productColors = document.querySelector('select');
     var colorChoice = new Array(); 
     colorChoice = item.colors;
     var options = productColors.querySelectorAll('option');
@@ -113,37 +113,6 @@ var productColors = document.querySelector('select');
 
 
 
-//****************************MAIN************************
-
-const main = async () => {
-
-    const item = await retrieveItemData();
-    //l'item est récupéré
-
-    //rappel const productImage = document.createElement('img');
-    setImageAttributes(item);
-    //ajuste à item
-    fillImageDiv(item);
-    // ajuste la div supérieure à productImage (donc à item)
-
-    //rappel const productTitle = document.getElementById('title')
-    showTitle(item);
-    //ajuste à item
-
-    //rappel const productPrice = document.getElementById('price');
-    showPrice(item);
-    //ajuste à item
-
-    //rappel const productDescription = document.getElementById('description')
-    showDescription(item);
-    //ajuste à item
-
-    //rappel var productColors = document.querySelector('select')
-    showColors(item);
-    //ajuste à item    
-}
-
-main(); //la page HTML de l'item est créée
 
 
 //********************************************************
@@ -173,65 +142,66 @@ function populateStorage (arrCartEntry){
 }
 //********************************************************
 
-//const productColors = document.querySelector('select');
-var quantityElement  = document.querySelector('input');
+const quantityElement = document.querySelector('input');
 
-function colorChangeHandler(event){
-    productColors.value = event.target.value;
-    var selectedOption = productColors.options[productColors.selectedIndex];
-    var color = selectedOption.getAttribute('value');
-    for(let i = 0; i<productColors.options; i++){
-        if(productColors.options[i].selected){
-            i = productColors.selectedIndex;
-            selectedOption = productColors.options[i];
-            productColors.options[i].setAttribute('value', color);
-        }      
-    }
+
+
+//****************************MAIN************************
+
+const main = async () => {
+
+    const item = await retrieveItemData();
+    //l'item est récupéré
+
+    //rappel const productImage = document.createElement('img');
+    setImageAttributes(item);
+    //ajuste à item
+    fillImageDiv(item);
+    // ajuste la div supérieure à productImage (donc à item)
+
+    //rappel const productTitle = document.getElementById('title')
+    showTitle(item);
+    //ajuste à item
+
+    //rappel const productPrice = document.getElementById('price');
+    showPrice(item);
+    //ajuste à item
+
+    //rappel const productDescription = document.getElementById('description')
+    showDescription(item);
+    //ajuste à item
+
+    //rappel var productColors = document.querySelector('select')
+    const productColors = showColors(item);
+    //retourne  const productColors ajusté à l'item   
+    
+    //page HTML
+
+    var color;
+    var quantity;
+    var arrCartEntry;
+
+    productColors.addEventListener('change',function colorChangeHandler(event){
+        color = event.target.value;
+        console.log(' color change = ' +color)
+    });
+    
+    quantityElement.addEventListener('change', function quantityChangeHandler(event){
+        quantity = event.target.value;
+        console.log(' quantity change = ' + quantity)
+    });
+    
+    const button= document.querySelector('button'); 
+    
+    button.addEventListener('click', function(_e){
+        console.log('color = '+color);
+        console.log('quantity ='+quantity);
+        arrCartEntry = [idUrl, color, quantity];
+        console.log('var arrCartEntry button = '+arrCartEntry);
+        if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
+            populateStorage(arrCartEntry);
+        }
+    })
 }
 
-function quantityChangeHandler(event){
-    quantityElement.value = event.target.value;
-    var quantity= quantityElement.value;
-    quantityElement.setAttribute('value', quantity);
-}
-
-
-function colorChangeHandler(){
-    var productColors = document.querySelector('select');
-    productColors.addEventListener('change', colorChangeHandler);
-    return productColors;
-}
-
-function quantityChange(){
-    var quantityElement = document.querySelector('input');
-    quantityElement.addEventListener('change',quantityChangeHandler);
-    return quantityElement;
-}
-
-productColors =colorChangeHandler();
-quantityElement = quantityChange();
-
-var selectedOption = productColors.options[productColors.selectedIndex];
-var color = selectedOption.value;
-var quantity= quantityElement.getAttribute('value');
-
-
-console.log('setPurchase : '+setPurchase());
-
-console.log('color :'+color);
-console.log('quantity :'+quantity);
-var arrCartEntry = [idUrl, color, quantity];
-
-
-console.log('color définie///////quantité définie///////var arrCartEntry = '+arrCartEntry);
-
-
-const button= document.querySelector('button'); 
-
-button.addEventListener('click', function(e){
-    console.log('button e.taget.value :'+e.target.value)
-    if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
-        populateStorage(arrCartEntry);
-    }
-})
-
+main(); //la page HTML de l'item est créée
