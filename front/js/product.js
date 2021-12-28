@@ -177,8 +177,8 @@ const main = async () => {
     
     //page HTML
 
-    var color;
-    var quantity;
+    var color="";
+    var quantity="";
     var arrCartEntry;
 
     productColors.addEventListener('change',function colorChangeHandler(event){
@@ -197,11 +197,13 @@ const main = async () => {
         console.log('color = '+color);
         console.log('quantity ='+quantity);
         arrCartEntry = [idUrl, color, quantity];
-        console.log('var arrCartEntry button = '+arrCartEntry);
+        console.log('arrCartEntry = '+arrCartEntry);
         if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
             populateStorage(arrCartEntry);
+            var arr = setPurchase();
+            console.log('setPurchase donne le tableau = '+arr);
         }
     })
 }
 
-main(); //la page HTML de l'item est créée
+main();

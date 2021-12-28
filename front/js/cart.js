@@ -1,26 +1,6 @@
 //récupération du block à remplir par les fiches des produits dans le panier
 const cartItems = document.getElementById('cart__items');
-
-var idEntry ='';
-var colorEntry='';
-var quantityEntry= 0;
-var numberOfEntryToCart=0;
-var currentArray = new Array();
-
-if (numberOfEntryToCart > 0){
-    var arrCart = new Array(numberOfEntryToCart);
-    var itemsToPurchase = new Array(numberOfEntryToCart);
-}
-
-class Entry{
-    constructor(id, color, quantity){
-        this.id=id;
-        this.color= color;
-        this.quantity=quantity;
-    }
-};
-var entry= new Entry();
-
+//********************************************************
 function populateStorage(){
 
     if(idEntry !='' && colorEntry !='' && quantityEntry !=0){
@@ -39,43 +19,69 @@ function setPurchase() {
     var currentColor = localStorage.getItem('color');
     var currentQuantity = localStorage.getItem('quantity');
 
-    console.log('setPurchase marche');
+    if(currentId !=undefined && currentColor != undefined && currentQuantity != NaN){
+        var arr = [currentId, currentColor, currentQuantity];
+        return arr
+    }
+}
+//********************************************************
+var idEntry ="";
+var colorEntry="";
+var quantityEntry= "";
 
-    currentArray = [currentId, currentColor, currentQuantity]
+var numberOfEntryToCart=0;
 
-    return currentArray
+if (numberOfEntryToCart > 0){
+    var itemsToPurchase =new Array(numberOfEntryToCart);
 }
 
-function createTab(){
+class Entry{
+    constructor(id, color, quantity){
+        this.id=id;
+        this.color= color;
+        this.quantity=quantity;
+    }
+};
 
-    if(idEntry!=currentArray[0]){
-        idEntry = currentArray[0];
+var entry= new Entry();
 
-        numberOfEntryToCart++;
+entry={id:idEntry,color:colorEntry,quantity:quantityEntry};
 
-        if (idEntry!= '' && colorEntry!='' && quantityEntry!= 0){
-            entry.id = idEntry;
-            entry.color = colorEntry;
-            entry.quantity = quantityEntry;
-            entry = arrCart[numberOfEntryToCart - 1];
-        }
+var createArr=()=>{
+    var arr = setPurchase();
+
+    if(idEntry!= arr[0]){//si l'id dans localStorage n'est pas idEntry => il s'agit d'un nouveau item
+        idEntry = arr[0];
 
 //création d'une nouvelle entrée au panier seulement si l'id change => l'entrée prend un nouvel id
 
-//ajoute l'entrée au panier (tableau arrCart)
+//ajoute l'entrée au panier (tableau cartArrTot)
+        if (numberOfEntryToCart = 0) {
+            
+            numberOfEntryToCart++
+            var cartArrTot=new Array();
+        }
 
-        if(colorEntry!=currentArray[1] || quantityEntry!=currentArray[2]){
-            colorEntry = currentArray[1];
-            quantityEntry = currentArray[2];
+        ;//le panier comporte une nouvelle entrée item
+        
+        if (idEntry!= "" && colorEntry!="" && quantityEntry!= 0){;
+            cartArrTot.keys()=item;
+        }
+
+        if(colorEntry!=arr[1] || quantityEntry!=arr[2]){
+            entry.color = arr[1];
+            entry.quantity = arr[2];
         }
     }
 //l'entrée ne change que si la couleur ou la quantité change
 //dans le cas où l'id change c'est une nouvelle entrée (création d'un nouvel objet de classe Entry)
-    console.log('createTab marche');
-    return arrCart;
+    console.log('createArr() marche');
+    return cartArrTot;
 }
 
-arrCart = createTab();
+cartArrTot = createArr();
+
+console.log('cartArrTot = ' +cartArrTot);
 
 const retrieveItems = () =>fetch("http://localhost:3000/api/products")
     .then(res =>{
@@ -92,20 +98,22 @@ const retrieveItems = () =>fetch("http://localhost:3000/api/products")
 
             let item= data[i];
 
-            if(arrCart){
+            if(numberOfEntryToCart>0){
 
                 for(let j=0; j<numberOfEntryToCart; j++){
                     var purchase = new Entry();
-                    purchase = arrCart[j];
+                    cartArrTot[j] = purchase;
                     var identifier = purchase.id;
 
                     if(item._id === identifier){
-                        item = itemsToPurchase[j];
+                        itemsToPurchase[j]=item;
                     }
                 }
+
+            console.log('retrieveItems peut donner un tableau itemsToPurchase, itemsToPurchase ='+itemsToPurchase)
+            return itemsToPurchase; 
+
             }
-            console.log('retrieveItems peut donner un tableau itemsToPurchase')
-            return itemsToPurchase;
         }
     })
     .catch (err => console.log('erreur suivante:'+ err))
@@ -118,8 +126,8 @@ const createCartItem = ()=>{
 
             const cartItem = document.createElement('article');
             cartItem.classList.add('cart__item');
-            cartItem.setAttribute('data-id', arrCart[i].id);
-            cartItem.setAttribute('data-color', arrCart[i].color);
+            cartItem.setAttribute('data-id', cartArrTot[i].id);
+            cartItem.setAttribute('data-color', cartArrTot[i].color);
 
             const itemImage = document.createElement('div');
             itemImage.classList.add('cart__item__img');
@@ -137,7 +145,7 @@ const createCartItem = ()=>{
             const DescriptionTitle = document.createElement('h2');
             DescriptionTitle.contentText = itemsToPurchase[i].name; 
             const DescriptionFirstP = document.createElement('p');
-            DescriptionFirstP.contentText = arrCart[i].color;
+            DescriptionFirstP.contentText = cartArrTot[i].color;
             const DescriptionSecondP = document.createElement('p');
             DescriptionSecondP.contentText = itemsToPurchase[i].price;
 
@@ -154,7 +162,7 @@ const createCartItem = ()=>{
             QuantityInput.setAttribute('name', 'ItemQuantity');
             QuantityInput.setAttribute('min', '1');
             QuantityInput.setAttribute('max','100');
-            QuantityInput.setAttribute('value', arrCart[i].quantity);
+            QuantityInput.setAttribute('value', cartArrTot[i].quantity);
 
             const settingsDelete = document.createElement('div');
             settingsDelete.classList.add('cart__item__content__settings__delete');
@@ -192,11 +200,11 @@ const createCartItem = ()=>{
 const main =async()=>{
 
     const arrCurrent = setPurchase();
-    const arrCart = createTab(arrCurrent);
-    const itemsToPurchase = retrieveItems(arrCart);
+    const cartArrTot = createArr(arrCurrent);
+    const itemsToPurchase = retrieveItems(cartArrTot);
 
     createCartItem(itemsToPurchase);
-    console.log('main marche')
+    console.log('main marche');
 }
 
 main();
