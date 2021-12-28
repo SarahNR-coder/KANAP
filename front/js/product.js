@@ -85,10 +85,9 @@ const showDescription =(item)=>{
     return productDescription;
 };
 
-const productColors = document.querySelector('select');
-const productColorOptionBlank = productColors.querySelector('option');
+var productColors = document.querySelector('select');
 
-const showColors = (item) =>{
+ var showColors = (item) =>{
     
     var colorChoice = new Array(); 
     colorChoice = item.colors;
@@ -108,7 +107,7 @@ const showColors = (item) =>{
 
         productColors.appendChild(option);
     }
-    return productColors//CONST PRODUCTCOLORS
+    return productColors
 }
 
 
@@ -139,7 +138,7 @@ const main = async () => {
     showDescription(item);
     //ajuste à item
 
-    //rappel const productColors = document.querySelector('select')
+    //rappel var productColors = document.querySelector('select')
     showColors(item);
     //ajuste à item    
 }
@@ -175,11 +174,9 @@ function populateStorage (arrCartEntry){
 //********************************************************
 
 //const productColors = document.querySelector('select');
-const quantityElement  = document.querySelector('input');
+var quantityElement  = document.querySelector('input');
 
-const changeHandler = () => main()
-.then(function (productColors) {
-productColors.addEventListener('change',function (event){
+function colorChangeHandler(event){
     productColors.value = event.target.value;
     var selectedOption = productColors.options[productColors.selectedIndex];
     var color = selectedOption.getAttribute('value');
@@ -190,16 +187,29 @@ productColors.addEventListener('change',function (event){
             productColors.options[i].setAttribute('value', color);
         }      
     }
-})})
-.then(function (quantityElement){ 
-    quantityElement.addEventListener('change',function (event){
-        quantityElement.value = event.target.value;
-        var quantity= quantityElement.value;
-        quantityElement.setAttribute('value', quantity);
-    })
-})
+}
 
-changeHandler();
+function quantityChangeHandler(event){
+    quantityElement.value = event.target.value;
+    var quantity= quantityElement.value;
+    quantityElement.setAttribute('value', quantity);
+}
+
+
+function colorChangeHandler(){
+    var productColors = document.querySelector('select');
+    productColors.addEventListener('change', colorChangeHandler);
+    return productColors;
+}
+
+function quantityChange(){
+    var quantityElement = document.querySelector('input');
+    quantityElement.addEventListener('change',quantityChangeHandler);
+    return quantityElement;
+}
+
+productColors =colorChangeHandler();
+quantityElement = quantityChange();
 
 var selectedOption = productColors.options[productColors.selectedIndex];
 var color = selectedOption.value;
@@ -212,7 +222,9 @@ console.log('color :'+color);
 console.log('quantity :'+quantity);
 var arrCartEntry = [idUrl, color, quantity];
 
+
 console.log('color définie///////quantité définie///////var arrCartEntry = '+arrCartEntry);
+
 
 const button= document.querySelector('button'); 
 
