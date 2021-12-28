@@ -25,65 +25,35 @@ function setPurchase() {
     }
 }
 //********************************************************
-var idEntry ="";
-var colorEntry="";
-var quantityEntry= "";
-
-var numberOfEntryToCart=0;
-
-if (numberOfEntryToCart > 0){
-    var itemsToPurchase =new Array(numberOfEntryToCart);
-}
-
-class Entry{
-    constructor(id, color, quantity){
-        this.id=id;
-        this.color= color;
-        this.quantity=quantity;
-    }
-};
-
-var entry= new Entry();
-
-entry={id:idEntry,color:colorEntry,quantity:quantityEntry};
 
 var createArr=()=>{
+
     var arr = setPurchase();
+    var cartArrTot= new Array();
+    var entry={id,color,quantity};
+    var idEntry=entry.id;
 
-    if(idEntry!= arr[0]){//si l'id dans localStorage n'est pas idEntry => il s'agit d'un nouveau item
-        idEntry = arr[0];
+    var arr=setPurchase();
 
-//création d'une nouvelle entrée au panier seulement si l'id change => l'entrée prend un nouvel id
-
-//ajoute l'entrée au panier (tableau cartArrTot)
-        if (numberOfEntryToCart = 0) {
-            
-            numberOfEntryToCart++
-            var cartArrTot=new Array();
-        }
-
-        ;//le panier comporte une nouvelle entrée item
+    if(idEntry!= arr[0]){
         
-        if (idEntry!= "" && colorEntry!="" && quantityEntry!= 0){;
-            cartArrTot.keys()=item;
-        }
-
-        if(colorEntry!=arr[1] || quantityEntry!=arr[2]){
+        if (arr[0]!= "" && arr[1]!="" && arr[2]!= ""){
+            entry.id = arr[0];
             entry.color = arr[1];
             entry.quantity = arr[2];
+            cartArrTot.push(entry);
         }
+        numberOfEntryToCart++;
     }
-//l'entrée ne change que si la couleur ou la quantité change
-//dans le cas où l'id change c'est une nouvelle entrée (création d'un nouvel objet de classe Entry)
     console.log('createArr() marche');
     return cartArrTot;
 }
 
-cartArrTot = createArr();
+var cartArrTot = createArr();
 
 console.log('cartArrTot = ' +cartArrTot);
 
-const retrieveItems = () =>fetch("http://localhost:3000/api/products")
+const retrieveItemsToPurchase = () =>fetch("http://localhost:3000/api/products")
     .then(res =>{
         if (res.ok){
             return res.json();
@@ -92,29 +62,26 @@ const retrieveItems = () =>fetch("http://localhost:3000/api/products")
     .then (data => {
         console.log(data);
         return data;})
-    .then(data=>{        
+    .then(data=>{ 
+        var itemsToPurchase = new Array(cartArrTot.length);
+        for(i=0; i<cartArrTot.length; i++){
+            var entry={id,color,quantity}
+            entry= cartArrTot[i];
+            var id =entry.id;
 
-        for(let i=0; i<data.length; i++) {
+            for(let i=0; i<data.length; i++) {
+                var item= data[i];
+                var values = Object.values(item);
 
-            let item= data[i];
-
-            if(numberOfEntryToCart>0){
-
-                for(let j=0; j<numberOfEntryToCart; j++){
-                    var purchase = new Entry();
-                    cartArrTot[j] = purchase;
-                    var identifier = purchase.id;
-
-                    if(item._id === identifier){
-                        itemsToPurchase[j]=item;
+                for(let j=0;j<values.length; j++) {
+                    let value = values[j];
+                    if (value === id){
+                        itemsToPurchase.push(item);
                     }
                 }
-
-            console.log('retrieveItems peut donner un tableau itemsToPurchase, itemsToPurchase ='+itemsToPurchase)
-            return itemsToPurchase; 
-
-            }
+            }    
         }
+        return itemsToPurchase;
     })
     .catch (err => console.log('erreur suivante:'+ err))
 
@@ -208,3 +175,7 @@ const main =async()=>{
 }
 
 main();
+
+
+//com#if(idEntry.. création d'une nouvelle entrée au panier seulement si l'id change => l'entrée prend un nouvel id
+//ajoute l'entrée au panier (tableau cartArrTot)
