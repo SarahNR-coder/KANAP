@@ -1,3 +1,5 @@
+
+
 //Récupérer les caractéristiques du produit à partir de la valeur id="" dans l'url de la page
 
 const urlIdValue =()=>{
@@ -133,13 +135,6 @@ function setPurchase() {
 //soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
 //soit ne retourne rien;
 
-function populateStorage (arrCartEntry){
-
-    localStorage.setItem('id', arrCartEntry[0]);
-    localStorage.setItem('color', arrCartEntry[1]);
-    localStorage.setItem('quantity', arrCartEntry[2]);
-
-}
 //********************************************************
 
 const quantityElement = document.querySelector('input');
@@ -176,10 +171,11 @@ const main = async () => {
     //retourne  const productColors ajusté à l'item   
     
     //page HTML
+    const name = item.name;
+    const idName= name.substring(6);
 
     var color="";
     var quantity="";
-    var arrCartEntry;
 
     productColors.addEventListener('change',function colorChangeHandler(event){
         color = event.target.value;
@@ -196,12 +192,10 @@ const main = async () => {
     button.addEventListener('click', function(_e){
         console.log('color = '+color);
         console.log('quantity ='+quantity);
-        arrCartEntry = [idUrl, color, quantity];
+        var arrCartEntry = [idUrl, color, quantity];
         console.log('arrCartEntry = '+arrCartEntry);
         if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
-            populateStorage(arrCartEntry);
-            var arr = setPurchase();
-            console.log('setPurchase donne le tableau = '+arr);
+            localStorage.setItem(idName, arrCartEntry);
         }
     })
 }
