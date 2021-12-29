@@ -15,7 +15,13 @@ const main =async()=>{
 
     const finalStorageArr = setPurchase(LineValue0);
 
-    const cartItem =createArticle();
+    const cartItems = document.getElementById('cart__items');
+    //const cartItem =createArticle();
+    cartItems.appendChild(cartItem);
+    ////const cartItem = document.createElement('article');
+    ////cartItem.setAttribute('data-id', id);
+    ////cartItem.setAttribute('data-color', color);
+    
 
     settingsDelete.appendChild(DeleteP);
 
@@ -30,13 +36,11 @@ const main =async()=>{
     contentSettings.appendChild(settingsQuantity);
     contentSettings.appendChild(settingsDelete);
 
-    itemImage.appendChild(itemImageShown);
 
     itemContent.appendChild(contentDescription);
     itemContent.appendChild(contentSettings);
 
-    const cartItems = document.getElementById('cart__items');
-    cartItems.appendChild(cartItem);
+    itemImage.appendChild(itemImageShown);
 
     const itemImage = document.createElement('div');
     itemImage.classList.add('cart__item__img');
@@ -89,7 +93,7 @@ const main =async()=>{
  
 }
 
-function createArticle (data){ 
+const createArticle = (data)=>{ 
     for(let i=0; i<finalStorageArr.length; i++){
     
         var LineValue ="";
@@ -118,14 +122,42 @@ function createArticle (data){
             for(let k=0; k<values.length; k++){
                 var value=values[k];
                 if (value === id){
-                    cartItem.setAttribute('data-color',color);
-                    QuantityInput.setAttribute('value', quantity);
-                    DescriptionTitle.contentText = item.name;
                     
+                    return cartItem;                   
                 }
             }   
         }    
     }
+}
+
+const itemCart =(item, id, color, quantity)=>{
+    const cartItem = document.createElement('article');
+    cartItem.setAttribute('data-id',id);
+    cartItem.setAttribute('data-color',color);
+    cartItems.appendChild(cartItem);
+
+    const itemImage = document.createElement('div');
+    itemImage.classList.add('cart__item__img');
+
+    const itemContent = document.createElement('div');
+    itemContent.classList.add('cart__item__content');
+
+    cartItem.appendChild(itemImage);
+    cartItem.appendChild(itemContent);
+
+    const itemImageShown = document.createElement('img');
+    itemImageShown.setAttribute('src', item.imageUrl);
+    itemImageShown.setAttribute('alt', item.altTxt);
+
+    itemImage.appendChild(itemImageShown);
+
+    itemContent.appendChild(contentDescription);
+    itemContent.appendChild(contentSettings);
+
+    QuantityInput.setAttribute('value', quantity);
+
+    DescriptionTitle.contentText = item.name;
+
 }
 
     fetch("http://localhost:3000/api/products")
