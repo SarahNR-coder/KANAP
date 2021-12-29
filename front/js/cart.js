@@ -49,8 +49,9 @@ const createarrCart=(arrAllStorage)=>{
     return entry;
 }
 
+const id =arrCart[0][0];
 var itemsToPurchase = new Array();
-const retrieveItemsToPurchase = (entry) =>fetch("http://localhost:3000/api/products")
+const retrieveItemsToPurchase = (arrCart) =>fetch("http://localhost:3000/api/products")
     .then(res =>{
         if (res.ok){
             return res.json();
@@ -61,13 +62,12 @@ const retrieveItemsToPurchase = (entry) =>fetch("http://localhost:3000/api/produ
         return data;})
     .then(data=>{ 
         for(i=0; i<arrCart.length; i++){
- 
             for(let i=0; i<data.length; i++) {
                 var item= data[i];
                 var values = Object.values(item);
                 for(let j=0;j<values.length; j++) {
                     let value = values[j];
-                    if (value === entry.id){
+                    if (value === id){
                         item._id= value;
                     }
                 }
