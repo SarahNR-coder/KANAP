@@ -117,7 +117,7 @@ const createArticle=(data, finalStorageArr)=>{
         var LineValue ="";
         LineValue = finalStorageArr[i];
 
-        const regex = "/[,]/g";
+        const regex = /[,]/;
 
         var index1 =LineValue.search(regex);
 
@@ -143,19 +143,19 @@ const createArticle=(data, finalStorageArr)=>{
         var altTxtKanap = "";
 
         do{
-            if(data[j].id == id){
+            if(data[j]._id == id){
                 idKanap = data[j]._id;
                 nameKanap = data[j].name;
                 priceKanap = data[j].price;
-                imageUrlKanap = data[j].imagUrl;
+                imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
             }
+            j++;
         }while(j<data.length);
 
-        var itemCart = createCartItem(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
+        var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
 
-        itemsCart.appendChild(itemCart);
-
+        itemsCart.appendChild(cart);
 /*        for(let j=0; j<data.length; j++){
 
             var item= data[j];
@@ -181,7 +181,7 @@ const main =async()=>{
     const data = await retrieveData();
 
     const finalStorageArr = setPurchase(LineValue0);
-    console.log("finalStorageArr = "+finalStorageArr)
+    console.log("finalStorageArr = "+finalStorageArr);
 
     createArticle(data, finalStorageArr);
     // const cartItems
