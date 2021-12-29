@@ -1,105 +1,123 @@
 
-
-const main =async()=>{
-    const LineValue0 = localStorage.getItem(localStorage.key(0));
-
-    var setPurchase=(LineValue0)=> {
-        var finalStorageArr = new Array([""]);
-        finalStorageArr[0] = LineValue0;      
-        for(let i=1; i<localStorage.length; i++){ 
-            var LineValue= localStorage.getItem(localStorage.key(i));            
-            finalStorageArr[i]=LineValue;
+const retrieveData = () =>fetch("http://localhost:3000/api/products")
+    .then(res =>{
+        if (res.ok){
+            return res.json();
         }
-        return finalStorageArr;
-    }
-
-    const finalStorageArr = setPurchase(LineValue0);
-
-    const cartItems = document.getElementById('cart__items');
-    //const cartItem =createArticle();
-    cartItems.appendChild(cartItem);
-    ////const cartItem = document.createElement('article');
-    ////cartItem.setAttribute('data-id', id);
-    ////cartItem.setAttribute('data-color', color);
+    })
+    .then (data => {
+        console.log(data);
+        return data;})
+    .catch (err => console.log('erreur suivante:'+ err))
     
+var itemCart =(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
+    //#1
+    const cartItem = document.createElement('article');
+    cartItem.classList.add('cart__item');
+    cartItem.setAttribute('data-id',idKanap);
+    cartItem.setAttribute('data-color',color);
 
-    settingsDelete.appendChild(DeleteP);
-
-    settingsQuantity.appendChild(QuantityP);
-    settingsQuantity.appendChild(QuantityInput);
-
-
-    contentDescription.appendChild(DescriptionTitle);
-    contentDescription.appendChild(DescriptionFirstP);
-    contentDescription.appendChild(DescriptionSecondP);
-
-    contentSettings.appendChild(settingsQuantity);
-    contentSettings.appendChild(settingsDelete);
-
-
-    itemContent.appendChild(contentDescription);
-    itemContent.appendChild(contentSettings);
-
-    itemImage.appendChild(itemImageShown);
-
+    //#1.1    
     const itemImage = document.createElement('div');
     itemImage.classList.add('cart__item__img');
-    const itemImageShown = document.createElement('img');
-    itemImageShown.setAttribute('src', item.imageUrl);
-    itemImageShown.setAttribute('alt', item.altTxt);
-
+    //#1.2
     const itemContent = document.createElement('div');
     itemContent.classList.add('cart__item__content');
 
+    //#1
+    cartItem.appendChild(itemImage);//#1.1
+    cartItem.appendChild(itemContent);//#1.2
+
+    //#1.1.1
+    const itemImageShown = document.createElement('img');
+    itemImageShown.setAttribute('src', imageUrlKanap);
+    itemImageShown.setAttribute('alt', altTxtKanap);
+
+    //#1.1
+    itemImage.appendChild(itemImageShown);//#1.1.1
+
+    //#1.2.1
     const contentDescription =document.createElement('div');
     contentDescription.classList.add('cart__item__content__description');
-
-
-    const DescriptionTitle = document.createElement('h2');
-    //=>
-    DescriptionTitle.contentText = item.name; 
-
-    const DescriptionFirstP = document.createElement('p');
-    //=>
-    DescriptionFirstP.contentText = entry.color;
-    
-    const DescriptionSecondP = document.createElement('p');
-
-    //=>
-    DescriptionSecondP.contentText = item.price;
-    
-
+    //#1.2.2
     const contentSettings =document.createElement('div');
     contentSettings.classList.add('cart__item__content__settings');
 
+    //#1.2
+    itemContent.appendChild(contentDescription);//#1.2.1
+    itemContent.appendChild(contentSettings);//#1.2.2
+
+    //#1.2.1.1
+    const DescriptionTitle = document.createElement('h2');
+    DescriptionTitle.textContent = nameKanap;
+    //#1.2.1.2 
+    const DescriptionFirstP = document.createElement('p');
+    DescriptionFirstP.textContent = color;
+    //#1.2.1.3
+    const DescriptionSecondP = document.createElement('p');
+    DescriptionSecondP.textContent = priceKanap;
+
+    //#1.2.1
+    contentDescription.appendChild(DescriptionTitle)//   #1.2.1.1
+    contentDescription.appendChild(DescriptionFirstP);//#1.2.1.2
+    contentDescription.appendChild(DescriptionSecondP);// //#1.2.1.3
+
+    //#1.2.2.1
     const settingsQuantity = document.createElement('div');
     settingsQuantity.classList.add('cart__item__content__settings__quantity');
+    //#1.2.2.2
+    const settingsDelete = document.createElement('div');
+    settingsDelete.classList.add('cart__item__content__settings__delete');
 
-//+
+    //#1.2.2
+    contentSettings.appendChild(settingsQuantity);//#1.2.2.1
+    contentSettings.appendChild(settingsDelete);//#1.2.2.2
+    
+    //#1.2.2.1.1
     const QuantityP = document.createElement('p');
-    QuantityP.contentText ='Qté :';
+    QuantityP.textContent ='Qté :';
+    //#1.2.2.1.2
     const QuantityInput = document.createElement('input');
     QuantityInput.setAttribute('type','number');
     QuantityInput.setAttribute('name', 'ItemQuantity');
     QuantityInput.setAttribute('min', '1');
     QuantityInput.setAttribute('max','100');
-    QuantityInput.setAttribute('value', entry.quantity);
-//+
-    const settingsDelete = document.createElement('div');
-    settingsDelete.classList.add('cart__item__content__settings__delete');
+    QuantityInput.setAttribute('value', quantity);
+
+    //#1.2.2.1
+    settingsQuantity.appendChild(QuantityP);//#1.2.2.1.1
+    settingsQuantity.appendChild(QuantityInput);//#1.2.2.1.2
+
+    //#1.2.2.2.1
     const DeleteP = document.createElement('p');
     DeleteP.classList.add('deleteItem');
 
- 
+    //#1.2.2.2
+    settingsDelete.appendChild(DeleteP);//#1.2.2.2.1
+
+    return cartItem;
 }
 
-const createArticle = (data)=>{ 
+
+const setPurchase=(LineValue0)=> {
+    var finalStorageArr = new Array([""]);
+    finalStorageArr[0] = LineValue0;      
+    for(let i=1; i<localStorage.length; i++){ 
+        var LineValue= localStorage.getItem(localStorage.key(i));            
+        finalStorageArr[i]=LineValue;
+    }
+    return finalStorageArr;
+}
+
+const createArticle=(data, finalStorageArr)=>{  
+    const itemsCart = document.getElementById('cart__items');
+    //parcours Storage (panier)
     for(let i=0; i<finalStorageArr.length; i++){
     
         var LineValue ="";
         LineValue = finalStorageArr[i];
 
-        const regex = /[,]/g;
+        const regex = "/[,]/g";
 
         var index1 =LineValue.search(regex);
 
@@ -116,72 +134,57 @@ const createArticle = (data)=>{
         var quantity= substringNot1.substring(index2+1);
         console.log('quantity ='+quantity);
 
-        for(let j=0; j<data.length; j++) {
+        //recherche de l'élement du panier dans le catalogue
+        var j=0;
+        var idKanap = "";
+        var nameKanap="";
+        var priceKanap = 0;
+        var imageUrlKanap = "";
+        var altTxtKanap = "";
+
+        do{
+            if(data[j].id == id){
+                idKanap = data[j]._id;
+                nameKanap = data[j].name;
+                priceKanap = data[j].price;
+                imageUrlKanap = data[j].imagUrl;
+                altTxtKanap = data[j].altTxt;
+            }
+        }while(j<data.length);
+
+        var itemCart = createCartItem(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
+
+        itemsCart.appendChild(itemCart);
+
+/*        for(let j=0; j<data.length; j++){
+
             var item= data[j];
+            price0=toString(item.price);
+            console.log('price0 = '+price0+'; typeof =' +typeof price0 ); 
+            var euros = price0.substring(0,2)+','+price0.substring(2)+' €';
+            console.log('euros = '+euros);
             var values = Object.values(item);
             for(let k=0; k<values.length; k++){
                 var value=values[k];
                 if (value === id){
-                    
-                    return cartItem;                   
+                    var cartItem =itemCart(item,id,color,quantity,euros);
+                    cartItems.appendChild(cartItem);
                 }
             }   
-        }    
+        }*/    
     }
 }
 
-const itemCart =(item, id, color, quantity)=>{
-    const cartItem = document.createElement('article');
-    cartItem.setAttribute('data-id',id);
-    cartItem.setAttribute('data-color',color);
-    cartItems.appendChild(cartItem);
+const main =async()=>{
+    const LineValue0 = localStorage.getItem(localStorage.key(0));
 
-    const itemImage = document.createElement('div');
-    itemImage.classList.add('cart__item__img');
+    const data = await retrieveData();
 
-    const itemContent = document.createElement('div');
-    itemContent.classList.add('cart__item__content');
+    const finalStorageArr = setPurchase(LineValue0);
+    console.log("finalStorageArr = "+finalStorageArr)
 
-    cartItem.appendChild(itemImage);
-    cartItem.appendChild(itemContent);
-
-    const itemImageShown = document.createElement('img');
-    itemImageShown.setAttribute('src', item.imageUrl);
-    itemImageShown.setAttribute('alt', item.altTxt);
-
-    itemImage.appendChild(itemImageShown);
-
-    itemContent.appendChild(contentDescription);
-    itemContent.appendChild(contentSettings);
-
-    QuantityInput.setAttribute('value', quantity);
-
-    DescriptionTitle.contentText = item.name;
-
-}
-
-    fetch("http://localhost:3000/api/products")
-    .then(res =>{
-        if (res.ok){
-            return res.json();
-        }
-    })
-    .then (data => {
-        console.log(data);
-        return data;})
-    .then (createArticle(data))
-    .catch (err => console.log('erreur suivante:'+ err))
-
-
-    console.log('lclSt length = '+localStorage.length);
-
-    
-
-    /*const itemsToPurchase = await retrieveItemsToPurchase(arrCart);
-
-
-    cartItems.appendChild(cartItem);*/
-
+    createArticle(data, finalStorageArr);
+    // const cartItems
 }
 
 main();
