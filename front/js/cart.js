@@ -24,6 +24,11 @@ const setPurchase=(LineValue0)=> {
 //                   //+ function itemCart()
 const createArticle=(data, finalStorageArr)=>{  
     const itemsCart = document.getElementById('cart__items');
+
+    var totalQuantity="";
+    var totalQuantity0 = 0;
+    var totalPrice0 = 0;
+    var totalPrice ="";
     //parcours Storage (panier)
     for(let i=0; i<finalStorageArr.length; i++){
     
@@ -46,12 +51,20 @@ const createArticle=(data, finalStorageArr)=>{
     
         var quantity= substringNot1.substring(index2+1);
         console.log('quantity ='+quantity);
+        var quantity0 = parseInt(quantity);
+        totalQuantity0 += quantity0;
     
         //recherche de l'élement du panier dans le catalogue
         var j=0;
         var idKanap = "";
         var nameKanap="";
-        var priceKanap = 0;
+
+        var priceKanap0 = 0;
+        var priceKanap1 = "";
+        var priceKanap= "";
+
+        var subTotalPrice0 = 0;
+
         var imageUrlKanap = "";
         var altTxtKanap = "";
     
@@ -59,17 +72,33 @@ const createArticle=(data, finalStorageArr)=>{
             if(data[j]._id == id){
                 idKanap = data[j]._id;
                 nameKanap = data[j].name;
-                priceKanap = data[j].price;
+
+                priceKanap0 = data[j].price;
+                priceKanap1 =priceKanap0.toString();
+                priceKanap= priceKanap1.substring(0,2) +','+priceKanap1.substring(2) + '€';
+
+                subTotalPrice0 = quantity0*priceKanap0;
+                totalPrice0 += subTotalPrice0;
+
                 imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
             }
             j++;
         }while(j<data.length);
-    
+
+        
         var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
     
-        itemsCart.appendChild(cart);  
+        itemsCart.appendChild(cart);
+        
+        /*
+        <div class="cart__price">
+              <p>Total (<span id="totalQuantity"><!-- 2 --></span> articles) : <span id="totalPrice"><!-- 84,00 --></span> €</p>
+            </div>
+        */   
     }
+    const totalQuantity= document.getElementById('totalQuantity');
+    totalQuantity.textContent= 
 }
 // la fonction createArticle à partir de la constante data (attendue) et de la constante finalStorageArr, en utilisant la fonction itemCart, ajoute en tant qu'éléments enfants des variables  HTMLElements <articles> nommées cart à la constante HTMLElement itemsCart;
 

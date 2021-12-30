@@ -142,20 +142,30 @@
                 var j=0;
                 var idKanap = "";
                 var nameKanap="";
-                var priceKanap = 0;
+
+                var priceKanap0 = 0;
+                var priceKanap1 = "";
+                var priceKanap= "";
+
                 var imageUrlKanap = "";
                 var altTxtKanap = "";
+                
 
                 do{
                     if(data[j]._id == id){
                         idKanap = data[j]._id;
                         nameKanap = data[j].name;
-                        priceKanap = data[j].price;
+
+                        priceKanap0 = data[j].price;
+                        priceKanap1 =priceKanap0.toString();
+                        priceKanap= priceKanap1.substring(0,2) +','+priceKanap1.substring(2) + '€';
+
                         imageUrlKanap = data[j].imageUrl;
                         altTxtKanap = data[j].altTxt;
                     }
                     j++;
                 }while(j<data.length);
+
 
                 var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
 
