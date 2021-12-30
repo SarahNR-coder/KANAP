@@ -155,23 +155,7 @@ const createArticle=(data, finalStorageArr)=>{
 
         var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
 
-        itemsCart.appendChild(cart);
-/*        for(let j=0; j<data.length; j++){
-
-            var item= data[j];
-            price0=toString(item.price);
-            console.log('price0 = '+price0+'; typeof =' +typeof price0 ); 
-            var euros = price0.substring(0,2)+','+price0.substring(2)+' €';
-            console.log('euros = '+euros);
-            var values = Object.values(item);
-            for(let k=0; k<values.length; k++){
-                var value=values[k];
-                if (value === id){
-                    var cartItem =itemCart(item,id,color,quantity,euros);
-                    cartItems.appendChild(cartItem);
-                }
-            }   
-        }*/    
+        itemsCart.appendChild(cart);  
     }
 }
 

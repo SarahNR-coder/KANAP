@@ -1,193 +1,175 @@
-//récupération du block à remplir par les fiches des produits dans le panier
-const cartItems = document.getElementById('cart__items');
-//********************************************************
-function populateStorage(arrCart){
-    
-    for(let i=0; i<arrCart.length; i++){
-        var entry= arrCart[i];
-        localStorage.setItem('id', entry.id);
-        localStorage.setItem('color', entry.color);
-        localStorage.setItem('quantity', entry.quantity);
+
+const retrieveData = () =>fetch("http://localhost:3000/api/products")
+.then(res =>{
+    if (res.ok){
+        return res.json();
     }
+})
+.then (data => {
+    console.log(data);
+    return data;})
+.catch (err => console.log('erreur suivante:'+ err))
+
+var itemCart =(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
+//#1
+const cartItem = document.createElement('article');
+cartItem.classList.add('cart__item');
+cartItem.setAttribute('data-id',idKanap);
+cartItem.setAttribute('data-color',color);
+
+//#1.1    
+const itemImage = document.createElement('div');
+itemImage.classList.add('cart__item__img');
+//#1.2
+const itemContent = document.createElement('div');
+itemContent.classList.add('cart__item__content');
+
+//#1
+cartItem.appendChild(itemImage);//#1.1
+cartItem.appendChild(itemContent);//#1.2
+
+//#1.1.1
+const itemImageShown = document.createElement('img');
+itemImageShown.setAttribute('src', imageUrlKanap);
+itemImageShown.setAttribute('alt', altTxtKanap);
+
+//#1.1
+itemImage.appendChild(itemImageShown);//#1.1.1
+
+//#1.2.1
+const contentDescription =document.createElement('div');
+contentDescription.classList.add('cart__item__content__description');
+//#1.2.2
+const contentSettings =document.createElement('div');
+contentSettings.classList.add('cart__item__content__settings');
+
+//#1.2
+itemContent.appendChild(contentDescription);//#1.2.1
+itemContent.appendChild(contentSettings);//#1.2.2
+
+//#1.2.1.1
+const DescriptionTitle = document.createElement('h2');
+DescriptionTitle.textContent = nameKanap;
+//#1.2.1.2 
+const DescriptionFirstP = document.createElement('p');
+DescriptionFirstP.textContent = color;
+//#1.2.1.3
+const DescriptionSecondP = document.createElement('p');
+DescriptionSecondP.textContent = priceKanap;
+
+//#1.2.1
+contentDescription.appendChild(DescriptionTitle)//   #1.2.1.1
+contentDescription.appendChild(DescriptionFirstP);//#1.2.1.2
+contentDescription.appendChild(DescriptionSecondP);// //#1.2.1.3
+
+//#1.2.2.1
+const settingsQuantity = document.createElement('div');
+settingsQuantity.classList.add('cart__item__content__settings__quantity');
+//#1.2.2.2
+const settingsDelete = document.createElement('div');
+settingsDelete.classList.add('cart__item__content__settings__delete');
+
+//#1.2.2
+contentSettings.appendChild(settingsQuantity);//#1.2.2.1
+contentSettings.appendChild(settingsDelete);//#1.2.2.2
+
+//#1.2.2.1.1
+const QuantityP = document.createElement('p');
+QuantityP.textContent ='Qté :';
+//#1.2.2.1.2
+const QuantityInput = document.createElement('input');
+QuantityInput.setAttribute('type','number');
+QuantityInput.setAttribute('name', 'ItemQuantity');
+QuantityInput.setAttribute('min', '1');
+QuantityInput.setAttribute('max','100');
+QuantityInput.setAttribute('value', quantity);
+
+//#1.2.2.1
+settingsQuantity.appendChild(QuantityP);//#1.2.2.1.1
+settingsQuantity.appendChild(QuantityInput);//#1.2.2.1.2
+
+//#1.2.2.2.1
+const DeleteP = document.createElement('p');
+DeleteP.classList.add('deleteItem');
+
+//#1.2.2.2
+settingsDelete.appendChild(DeleteP);//#1.2.2.2.1
+
+return cartItem;
 }
 
 
-function setPurchase() {
-    var arrAllStorage = new Array(localStorage.length);
-    for(let i=0; i<localStorage.length; i++){
-        var arrStorageLine = localStorage.getItem(localStorage.key(i));
-        console.log('arrStorageLine de setPurchase ='+ arrStorageLine + ' de typeof = '+ typeof arrStorageLine);
-        arrAllStorage[i]= arrStorageLine;
-    }
-    console.log('arrAllStorage = '+arrAllStorage);
-    return arrAllStorage;
+const setPurchase=(LineValue0)=> {
+var finalStorageArr = new Array([""]);
+finalStorageArr[0] = LineValue0;      
+for(let i=1; i<localStorage.length; i++){ 
+    var LineValue= localStorage.getItem(localStorage.key(i));            
+    finalStorageArr[i]=LineValue;
+}
+return finalStorageArr;
 }
 
-//********************************************************
+const createArticle=(data, finalStorageArr)=>{  
+const itemsCart = document.getElementById('cart__items');
+//parcours Storage (panier)
+for(let i=0; i<finalStorageArr.length; i++){
 
-const createarrCart=(arrAllStorage)=>{
-    
-    var id="";
-    var color="";
-    var quantity="";
-    var entry={id,color,quantity};
+    var LineValue ="";
+    LineValue = finalStorageArr[i];
 
-    var idE=entry.id;
+    const regex = /[,]/;
 
-    for(let i=0; i<arrAllStorage.length; i++){
-        var arrStorageLine= arrAllStorage[i];
-        var arrCartEntry;
-        if(idE!= arrStorageLine[0]){
-        
-            entry.id = arrStorageLine[0];
-            entry.color = arrStorageLine[1];
-            entry.quantity = arrStorageLine[2];
-            
+    var index1 =LineValue.search(regex);
+
+    var id = LineValue.substring(0,index1);
+    console.log('id ='+id);
+
+    var substringNot1 = LineValue.substring(index1+1);
+
+    var index2 = substringNot1.search(regex);
+
+    var color= substringNot1.substring(0,index2);
+    console.log('color ='+color)
+
+    var quantity= substringNot1.substring(index2+1);
+    console.log('quantity ='+quantity);
+
+    //recherche de l'élement du panier dans le catalogue
+    var j=0;
+    var idKanap = "";
+    var nameKanap="";
+    var priceKanap = 0;
+    var imageUrlKanap = "";
+    var altTxtKanap = "";
+
+    do{
+        if(data[j]._id == id){
+            idKanap = data[j]._id;
+            nameKanap = data[j].name;
+            priceKanap = data[j].price;
+            imageUrlKanap = data[j].imageUrl;
+            altTxtKanap = data[j].altTxt;
         }
-    }
-    console.log('entry ='+entry);
-    return entry;
+        j++;
+    }while(j<data.length);
+
+    var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
+
+    itemsCart.appendChild(cart);  
+}
 }
 
-const id =arrCart[0][0];
-var itemsToPurchase = new Array();
-const retrieveItemsToPurchase = (arrCart) =>fetch("http://localhost:3000/api/products")
-    .then(res =>{
-        if (res.ok){
-            return res.json();
-        }
-    })
-    .then (data => {
-        console.log(data);
-        return data;})
-    .then(data=>{ 
-        for(i=0; i<arrCart.length; i++){
-            for(let i=0; i<data.length; i++) {
-                var item= data[i];
-                var values = Object.values(item);
-                for(let j=0;j<values.length; j++) {
-                    let value = values[j];
-                    if (value === id){
-                        item._id= value;
-                    }
-                }
-                item = itemsToPurchase[i];
-                console.log('itemsToPurchase ='+itemsToPurchase);
-                return itemsToPurchase;
-            }
-        }    
-    })
-    .catch (err => console.log('erreur suivante:'+ err))
-
-const createArticle =(entry)=>{
-    const cartItem = document.createElement('article');
-    cartItem.classList.add('cart__item');
-    cartItem.setAttribute('data-id', entry.id);
-    cartItem.setAttribute('data-color',entry.color);
-
-    return cartItem;
-}
-
-const createImage =(item)=>{
-    const itemImage = document.createElement('div');
-    itemImage.classList.add('cart__item__img');
-
-    const itemImageShown = document.createElement('img');
-    itemImageShown.setAttribute('src', item.imageUrl);
-    itemImageShown.setAttribute('alt', item.altTxt);
-
-    return itemImage;
-}
-
-const createInput =(entry)=>{
-    const QuantityP = document.createElement('p');
-    QuantityP.contentText ='Qté :';
-    const QuantityInput = document.createElement('input');
-    QuantityInput.setAttribute('type','number');
-    QuantityInput.setAttribute('name', 'ItemQuantity');
-    QuantityInput.setAttribute('min', '1');
-    QuantityInput.setAttribute('max','100');
-    QuantityInput.setAttribute('value', entry.quantity);
-
-    return QuantityP, QuantityInput;
-}
-
-const createContent =(item)=>{
-
-    const itemContent = document.createElement('div');
-    itemContent.classList.add('cart__item__content');
-
-    const contentDescription =document.createElement('div');
-    contentDescription.classList.add('cart__item__content__description');
-
-    const DescriptionTitle = document.createElement('h2');
-    DescriptionTitle.contentText = item.name; 
-    const DescriptionFirstP = document.createElement('p');
-    DescriptionFirstP.contentText = entry.color;
-    const DescriptionSecondP = document.createElement('p');
-    DescriptionSecondP.contentText = item.price;
-
-    const contentSettings =document.createElement('div');
-    contentSettings.classList.add('cart__item__content__settings');
-
-    const settingsQuantity = document.createElement('div');
-    settingsQuantity.classList.add('cart__item__content__settings__quantity');
-//
-
-//
-    const settingsDelete = document.createElement('div');
-    settingsDelete.classList.add('cart__item__content__settings__delete');
-    const DeleteP = document.createElement('p');
-    DeleteP.classList.add('deleteItem');
-
-    settingsDelete.appendChild(DeleteP);
-
-    settingsQuantity.appendChild(QuantityP);
-    settingsQuantity.appendChild(QuantityInput);
-
-
-    contentDescription.appendChild(DescriptionTitle);
-    contentDescription.appendChild(DescriptionFirstP);
-    contentDescription.appendChild(DescriptionSecondP);
-
-    contentSettings.appendChild(settingsQuantity);
-    contentSettings.appendChild(settingsDelete);
-
-    itemImage.appendChild(itemImageShown);
-
-    itemContent.appendChild(contentDescription);
-    itemContent.appendChild(contentSettings);
-}
-
-const createCartItem = (itemsToPurchase, arrCart)=>{
-
-    for(let i=0; i<itemsToPurchase.length; i++){
-        var item =itemsToPurchase[i];
-        var entry = arrCart[i];
-
-
-        cartItem.appendChild(itemImage);
-        cartItem.appendChild(itemContent);
-
-        cartItems.appendChild(cartItem);
-
-        console.log('createCartItem retourne élément HTML cartItems');
-        return cartItems;
-    }
-}
 const main =async()=>{
+const LineValue0 = localStorage.getItem(localStorage.key(0));
 
-    console.log('lclSt length = '+localStorage.length);
-    const arrAllStorage = setPurchase();
-    console.log('arrAllStorage de setPurchase   = ' +arrAllStorage+' de type (typeof) ='+ typeof arrAllStorage);
+const data = await retrieveData();
 
-    const arrCart = createarrCart(arrAllStorage);
-    console.log('arrCart = ' +arrCart);
+const finalStorageArr = setPurchase(LineValue0);
+console.log("finalStorageArr = "+finalStorageArr);
 
-    const itemsToPurchase = await retrieveItemsToPurchase(arrCart);
-
-    const cartItem =createCartItem(itemsToPurchase, arrCart);
-    cartItems.appendChild(cartItem);
+createArticle(data, finalStorageArr);
+// const cartItems
 }
 
 main();
+
