@@ -63,6 +63,7 @@ const createArticle=(data, finalStorageArr)=>{
 
         var priceKanap0 = 0;
         var priceKanap = "";
+        var priceKanap1 ="";
 
         var subTotalPrice0 = 0;
 
@@ -78,52 +79,58 @@ const createArticle=(data, finalStorageArr)=>{
                 nameKanap = data[j].name;
                 priceKanap0 = data[j].price;
                 console.log('priceKanap0  =' + priceKanap0);
+
+                priceKanap1= priceKanap0.toString();
+                console.log('priceKanap1 =' +priceKanap1);
+
                 imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
+
                 subTotalPrice0 = quantity0*priceKanap0;
                 console.log('subTotalPrice0 ='+ subTotalPrice0)
+
                 totalQuantity0 += quantity0;
                 console.log('totalQuantity0 incrémenté (recherche catalogue) = '+totalQuantity0);
+
                 totalPrice0 += subTotalPrice0;
                 console.log('totalPrice0 incrémenté (recherche catalogue) = '+ totalPrice0);
 
-                var length = priceKanap0.toString().length;
+                var length = priceKanap1.length;
                 console.log('length nombre chiffres dans le string de priceKanap0 (un item) = ' +length);
-                
-
-                var priceNoJ = "";
-                var priceNoBY= "";
-                        
+                      
                 var priceNoA="";
                 if(length <4){
-                    priceKanap = priceKanap0.toString() +',00 €'
+                    priceKanap = priceKanap1 +',00 €'
                 }else{
                                 
                     var lastCharPlace = length -1;
                     console.log('lastCharPlace = '+lastCharPlace);
                     var NbTrios = Math.floor(length/3);
                     console.log('NbTrios  ='+NbTrios);
-                    var firstTrioAt = lastCharPlace - NbTrios*3;
-                    console.log('firstTrioAt ='+firstTrioAt);
 
                     var priceNoA ="";
-
-                    var j = 0;
                     var n = 0;
                     do{ 
-                        n =+ j;
+                        n += 3;
+                    }while(n <= NbTrios && lastCharPlace>2);
+                    console.log('n = '+n);
 
-                        priceNoJ = priceKanap0.toString().substring(lastCharPlace -j,lastCharPlace);                       
+                    var nZ = length - n;
+                    console.log('nZ = '+nZ);
 
-                        priceNoBY += ' ' +priceNoJ;
-                        console.log('priceNoBY incrémenté  ='+priceNoBY);
+                    priceNoA =priceKanap1.substring(0, nZ);
+                    console.log('priceNoA = '+priceNoA);
+                    var priceNoZ = priceKanap1.substring(lastCharPlace-3,lastCharPlace);
 
-                        j+=3;
+                    priceKanap = priceNoA;
 
-                    }while(j<= NbTrios && lastCharPlace>2);
+                    for(let i=0;nZ+i+3<lastCharPlace; i+=3 ){
+                        var subPriceI = priceKanap1.substring(nZ+i,nZ+i+3);
+                        var subPriceNoBY = ' '+ subPriceI;
+                        priceKanap += subPriceNoBY;
 
-                    priceNoA =priceKanap0.toString().substring(0, lastCharPlace - n);
-                    priceKanap = priceNoA + priceNoBY +',00 €';
+                    }            
+                    priceKanap +=' '+priceNoZ+',00 €';
                     console.log('priceKanap mis en forme ='+priceKanap) 
                 }                  
             }               
@@ -139,37 +146,38 @@ const createArticle=(data, finalStorageArr)=>{
         var lengthTot = totalPrice0.toString().length;
         console.log('lengthTot nombre chiffres dans le string de totalPrice0 (un item) = ' +lengthTot);
 
+        var totalPrice1 = totalPrice0.toString();
+
         if(length<=3){
-            totalPrice = totalPrice0.toString() + ',00'
+            totalPrice = totalPrice1 +',00'
         }else{
             var BlastCharPlace = lengthTot -1;
             console.log('BlastCharPlace = '+BlastCharPlace);
             var BNbTrios = Math.floor(lengthTot/3);
             console.log('BNbTrios  ='+BNbTrios);
 
-            var subTotNoJ = "";
-            var subTotNoBY= "";
-            var subTotNoA = "";
-
-            var BfirstTrioAt = BlastCharPlace - BNbTrios*3;
-            console.log('BfirstTrioAt ='+BfirstTrioAt);  
-
-            var j = 0;
+            var subTotNoA = "";  
             var n=0;
             do{ 
-                n=+j;
-                
-                var subTotNoJ =totalPrice0.toString().substring(BlastCharPlace -j,BlastCharPlace);                     
-                console.log('subTotNoJ un item  ='+priceNoBY);
+                n+=3                               
+            }while (n <= BNbTrios && BlastCharPlace >2);
+            console.log('n   nb de trios (boucles) x3, donc le nombre total de chiffres de trio  =  ' +n );
+            var nZ = lengthTot -n
+            console.log('nZ la place à partir de laquelle commencent les trios de chiffres =' +nZ);
 
-                subTotNoBY += " " +subTotNoJ;
-                console.log('subTotNoBY incrémenté  ='+priceNoBY);
-                
-                j+=3;
+            subTotNoA = totalPrice1.substring(0,nZ);
+            console.log('subTotNoA = '+subTotNoA);
 
-            }while (j<= BNbTrios && BlastCharPlace >2)
-            subTotNoA = totalPrice0.toString().substring(0, BlastCharPlace -n);
-            totalPrice = subTotNoA + subTotNoBY +',00';
+            var subTotNoZ = totalPrice1.substring(BlastCharPlace-3,BlastCharPlace);
+            totalPrice = subTotNoA;
+
+            for(let i=0; nZ+i+3<BlastCharPlace; i+=3){
+                var subTotI = totalPrice1.substring(nZ+i,nZ+i+3);
+                
+                var subTotNoBY = ' '+ subTotI;
+                totalPrice += subTotNoBY;
+            }            
+            totalPrice +=' '+subTotNoZ+',00';
             console.log('totalPrice ='+totalPrice);
         }
         
