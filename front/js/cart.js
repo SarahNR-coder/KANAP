@@ -28,7 +28,8 @@ const createArticle=(data, finalStorageArr)=>{
     var totalQuantity="";
     var totalQuantity0 = 0;
     var totalPrice0 = 0;
-    var totalPrice ="";
+    var totalPrice = "";
+
     //parcours Storage (panier)
     for(let i=0; i<finalStorageArr.length; i++){
     
@@ -51,54 +52,133 @@ const createArticle=(data, finalStorageArr)=>{
     
         var quantity= substringNot1.substring(index2+1);
         console.log('quantity ='+quantity);
+
+
+
         var quantity0 = parseInt(quantity);
-        totalQuantity0 += quantity0;
+        console.log('quantity0 = '+ quantity0);
     
-        //recherche de l'élement du panier dans le catalogue
-        var j=0;
         var idKanap = "";
         var nameKanap="";
 
         var priceKanap0 = 0;
-        var priceKanap1 = "";
-        var priceKanap= "";
+        var priceKanap = "";
 
         var subTotalPrice0 = 0;
 
         var imageUrlKanap = "";
         var altTxtKanap = "";
+
+        //recherche de l'élement du panier dans le catalogue        
     
+        var j=0;
         do{
             if(data[j]._id == id){
                 idKanap = data[j]._id;
                 nameKanap = data[j].name;
-
                 priceKanap0 = data[j].price;
-                priceKanap1 =priceKanap0.toString();
-                priceKanap= priceKanap1.substring(0,2) +','+priceKanap1.substring(2) + '€';
-
-                subTotalPrice0 = quantity0*priceKanap0;
-                totalPrice0 += subTotalPrice0;
-
+                console.log('priceKanap0  =' + priceKanap0);
                 imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
-            }
+                subTotalPrice0 = quantity0*priceKanap0;
+                console.log('subTotalPrice0 ='+ subTotalPrice0)
+                totalQuantity0 += quantity0;
+                console.log('totalQuantity0 incrémenté (recherche catalogue) = '+totalQuantity0);
+                totalPrice0 += subTotalPrice0;
+                console.log('totalPrice0 incrémenté (recherche catalogue) = '+ totalPrice0);
+
+                var length = priceKanap0.toString().length;
+                console.log('length nombre chiffres dans le string de priceKanap0 (un item) = ' +length);
+                
+
+                var priceNoJ = "";
+                var priceNoBY= "";
+                        
+                var priceNoA="";
+                if(length <4){
+                    priceKanap = priceKanap0.toString() +',00 €'
+                }else{
+                                
+                    var lastCharPlace = length -1;
+                    console.log('lastCharPlace = '+lastCharPlace);
+                    var NbTrios = Math.floor(length/3);
+                    console.log('NbTrios  ='+NbTrios);
+                    var firstTrioAt = lastCharPlace - NbTrios*3;
+                    console.log('firstTrioAt ='+firstTrioAt);
+
+                    var priceNoA ="";
+
+                    var j = 0;
+                    var n = 0;
+                    do{ 
+                        n =+ j;
+
+                        priceNoJ = priceKanap0.toString().substring(lastCharPlace -j,lastCharPlace);                       
+
+                        priceNoBY += ' ' +priceNoJ;
+                        console.log('priceNoBY incrémenté  ='+priceNoBY);
+
+                        j+=3;
+
+                    }while(j<= NbTrios && lastCharPlace>2);
+
+                    priceNoA =priceKanap0.toString().substring(0, lastCharPlace - n);
+                    priceKanap = priceNoA + priceNoBY +',00 €';
+                    console.log('priceKanap mis en forme ='+priceKanap) 
+                }                  
+            }               
             j++;
         }while(j<data.length);
 
-        
         var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
     
         itemsCart.appendChild(cart);
+       
+        totalQuantity= totalQuantity0.toString();
+
+        var lengthTot = totalPrice0.toString().length;
+        console.log('lengthTot nombre chiffres dans le string de totalPrice0 (un item) = ' +lengthTot);
+
+        if(length<=3){
+            totalPrice = totalPrice0.toString() + ',00'
+        }else{
+            var BlastCharPlace = lengthTot -1;
+            console.log('BlastCharPlace = '+BlastCharPlace);
+            var BNbTrios = Math.floor(lengthTot/3);
+            console.log('BNbTrios  ='+BNbTrios);
+
+            var subTotNoJ = "";
+            var subTotNoBY= "";
+            var subTotNoA = "";
+
+            var BfirstTrioAt = BlastCharPlace - BNbTrios*3;
+            console.log('BfirstTrioAt ='+BfirstTrioAt);  
+
+            var j = 0;
+            var n=0;
+            do{ 
+                n=+j;
+                
+                var subTotNoJ =totalPrice0.toString().substring(BlastCharPlace -j,BlastCharPlace);                     
+                console.log('subTotNoJ un item  ='+priceNoBY);
+
+                subTotNoBY += " " +subTotNoJ;
+                console.log('subTotNoBY incrémenté  ='+priceNoBY);
+                
+                j+=3;
+
+            }while (j<= BNbTrios && BlastCharPlace >2)
+            subTotNoA = totalPrice0.toString().substring(0, BlastCharPlace -n);
+            totalPrice = subTotNoA + subTotNoBY +',00';
+            console.log('totalPrice ='+totalPrice);
+        }
         
-        /*
-        <div class="cart__price">
-              <p>Total (<span id="totalQuantity"><!-- 2 --></span> articles) : <span id="totalPrice"><!-- 84,00 --></span> €</p>
-            </div>
-        */   
+        const totalQuantityHTML= document.getElementById('totalQuantity');
+        totalQuantityHTML.textContent= totalQuantity;
+
+        const totalPriceHTML = document.getElementById('totalPrice');
+        totalPriceHTML.textContent= totalPrice;
     }
-    const totalQuantity= document.getElementById('totalQuantity');
-    totalQuantity.textContent= 
 }
 // la fonction createArticle à partir de la constante data (attendue) et de la constante finalStorageArr, en utilisant la fonction itemCart, ajoute en tant qu'éléments enfants des variables  HTMLElements <articles> nommées cart à la constante HTMLElement itemsCart;
 
@@ -112,7 +192,7 @@ const createArticle=(data, finalStorageArr)=>{
 //on fait passer ces variablesKanap dans la fonction itemCart
 //on en retire la variable HTMElement <article> cart
 
-var itemCart =(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
+var itemCart= (idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
     //#1
     const cartItem = document.createElement('article');
     cartItem.classList.add('cart__item');
