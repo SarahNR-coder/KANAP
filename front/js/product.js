@@ -165,10 +165,8 @@ const main = async () => {
     button.addEventListener('click', function(_e){
         console.log('color = '+color);
         console.log('quantity ='+quantity);
-        var arrCartEntry = [idUrl, color, quantity];
-        console.log('arrCartEntry = '+arrCartEntry);
-        if(arrCartEntry[1]!="" && arrCartEntry[2]!=""){      
-            localStorage.setItem(idName, arrCartEntry);
+        if(color!="" && quantity!=""){      
+            localStorage.setItem(idName+color, [idUrl, color, quantity]);
         }
     })
 }
