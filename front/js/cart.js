@@ -308,7 +308,7 @@ const main =async()=>{
     var totalPrice = totalPriceHTML.textContent;
     var tPlength = totalPrice.length;
     var totalPriceToComa = totalPrice.substring(0, tPlength -1 -3);
-    var tPTCLessSpaces = totalPriceToComa.replace(/[]/g, '');
+    var tPTCLessSpaces = totalPriceToComa.replace(/[]/, '');
     var totalPrice0 = parseInt(tPTCLessSpaces);
 
     totalPrice = "";
@@ -319,8 +319,69 @@ const main =async()=>{
     i=0
 
     do{
-        
+        const quantityInputX = quantityInputs[i];
+        var quantityX=quantityInputX.value;
+        var quantityX0 = parseInt(quantityX);
+
+        const itemCartX = quantityInputX.closest('article.cart__item');
+        const colorX = itemCartX.dataset.color;
+        const idX = itemCartX.dataset.id;
+
+        const descriptionTitle = itemCartX.querySelector(div.cart__item__content__description > h2);
+        const nameKanapX = descriptionTitle.textContent;
+        const idNameX = nameKanapX.substring(6);
+
+        const descriptionSecondP = itemCartX.querySelectorAll(div.cart__item__content__description > p)[1];
+        const priceKanapX = descriptionSecondP.textContent;
+        const pKXlength = priceKanapX.length;
+        const pKXToComa = priceKanapX.substring(0, pKXlength -1 -5);
+        const pKXTCLessSpaces = pKXToComa.replace(/[]/,'');
+        const priceKanapX0 = parseInt(pKXTCLessSpaces);
+
+        quantityInputX.addEventListener('change', function(e){
+            totalQuantity0 -= quantityX0;
+            totalPrice0 -= quantityX0*priceKanapX0;
+
+            var quantityXChange = e.target.value;
+            var quantityX0Change = parseInt(quantityX);
+
+            totalQuantity0 +=quantityX0Change;
+            totalPrice0 += quantityX0Change*priceKanapX0;
+
+            localStorage.setItem(idNameX+','+colorX,idX+','+colorX+','+quantityXChange);
+        })
+
+        const deletePX = itemCartX.querySelector(div.cart__item__content__settings__delete > p.deteItem);
+
+        deletePX.addEventListener('click', function(e){
+            itemCartX.remove();
+            localStorage.removeItem(idNameX+','+colorX);
+        })
+        i++;
+    }while(i<quantityInputs.length);
+    
+    totalQuantity = totalQuantity.toString();
+
+    var totalPrice1=totalPrice0.toString();
+    var NbTriosTP = Math.floor(tPlength/3);
+    var subTotNoA="";
+    var n=0;
+
+    do{ n+=3;}while(n<=NbTRiosTP && tPlength>3);
+
+    var nZ = tPlength - n;
+    subTotNoA = totalPrice1.substring(0,nZ);
+    var subTotNoZ = totalPrice1.substring(tPlength-1 -3,tPlength -1);
+    totalPrice = subTotNoA;
+    for(let j=0; nZ+i<tPlength-1-3; i+=3)
+    {
+        var subTotJ = totalPrice1.substring(nZ+i, nZ+3+i);
+        var subTotNoBY =' '+subTotJ;
+        totalPrice += subTotNoBY;
     }
+
+    totalPrice += ' '+ subTotNoZ + ',00';
+    totalPriceHTML.textContent = totalPrice;
 }
 
 main();
