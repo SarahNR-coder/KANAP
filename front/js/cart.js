@@ -299,6 +299,28 @@ const main =async()=>{
 
     createArticle(data, finalStorageArr);
     // const cartItems
+
+    const totalQuantityHTML = document.getElementById('totalQuantity');
+    var totalQuantity = totalQuantityHTML.textContent;
+    var totalQuantity0 = parseInt(totalQuantity);
+
+    const totalPriceHTML =document.getElementById('totalPrice');
+    var totalPrice = totalPriceHTML.textContent;
+    var tPlength = totalPrice.length;
+    var totalPriceToComa = totalPrice.substring(0, tPlength -1 -3);
+    var tPTCLessSpaces = totalPriceToComa.replace(/[]/g, '');
+    var totalPrice0 = parseInt(tPTCLessSpaces);
+
+    totalPrice = "";
+    totalQuantity ="";
+
+    var quantityInputs = document.querySelectorAll(' input.itemQuantity');
+
+    i=0
+
+    do{
+        
+    }
 }
 
 main();

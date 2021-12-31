@@ -166,7 +166,7 @@ const main = async () => {
         console.log('color = '+color);
         console.log('quantity ='+quantity);
         if(color!="" && quantity!=""){      
-            localStorage.setItem(idName+color, [idUrl, color, quantity]);
+            localStorage.setItem(idName+','+color, [idUrl, color, quantity]);
         }
     })
 }
