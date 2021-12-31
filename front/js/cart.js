@@ -53,8 +53,6 @@ const createArticle=(data, finalStorageArr)=>{
         var quantity= substringNot1.substring(index2+1);
         console.log('quantity ='+quantity);
 
-
-
         var quantity0 = parseInt(quantity);
         console.log('quantity0 = '+ quantity0);
     
@@ -200,7 +198,7 @@ const createArticle=(data, finalStorageArr)=>{
 //on fait passer ces variablesKanap dans la fonction itemCart
 //on en retire la variable HTMElement <article> cart
 
-var itemCart= (idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
+var itemCart= (idKanap, color, quantity0, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
     //#1
     const cartItem = document.createElement('article');
     cartItem.classList.add('cart__item');
@@ -272,7 +270,7 @@ var itemCart= (idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, a
     QuantityInput.setAttribute('name', 'ItemQuantity');
     QuantityInput.setAttribute('min', '1');
     QuantityInput.setAttribute('max','100');
-    QuantityInput.setAttribute('value', quantity);
+    QuantityInput.setAttribute('value', quantity0);
 
     //#1.2.2.1
     settingsQuantity.appendChild(QuantityP);//#1.2.2.1.1
@@ -281,6 +279,7 @@ var itemCart= (idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, a
     //#1.2.2.2.1
     const DeleteP = document.createElement('p');
     DeleteP.classList.add('deleteItem');
+    DeleteP.textContent='Supprimer';
 
     //#1.2.2.2
     settingsDelete.appendChild(DeleteP);//#1.2.2.2.1

@@ -112,34 +112,7 @@ const showColors = (item) =>{
     return productColors
 }
 
-
-
-
-
-
-//********************************************************
-//***********************LOCALSTORAGE*********************
-//********************************************************
-
-function setPurchase() {
-    var currentId = localStorage.getItem('id');
-    var currentColor = localStorage.getItem('color');
-    var currentQuantity = localStorage.getItem('quantity');
-
-    if(currentId !=undefined && currentColor != undefined && currentQuantity != NaN){
-        var arr = [currentId, currentColor, currentQuantity];
-        return arr
-    }
-}
-
-//soit retourne un tableau => arrCartEntry prendra les valeurs de ce tableau (change)
-//soit ne retourne rien;
-
-//********************************************************
-
 const quantityElement = document.querySelector('input');
-
-
 
 //****************************MAIN************************
 
