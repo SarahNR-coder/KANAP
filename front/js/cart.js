@@ -22,8 +22,10 @@ const setPurchase=(LineValue0)=> {
 }
 // => finalStorageArr
 //                   //+ function itemCart()
-const createArticle=(data, finalStorageArr)=>{  
+function createArticle(data){
     const itemsCart = document.getElementById('cart__items');
+    const LineValue0 = localStorage.getItem(localStorage.key(0));
+    const finalStorageArr = setPurchase(LineValue0);
 
     var totalQuantity="";
     var totalQuantity0 = 0;
@@ -37,60 +39,56 @@ const createArticle=(data, finalStorageArr)=>{
         LineValue = finalStorageArr[i];
     
         const regex = /[,]/;
-    
         var index1 =LineValue.search(regex);
     
         var id = LineValue.substring(0,index1);
         console.log('id ='+id);
-    
         var substringNot1 = LineValue.substring(index1+1);
     
         var index2 = substringNot1.search(regex);
-    
         var color= substringNot1.substring(0,index2);
         console.log('color ='+color)
     
         var quantity= substringNot1.substring(index2+1);
         console.log('quantity ='+quantity);
-
         var quantity0 = parseInt(quantity);
         console.log('quantity0 = '+ quantity0);
     
         var idKanap = "";
         var nameKanap="";
-
         var priceKanap0 = 0;
         var priceKanap = "";
         var priceKanap1 ="";
-
-        var subTotalPrice0 = 0;
-
         var imageUrlKanap = "";
         var altTxtKanap = "";
 
         //recherche de l'élement du panier dans le catalogue        
-    
+        const itemCart = document.createElement('article');
+        itemCart.classList.add('cart__item');
+        itemsCart.appendChild(itemCart);
+        itemCart.setAttribute('data-id',id);
+        itemCart.setAttribute('data-color',color); 
+                    
         var j=0;
         do{
             if(data[j]._id == id){
                 idKanap = data[j]._id;
-                nameKanap = data[j].name;
+                nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
+                altTxtKanap = data[j].altTxt;
+
+                //----------------------------------
+                //------- Calcul priceKanap---------
+
                 priceKanap0 = data[j].price;
                 console.log('priceKanap0  =' + priceKanap0);
 
                 priceKanap1= priceKanap0.toString();
                 console.log('priceKanap1 =' +priceKanap1);
-
-                imageUrlKanap = data[j].imageUrl;
-                altTxtKanap = data[j].altTxt;
-
-                subTotalPrice0 = quantity0*priceKanap0;
-                console.log('subTotalPrice0 ='+ subTotalPrice0)
-
+                
                 totalQuantity0 += quantity0;
                 console.log('totalQuantity0 incrémenté (recherche catalogue) = '+totalQuantity0);
 
-                totalPrice0 += subTotalPrice0;
+                totalPrice0 += quantity0*priceKanap0;
                 console.log('totalPrice0 incrémenté (recherche catalogue) = '+ totalPrice0);
 
                 var length = priceKanap1.length;
@@ -128,63 +126,78 @@ const createArticle=(data, finalStorageArr)=>{
                         priceKanap += subPriceNoBY;
 
                     }            
-                    priceKanap +=' '+priceNoZ+',00 €';
-                    console.log('priceKanap mis en forme ='+priceKanap) 
-                }                  
-            }               
-            j++;
+                } 
+                priceKanap +=' '+priceNoZ+',00 €';
+                console.log('priceKanap mis en forme ='+priceKanap)
+                //----------------------------------
+                //----------------------------------
+
+                var itemImage = document.createElement('div');
+                itemImage =addImageToItemCart(itemImage, imageUrlKanap, altTxtKanap);
+                itemImage.classList.add('cart__item__img');
+                
+                var itemContent = document.createElement('div');
+                itemContent =addContentToItemCart(itemContent,color, quantity, nameKanap, priceKanap);
+                itemContent.classList.add('cart__item__content');
+                
+                itemCart.appendChild(itemImage);
+                itemCart.appendChild(itemContent);
+            }
+            j++;    
         }while(j<data.length);
 
-        var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
-    
-        itemsCart.appendChild(cart);
-       
-        totalQuantity= totalQuantity0.toString();
-
-        var lengthTot = totalPrice0.toString().length;
-        console.log('lengthTot nombre chiffres dans le string de totalPrice0 (un item) = ' +lengthTot);
-
-        var totalPrice1 = totalPrice0.toString();
-
-        if(length<=3){
-            totalPrice = totalPrice1 +',00'
-        }else{
-            var BlastCharPlace = lengthTot -1;
-            console.log('BlastCharPlace = '+BlastCharPlace);
-            var BNbTrios = Math.floor(lengthTot/3);
-            console.log('BNbTrios  ='+BNbTrios);
-
-            var subTotNoA = "";  
-            var n=0;
-            do{ 
-                n+=3                               
-            }while (n <= BNbTrios && BlastCharPlace >2);
-            console.log('n   nb de trios (boucles) x3, donc le nombre total de chiffres de trio  =  ' +n );
-            var nZ = lengthTot -n
-            console.log('nZ la place à partir de laquelle commencent les trios de chiffres =' +nZ);
-
-            subTotNoA = totalPrice1.substring(0,nZ);
-            console.log('subTotNoA = '+subTotNoA);
-
-            var subTotNoZ = totalPrice1.substring(BlastCharPlace-3,BlastCharPlace);
-            totalPrice = subTotNoA;
-
-            for(let i=0; nZ+i+3<BlastCharPlace; i+=3){
-                var subTotI = totalPrice1.substring(nZ+i,nZ+i+3);
-                
-                var subTotNoBY = ' '+ subTotI;
-                totalPrice += subTotNoBY;
-            }            
-            totalPrice +=' '+subTotNoZ+',00';
-            console.log('totalPrice ='+totalPrice);
-        }
-        
-        const totalQuantityHTML= document.getElementById('totalQuantity');
-        totalQuantityHTML.textContent= totalQuantity;
-
-        const totalPriceHTML = document.getElementById('totalPrice');
-        totalPriceHTML.textContent= totalPrice;
+        itemsCart.appendChild(itemCart);
     }
+
+    totalQuantity= totalQuantity0.toString();
+
+    //----------------------------------------------
+    //------------Calcule totalPrice----------------
+    var lengthTot = totalPrice0.toString().length;
+    console.log('lengthTot nombre chiffres dans le string de totalPrice0 (un item) = ' +lengthTot);
+
+    var totalPrice1 = totalPrice0.toString();
+
+    if(length<=3){
+        totalPrice = totalPrice1 +',00'
+    }else{
+        var BlastCharPlace = lengthTot -1;
+        console.log('BlastCharPlace = '+BlastCharPlace);
+        var BNbTrios = Math.floor(lengthTot/3);
+        console.log('BNbTrios  ='+BNbTrios);
+
+        var subTotNoA = "";  
+        var n=0;
+        do{ 
+            n+=3                               
+        }while (n <= BNbTrios && BlastCharPlace >2);
+        console.log('n   nb de trios (boucles) x3, donc le nombre total de chiffres de trio  =  ' +n );
+        var nZ = lengthTot -n
+        console.log('nZ la place à partir de laquelle commencent les trios de chiffres =' +nZ);
+
+        subTotNoA = totalPrice1.substring(0,nZ);
+        console.log('subTotNoA = '+subTotNoA);
+
+        var subTotNoZ = totalPrice1.substring(BlastCharPlace-3,BlastCharPlace);
+        totalPrice = subTotNoA;
+
+        for(let i=0; nZ+i+3<BlastCharPlace; i+=3){
+            var subTotI = totalPrice1.substring(nZ+i,nZ+i+3);
+            
+            var subTotNoBY = ' '+ subTotI;
+            totalPrice += subTotNoBY;
+        }            
+        totalPrice +=' '+subTotNoZ+',00';
+        console.log('totalPrice ='+totalPrice);   
+    }
+    //----------------------------------------------
+    //----------------------------------------------
+    
+    const totalQuantityHTML= document.getElementById('totalQuantity');
+    totalQuantityHTML.textContent= totalQuantity;
+
+    const totalPriceHTML = document.getElementById('totalPrice');
+    totalPriceHTML.textContent= totalPrice;
 }
 // la fonction createArticle à partir de la constante data (attendue) et de la constante finalStorageArr, en utilisant la fonction itemCart, ajoute en tant qu'éléments enfants des variables  HTMLElements <articles> nommées cart à la constante HTMLElement itemsCart;
 
@@ -198,32 +211,21 @@ const createArticle=(data, finalStorageArr)=>{
 //on fait passer ces variablesKanap dans la fonction itemCart
 //on en retire la variable HTMElement <article> cart
 
-var itemCart= (idKanap, color, quantity0, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
-    //#1
-    const cartItem = document.createElement('article');
-    cartItem.classList.add('cart__item');
-    cartItem.setAttribute('data-id',idKanap);
-    cartItem.setAttribute('data-color',color);
+const addImageToItemCart =(itemImage, imageUrlKanap, altTxtKanap)=>
+{
 
-    //#1.1    
-    const itemImage = document.createElement('div');
-    itemImage.classList.add('cart__item__img');
-    //#1.2
-    const itemContent = document.createElement('div');
-    itemContent.classList.add('cart__item__content');
-
-    //#1
-    cartItem.appendChild(itemImage);//#1.1
-    cartItem.appendChild(itemContent);//#1.2
-
-    //#1.1.1
     const itemImageShown = document.createElement('img');
     itemImageShown.setAttribute('src', imageUrlKanap);
     itemImageShown.setAttribute('alt', altTxtKanap);
 
     //#1.1
-    itemImage.appendChild(itemImageShown);//#1.1.1
+    itemImage.appendChild(itemImageShown);
 
+    return itemImage;
+}
+
+const addContentToItemCart =(itemContent, color, quantity, nameKanap, priceKanap) =>
+{
     //#1.2.1
     const contentDescription =document.createElement('div');
     contentDescription.classList.add('cart__item__content__description');
@@ -270,7 +272,7 @@ var itemCart= (idKanap, color, quantity0, nameKanap, priceKanap, imageUrlKanap, 
     QuantityInput.setAttribute('name', 'ItemQuantity');
     QuantityInput.setAttribute('min', '1');
     QuantityInput.setAttribute('max','100');
-    QuantityInput.setAttribute('value', quantity0);
+    QuantityInput.setAttribute('value', quantity);
 
     //#1.2.2.1
     settingsQuantity.appendChild(QuantityP);//#1.2.2.1.1
@@ -284,90 +286,25 @@ var itemCart= (idKanap, color, quantity0, nameKanap, priceKanap, imageUrlKanap, 
     //#1.2.2.2
     settingsDelete.appendChild(DeleteP);//#1.2.2.2.1
 
-return cartItem;
+    return itemContent;
 }
-
-
-
-const main =async()=>{
-    const LineValue0 = localStorage.getItem(localStorage.key(0));
-
-    const data = await retrieveData();
-
-    const finalStorageArr = setPurchase(LineValue0);
-    console.log("finalStorageArr = "+finalStorageArr);
-
-    createArticle(data, finalStorageArr);
-    // const cartItems
-
-    const totalQuantityHTML = document.getElementById('totalQuantity');
-    var totalQuantity = totalQuantityHTML.textContent;
-    var totalQuantity0 = parseInt(totalQuantity);
-
-    const totalPriceHTML =document.getElementById('totalPrice');
-    var totalPrice = totalPriceHTML.textContent;
+var totalPrice0Calc =(totalPrice)=>{
+      
     var tPlength = totalPrice.length;
     var totalPriceToComa = totalPrice.substring(0, tPlength -1 -3);
     var tPTCLessSpaces = totalPriceToComa.replace(/[]/, '');
     var totalPrice0 = parseInt(tPTCLessSpaces);
+    return totalPrice0;
+}
 
-    totalPrice = "";
-    totalQuantity ="";
-
-    var quantityInputs = document.querySelectorAll(' input.itemQuantity');
-
-    i=0
-
-    do{
-        const quantityInputX = quantityInputs[i];
-        var quantityX=quantityInputX.value;
-        var quantityX0 = parseInt(quantityX);
-
-        const itemCartX = quantityInputX.closest('article.cart__item');
-        const colorX = itemCartX.dataset.color;
-        const idX = itemCartX.dataset.id;
-
-        const descriptionTitle = itemCartX.querySelector(div.cart__item__content__description > h2);
-        const nameKanapX = descriptionTitle.textContent;
-        const idNameX = nameKanapX.substring(6);
-
-        const descriptionSecondP = itemCartX.querySelectorAll(div.cart__item__content__description > p)[1];
-        const priceKanapX = descriptionSecondP.textContent;
-        const pKXlength = priceKanapX.length;
-        const pKXToComa = priceKanapX.substring(0, pKXlength -1 -5);
-        const pKXTCLessSpaces = pKXToComa.replace(/[]/,'');
-        const priceKanapX0 = parseInt(pKXTCLessSpaces);
-
-        quantityInputX.addEventListener('change', function(e){
-            totalQuantity0 -= quantityX0;
-            totalPrice0 -= quantityX0*priceKanapX0;
-
-            var quantityXChange = e.target.value;
-            var quantityX0Change = parseInt(quantityX);
-
-            totalQuantity0 +=quantityX0Change;
-            totalPrice0 += quantityX0Change*priceKanapX0;
-
-            localStorage.setItem(idNameX+','+colorX,idX+','+colorX+','+quantityXChange);
-        })
-
-        const deletePX = itemCartX.querySelector(div.cart__item__content__settings__delete > p.deteItem);
-
-        deletePX.addEventListener('click', function(e){
-            itemCartX.remove();
-            localStorage.removeItem(idNameX+','+colorX);
-        })
-        i++;
-    }while(i<quantityInputs.length);
-    
-    totalQuantity = totalQuantity.toString();
-
+var totalPriceCalc = (totalPrice0)=>{
+    var totalPrice ="";
     var totalPrice1=totalPrice0.toString();
     var NbTriosTP = Math.floor(tPlength/3);
     var subTotNoA="";
     var n=0;
 
-    do{ n+=3;}while(n<=NbTRiosTP && tPlength>3);
+    do{ n+=3;}while(n<=NbTriosTP && tPlength>3);
 
     var nZ = tPlength - n;
     subTotNoA = totalPrice1.substring(0,nZ);
@@ -381,7 +318,108 @@ const main =async()=>{
     }
 
     totalPrice += ' '+ subTotNoZ + ',00';
-    totalPriceHTML.textContent = totalPrice;
+    return totalPrice;
+}
+
+var priceKanapX0Calc =(priceKanapX)=>{
+    var priceKanapX0 = 0;
+    var pKXlength = priceKanapX.length;
+    var pKXToComa = priceKanapX.substring(0, pKXlength -1 -5);
+    var pKXTCLessSpaces = pKXToComa.replace(/[]/,'');
+    priceKanapX0 = parseInt(pKXTCLessSpaces);
+    return priceKanapX0;
+}
+
+const main =async()=>{
+
+    const data = await retrieveData();
+
+    createArticle(data);
+    
+    document.addEventListener("DOMContentLoaded", function(_e){
+
+        var totalQuantityHTML = document.getElementById('totalQuantity');
+        var totalQuantity = "";
+        var totalQuantity0 = 0;
+
+        totalQuantityHTML.addEventListener('change',function(e){
+            totalQuantity = e.target.value;
+            totalQuantityHTML.textContent = Quantity;
+            console.log('e.target.value Qtt= '+e.target.value);
+            totalQuantity0 = parseInt(totalQuantity);
+        })
+        var totalPriceHTML =document.getElementById('totalPrice');
+        var totalPrice = "";
+        var totalPrice0 = 0;
+
+        totalPriceHTML.addEventListener('change', function(e){
+            totalPrice = e.target.value;
+            totalPriceHTML.textContent =totalPrice;
+            totalPrice0 = totalPrice0Calc(totalPrice);
+        })
+
+        const quantityInputs = document.getElementsByTagName('input');
+        i=0
+        do{
+            var quantityInputX = quantityInputs[i];
+            var quantityX=quantityInputX.getAttribute('value');
+            var quantityX0 = parseInt(quantityX);
+
+            var itemCart = document.getElementsByTagName('article');
+
+            var itemCartX = itemCart[i];
+            
+            var contentDescriptionX = document.getElementsByClassName('.cart__item__content__description')[i];
+            var descriptionCollectionHTML = contentDescriptionX.children;
+            var descriptionTitleX = descriptionCollectionHTML[0];
+            var nameKanapX= descriptionTitleX.textContent;
+
+            var idNameX = nameKanapX.substring(6);
+            var descriptionFirstPX = descriptionCollectionHTML[1];
+
+            var colorX = descriptionFirstPX.textContent;
+
+            var idX = itemCartX.getAttribute('data-id');
+
+            var descriptionSecondPX = descriptionCollectionHTML[2];
+            var priceKanapX = descriptionSecondPX.textContent;
+
+            var priceKanapX0 =priceKanapX0Calc(priceKanapX);
+            
+            var quantityX ="";
+            var quantityX0 =0;
+
+            quantityInputX.addEventListener('change', function(e){
+                quantityX = e.target.value;
+                var quantityX0 = parseInt(quantityX);
+                var totalQuantity0= 
+
+                var totalPrice0Changed = totalPrice0 +(quantityX0Changed - quantityX0)*priceKanapX0;
+
+                localStorage.setItem(idNameX+','+colorX,idX+','+colorX+','+quantityXChanged);
+
+
+            })
+
+            const settingsDeleteX = document.getElementsByClassName('cart__item__content__settings__delete')[i];
+            const deletePX = settingsDeleteX.children[0];
+
+            deletePX.addEventListener('click', function(_e){
+                totalQuantity0 =totalQuantity0 - quantityX0;
+                totalPrice0 = totalPrice0 - quantityX0*priceKanapX0;
+
+                itemCartX.remove();
+                localStorage.removeItem(idNameX+','+colorX);
+
+                totalQuantity = totalQuantity0.toString();
+
+                totalPrice = totalPriceCalc(totalPrice0);
+
+            })
+
+            i++;
+        }while(i<quantityInputs.length);
+    })
 }
 
 main();
