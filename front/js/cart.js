@@ -13,8 +13,9 @@ const retrieveData = () =>fetch("http://localhost:3000/api/products")
 .catch (err => console.log('erreur suivante:'+ err))
 
 //récupération dans le tableau-panier (localStorage)des produits commandés d'un certain id et parmi ceux qui ont cet id, d'une certaine couleur; Un article pour une combinaison id-couleur
-var setPurchase=(LineValue0)=> {
-    var finalStorageArr = new Array([""]);
+const LineValue0 = localStorage.getItem(localStorage.key(0));
+var finalStorageArr =new Array([""]);
+var setPurchase=()=> {
     finalStorageArr[0] = LineValue0;      
     for(let i=1; i<localStorage.length; i++){ 
         var LineValue= localStorage.getItem(localStorage.key(i));            
@@ -22,7 +23,7 @@ var setPurchase=(LineValue0)=> {
     }
     return finalStorageArr;
 }
-
+var finalStorageArr = setPurchase();
 //fonctions de calcul de prix string à partir de prix nombres et l'inverse
 
 var priceGlobCalculator =(priceNPQ0)=>{
@@ -158,18 +159,11 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
     return itemContent;
 }
 
-const totalQuantityHTML = document.getElementById('totalQuantity');
-const totalPriceHTML = document.getElementById('totalPrice');
-
-var totalQuantity = "";
-var totalQuantity0 = 0;
-var totalPrice ="";
+const cartItems = document.getElementById('cart__items');
+var totalQuantity0 =0;
 var totalPrice0 =0;
-
 //création d'une section d'items comportant une fiche/article par produit commandé
-function createArticlesAndAppendToSection(data, finalStorageArr){
-    const cartItems = document.getElementById('cart__items');
-
+var createArticlesAndAppendToSection=(data)=>{
     
     for(let i=0; i<finalStorageArr.length; i++){
         
@@ -191,6 +185,7 @@ function createArticlesAndAppendToSection(data, finalStorageArr){
         var quantity0 = parseInt(quantity);
 
         totalQuantity0 += quantity0;
+        totalQuantity = 
         
         console.log('id ='+id);
         console.log('color ='+color);
@@ -203,8 +198,6 @@ function createArticlesAndAppendToSection(data, finalStorageArr){
         var imageUrlKanap = "";
         var altTxtKanap = "";
 
-        //**       
-        
         cartItem.setAttribute('data-id',id);
         cartItem.setAttribute('data-color',color); 
     
@@ -217,6 +210,8 @@ function createArticlesAndAppendToSection(data, finalStorageArr){
                 priceKanap0 = data[j].price;
 
                 totalPrice0 += priceKanap0*quantity0;
+
+                totalPrice = priceGlobCalculator(totalPrice0);
 
                 priceKanap = priceGlobCalculator(priceKanap0)+' €';
 
@@ -240,33 +235,45 @@ function createArticlesAndAppendToSection(data, finalStorageArr){
             }
             j++;    
         }while(j<data.length);
+        return cartItems, totalQuantity0, totalPrice0;
     }
-
-    totalQuantity= totalQuantity0.toString();
-    totalQuantityHTML.textContent= totalQuantity;
-    totalPrice = priceGlobCalculator(totalPrice0);    
-    totalPriceHTML.textContent= totalPrice;
 }
 //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
+var totalPrice="";
+var totalQuantity ="";
+const totalQuantityHTML = document.getElementById('totalQuantity');
+const totalPriceHTML = document.getElementById('totalPrice');
+const retrieveCart =(data)=>{
+    var totalQuantity="";
+    var totalPrice="";
+    createArticlesAndAppendToSection(data);
+    totalQuantity = totalQuantity0.toString();
+    totalPrice = priceGlobCalculator(totalPrice0);  
+    totalQuantityHTML.textContent= totalQuantity;
+    totalPriceHTML.textContent= totalPrice;
+    return cartItems, totalQuantityHTML, totalPriceHTML;
+}
+
+var totalQuantity0 =0;
+var totalQuantity="";
+var totalPrice0 =0;
+var totalPrice="";
+
 const main =async()=>{
-
-    const LineValue0 = localStorage.getItem(localStorage.key(0));
-    const cartItems = document.getElementById('cart__items');
-    const finalStorageArr = setPurchase(LineValue0);
     const data = await retrieveData();
+    retrieveCart(data);
 
-    createArticlesAndAppendToSection(data,finalStorageArr);
+    totalQuantity = totalQuantityHTML.textContent;
+    totalPrice = totalPriceHTML.textContent;
+    totalQuantity0 = parseInt(totalQuantity);
+    totalPrice0 = price0GlobCalculator(totalPrice);
 
-    var totalQuantity = totalQuantityHTML.textContent;
-    var totalQuantity0 =parseInt(totalQuantity);
-    var totalPrice = totalPriceHTML.textContent;
-    var totalPrice0 =price0GlobCalculator(totalPrice);
+    var productListLength = cartItems.childElementCount;
 
-    const productListLength = cartItems.childElementCount;
-    
-    const inputCollection = document.getElementsByName('itemQuantity');
+    var inputCollection = document.getElementsByName('itemQuantity');
+    var price0=0;
 
     for(let i=0; i<productListLength; i++)
     {
@@ -280,21 +287,22 @@ const main =async()=>{
         var descriptionTheColor = contentDescription.getElementsByTagName('p')[0];
         var descriptionThePrice = contentDescription.getElementsByTagName('p')[1];
 
-        var name = descriptionTheName.textContent;
-        var idName = name.substring(6);
+        var name1 = descriptionTheName.textContent;
+        var idName = name1.substring(6);
         var price = descriptionThePrice.textContent;
-        var price0 = price0GlobCalculator(price);
+        price0 = price0GlobCalculator(price);
         var color = descriptionTheColor.textContent;
 
-        var quantity = input.getAttribute('value');
-        var quantity0 = parseInt(quantity);
+        var quantity = input.getAttribute('value');   
         var quantityUpToDate =input.getAttribute('value');
-        var quantityUpToDate0 =parseInt(quantityUpToDate);
-
+    
         input.addEventListener('change', function(e){
             quantityUpToDate = e.target.value;
             localStorage.setItem(idName+','+color, [id,color,quantityUpToDate])
         });
+
+        var quantity0 = parseInt(quantity);
+        var quantityUpToDate0 =parseInt(quantityUpToDate);
 
         deleteP.addEventListener('click', function(e){
             localStorage.removeItem(idName+''+color);
@@ -317,5 +325,6 @@ const main =async()=>{
         })
     }
 }
+
 main();
 
