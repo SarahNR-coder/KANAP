@@ -23,24 +23,21 @@ const setPurchase=(LineValue0)=> {
     return finalStorageArr;
 }
 
-
-
 //fonctions de calcul de prix string à partir de prix nombres et l'inverse
 
-var priceKanapCalc =(priceKanap0)=>{
-    var priceKanap ="";
-    var priceKanap1 ="";
-    priceKanap1= priceKanap0.toString();
-    var length = priceKanap1.length;
-            
-    var priceNoA="";
+var priceGlobCalculator =(priceNPQ0)=>{
+    var priceNPQ ="";
+    var priceNPQ1 ="";
+    priceNPQ1= priceNPQ0.toString();
+    var length = priceNPQ1.length;
+
     if(length <4){
-        priceKanap = priceKanap1 +',00 €'
+        priceNPQ = priceNPQ1 +',00 €'
     }else{
                     
         var lastCharPlace = length -1;
         var NbTrios = Math.floor(length/3);
-        var priceNoA ="";
+        var priceNPQNoA ="";
         var n = 0;
         do{ 
             n += 3;
@@ -50,35 +47,45 @@ var priceKanapCalc =(priceKanap0)=>{
         var nZ = length - n;
         console.log('nZ = '+nZ);
 
-        priceNoA =priceKanap1.substring(0, nZ);
-        var priceNoZ = priceKanap1.substring(lastCharPlace-3,lastCharPlace);
+        priceNPQNoA =priceNPQ1.substring(0, nZ);
+        var priceNPQNoZ = priceNPQ1.substring(lastCharPlace-3,lastCharPlace);
 
-        priceKanap = priceNoA;
+        priceNPQ = priceNPQNoA;
 
         for(let i=0;nZ+i+3<lastCharPlace; i+=3 ){
-            var subPriceI = priceKanap1.substring(nZ+i,nZ+i+3);
-            var subPriceNoBY = ' '+ subPriceI;
-            priceKanap += subPriceNoBY;
+            var subPriceNPQI = priceNPQ1.substring(nZ+i,nZ+i+3);
+            var subPriceNPQNoBY = ' '+ subPriceNPQI;
+            priceNPQ += subPriceNPQNoBY;
 
         }
-        console.log('priceNoA = '+priceNoA);
+        console.log('priceNPQNoA = '+priceNPQNoA);
         console.log('lastCharPlace = '+lastCharPlace);
         console.log('NbTrios  ='+NbTrios);
 
     } 
-    priceKanap +=' '+priceNoZ+',00 €';
+    priceNPQ +=' '+priceNPQNoZ+',00';
     
 
     console.log('length nombre chiffres dans le string de priceKanap0 (un item) = ' +length);
-    console.log('priceKanap mis en forme ='+priceKanap)
+    console.log('priceKanap mis en forme ='+priceNPQ)
 
-    return priceKanap;
+    return priceNPQ;
+}
+
+
+var price0GlobCalculator =(priceNPQ)=>{
+    var priceNPQ0 = 0;
+    var length = priceNPQ.length;
+    var pNPQToComa = priceNPQ.substring(0, length -1 -5);
+    var pNPQTCLessSpaces = pNPQToComa.replace(/[]/,'');
+    priceNPQ0 = parseInt(pNPQTCLessSpaces);
+    return priceNPQ0;
 }
 
 //Fonctions création de contenu---------------------
 
 //création de l'image de la vignette produit-panier à partir d'une variable qui est un block div itemImage où l'on insére l'url de l'image et son texte alternatif, block image que l'on retourne;
-var addImageToItemCart =(itemImage, imageUrlKanap, altTxtKanap)=>
+var addImageTocartItem =(itemImage, imageUrlKanap, altTxtKanap)=>
 {
 
     const itemImageShown = document.createElement('img');
@@ -91,7 +98,7 @@ var addImageToItemCart =(itemImage, imageUrlKanap, altTxtKanap)=>
 }
 //création du contenu de la vignette produit-panier à partir d'une variable qui est un block div itemContent, où l'on insère la couleur, le nom, et le prix du produit-panier dans un block div description et sa quantité dans un élément input (quantité changeable), block content que l'on retourne;
 
-var addContentToItemCart =(itemContent, color, quantity, nameKanap, priceKanap) =>
+var addContentTocartItem =(itemContent, color, quantity, nameKanap, priceKanap) =>
 {
     //#.1
     const contentDescription =document.createElement('div');
@@ -155,8 +162,10 @@ var addContentToItemCart =(itemContent, color, quantity, nameKanap, priceKanap) 
 
     return itemContent;
 }
+
+//création d'une section d'items comportant une fiche/article par produit commandé
 var createArticle=(data)=>{
-    const itemsCart = document.getElementById('cart__items');
+    const cartItems = document.getElementById('cart__items');
     const LineValue0 = localStorage.getItem(localStorage.key(0));
     const finalStorageArr = setPurchase(LineValue0);
 
@@ -194,18 +203,18 @@ var createArticle=(data)=>{
         var altTxtKanap = "";
 
         //**       
-        const itemCart = document.createElement('article');
-        itemCart.classList.add('cart__item');
-        itemCart.setAttribute('data-id',id);
-        itemCart.setAttribute('data-color',color); 
+        const cartItem = document.createElement('article');
+        cartItem.classList.add('cart__item');
+        cartItem.setAttribute('data-id',id);
+        cartItem.setAttribute('data-color',color); 
     
-    //*Boucle for : à chaque ligne du LocalStorage (panier) on extrait l'id, la couleur et la quantité;
-    //****recherche de l'élement du panier dans le catalogue (data) grâce à l'id
-    //***pour chaque produit-panier que l'on ajoute on augmente la quantité globale de la quantité d'occurences de ce produit-panier 
-    //**je crée une vignette itemCart 'article.cart__item' pour chaque produit-panier correspondant chacunes à une ligne du tableau-panier (localStorage)
+        //*Boucle for : à chaque ligne du LocalStorage (panier) on extrait l'id, la couleur et la quantité;
+        //****recherche de l'élement du panier dans le catalogue (data) grâce à l'id
+        //***pour chaque produit-panier que l'on ajoute on augmente la quantité globale de la quantité d'occurences de ce produit-panier 
+        //**je crée une vignette cartItem 'article.cart__item' pour chaque produit-panier correspondant chacunes à une ligne du tableau-panier (localStorage)
 
-    totalQuantity0 += quantity0;
-    //***                
+        totalQuantity0 += quantity0;
+        //***                
     
         var j=0;
         do{//****
@@ -214,7 +223,7 @@ var createArticle=(data)=>{
                 priceKanap0 = data[j].price;
                 totalPrice0 += quantity0*priceKanap0;//*
                 
-                priceKanap = priceKanapCalc(priceKanap0);
+                priceKanap = priceGlobCalculator(priceKanap0)+' €';
                 idKanap = data[j]._id;
                 nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
@@ -225,16 +234,16 @@ var createArticle=(data)=>{
                 console.log('totalPrice0 incrémenté (recherche catalogue) = '+ totalPrice0);
                 
                 var itemImage = document.createElement('div');
-                itemImage =addImageToItemCart(itemImage, imageUrlKanap, altTxtKanap);
+                itemImage =addImageTocartItem(itemImage, imageUrlKanap, altTxtKanap);
                 itemImage.classList.add('cart__item__img');
                 
                 var itemContent = document.createElement('div');
-                itemContent =addContentToItemCart(itemContent,color, quantity, nameKanap, priceKanap);
+                itemContent =addContentTocartItem(itemContent,color, quantity, nameKanap, priceKanap);
                 itemContent.classList.add('cart__item__content');
                 
-                itemCart.appendChild(itemImage);
+                cartItem.appendChild(itemImage);
                 //**
-                itemCart.appendChild(itemContent);
+                cartItem.appendChild(itemContent);
                 //***
 
                 //*pour chaque produit-panier que l'on ajoute le prix global augmente du prix correspondant à ce seul produit panier: la quantité d'occurences de ce produit panier (quantité de ce même produit)*le prix unitaire de ce produit-panier;
@@ -244,172 +253,84 @@ var createArticle=(data)=>{
             j++;    
         }while(j<data.length); 
 
-        itemsCart.appendChild(itemCart);
-        return itemsCart;
+        cartItems.appendChild(cartItem);
+        return cartItems;
 
-        //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit itemCart 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée itemsCart;
-        //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes itemCart;
+        //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
+        //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
     }
 
     totalQuantity= totalQuantity0.toString();
     const totalQuantityHTML= document.getElementById('totalQuantity');
     totalQuantityHTML.textContent= totalQuantity;
 
-    totalPrice = totalPriceCalc(totalPrice0);
+    totalPrice = priceGlobCalculator(totalPrice0);
     const totalPriceHTML = document.getElementById('totalPrice');
     totalPriceHTML.textContent= totalPrice;
 }
 
 
-
-
-
-
-
-
-var totalPrice0Calc =(totalPrice)=>{
-      
-    var tPlength = totalPrice.length;
-    var totalPriceToComa = totalPrice.substring(0, tPlength -1 -3);
-    var tPTCLessSpaces = totalPriceToComa.replace(/[]/, '');
-    var totalPrice0 = parseInt(tPTCLessSpaces);
-    return totalPrice0;
-}
-
-var totalPriceCalc = (totalPrice0)=>{
-    var totalPrice1 ="";
-    totalPrice1=totalPrice0.toString();
-    var totalPrice ="";
-    var tPlength= totalPrice1.length;
-    if(tPlength<=3){
-        totalPrice = totalPrice1 +',00'
-    }else{      
-        var NbTriosTP = Math.floor(tPlength/3);
-        var subTotNoA="";
-        var n=0;
-
-        do{ n+=3;}while(n<=NbTriosTP && tPlength>3);
-
-        var nZ = tPlength - n;
-        subTotNoA = totalPrice1.substring(0,nZ);
-        var subTotNoZ = totalPrice1.substring(tPlength-1 -3,tPlength -1);
-        totalPrice = subTotNoA;
-        for(let j=0; nZ+i<tPlength-1-3; i+=3)
-        {
-            var subTotJ = totalPrice1.substring(nZ+i, nZ+3+i);
-            var subTotNoBY =' '+subTotJ;
-            totalPrice += subTotNoBY;
-        }
-        totalPrice += ' '+ subTotNoZ + ',00';
-    }
-    return totalPrice;    
-}
-
-var priceKanapX0Calc =(priceKanapX)=>{
-    var priceKanapX0 = 0;
-    var pKXlength = priceKanapX.length;
-    var pKXToComa = priceKanapX.substring(0, pKXlength -1 -5);
-    var pKXTCLessSpaces = pKXToComa.replace(/[]/,'');
-    priceKanapX0 = parseInt(pKXTCLessSpaces);
-    return priceKanapX0;
-}
-
 const main =async()=>{
-
-    const data = await retrieveData();
-
-    createArticle(data);
-
     var totalQuantityHTML = document.getElementById('totalQuantity');
     var totalPriceHTML =document.getElementById('totalPrice');
 
-    var totalQuantity = "";
-    var totalQuantity0 = 0;
-    var quantityXLS ="";
-    var quantiyX0LS = 0;
-    var totalPrice = "";
-    var totalPrice0 = 0;
+    const data = await retrieveData();
+    var cartItems= document.getElementById('cart__items');
 
-    const itemCart = document.getElementsByTagName('article');
-    i=0
-    do{
-        var quantityInputX = quantityInputs[i];
-        var quantityX=quantityInputX.getAttribute('value');
-        var quantityX0 = parseInt(quantityX);
+    var totalQuantity = totalQuantityHTML.contentText;
+    var totalQuantity0 =parseInt(totalQuantity);
+    var totalPrice = totalPriceHTML.contentText;
+    var totalPrice0 =price0GlobCalculator(totalPrice);
 
-        var itemCart = document.getElementsByTagName('article');
+    var cartItemCount = 0;
+    cartItemCount = cartItems.childElementCount;
+    
+    var inputCollection = document.getElementsByName('itemQuantity');
+    var cartItemList = cartItems.children;
 
-        var itemCartX = itemCart[i];
-        
-        var contentDescriptionX = document.getElementsByClassName('.cart__item__content__description')[i];
-        var descriptionCollectionHTML = contentDescriptionX.children;
-        var descriptionTitleX = descriptionCollectionHTML[0];
-        var nameKanapX= descriptionTitleX.textContent;
+    for(let i=0; i<cartItemCount; i++)
+    {
+        var input = inputCollection[i];
+        var cartItem = input.closest('article');
+        var descriptionTitle = cartItem.querySelector('h2');
+        var descriptionFirstP = descriptionTitle.nextElementSibling;
+        var descriptionSecondP = descriptionFirstP.nextElementSibling;
+        var settings = cartItem.getElementsByClassName('.cart__item__content__settings');
+        var deleteP = settings.getElementsByClassName('.deleteItem');
 
-        var idNameX = nameKanapX.substring(6);
-        var descriptionFirstPX = descriptionCollectionHTML[1];
+        var id = cartItem.getAttribute('data-id');
+        var color = cartItem.getAttribute('data-color');
+        var quantity = input.getAttribute('value');
+        var quantity0 = parseInt(quantity);
+        var quantityUpToDate =input.getAttribute('value');
+        var quantityUpToDate0 =parseInt(quantityUpToDate);
+        var name = descriptionTitle.textContent;
+        var idName = name.substring(6);
+        var price = descriptionSecondP.textContent;
+        var price0 = price0GlobCalculator(price +  ' €');
 
-        var colorX = descriptionFirstPX.textContent;
+        input.addEventListener('change', function(e){
+            quantityUpToDate = e.target.value;
+            localStorage.setItem(idName+','+color, [id,color,quantityUpToDate])
+        });
 
-        var idX = itemCartX.getAttribute('data-id');
-
-        var descriptionSecondPX = descriptionCollectionHTML[2];
-        var priceKanapX = descriptionSecondPX.textContent;
-
-        var priceKanapX0 =priceKanapX0Calc(priceKanapX);
-        
-        var quantityX ="";
-        var quantityX0 =0;
-
-        quantityInputX.addEventListener('change', function(e){
-            var quantityXC = "";
-            quantityXC = e.target.value;
-            var quantityX0C = 0;
-            quantityX0C = parseInt(quantityX);
-            var totalQuantity0C= 0;
-            totalQuantity0C = totalQuantity0 - quantityX0 + quantityX0C;
-
-            var totalPrice0C = "";
-            totalPrice0C = totalPrice0 + (-quantityX0 + quantityX0C)*priceKanapX0;
-
-            localStorage.setItem(idNameX+','+colorX,idX+','+colorX+','+quantityXChanged);
-
-            
+        deleteP.addEventListener('click', function(e){
+            localStorage.removeItem(idName+''+color);
+            cartItems.removeChild(cartItemList[i]);
+            quantityUpToDate0 = 0;
         })
-
-        totalQuantityHTML.addEventListener('change',function(e){
         
-            totalQuantity = totalQuantityHTML.textContent
-            var totalQuantityC= "";
-            totalQuantityC = e.target.value;
-
-            totalQuantity0 = parseInt(totalQuantity);
+        totalQuantityHTML.addEventListener('change', function(e){
+            totalQuantity0 = totalQuantity0 + quantityUpToDate0 - quantity0;
+            totalQuantity = totalQuantity0.toString;
+            totalQuantityHTML.textContent = totalQuantity0;
         })
 
         totalPriceHTML.addEventListener('change', function(e){
-            totalPrice = e.target.value;
-            totalPriceHTML.textContent =totalPrice;
-            totalPrice0 = totalPrice0Calc(totalPrice);
-        });
-
-        const settingsDeleteX = document.getElementsByClassName('cart__item__content__settings__delete')[i];
-        const deletePX = settingsDeleteX.children[0];
-
-        deletePX.addEventListener('click', function(_e){
-            totalQuantity0 =totalQuantity0 - quantityX0;
-            totalPrice0 = totalPrice0 - quantityX0*priceKanapX0;
-
-            itemCartX.remove();
-            localStorage.removeItem(idNameX+','+colorX);
-
-            totalQuantity = totalQuantity0.toString();
-
-            totalPrice = totalPriceCalc(totalPrice0);
+            totalPrice0 = totalPrice0 + quantityUpToDate0*price0 - quantity0*price0;
+            totalPrice=priceGlobCalculator(totalPrice0);
         })
-        i++;
-    }while(i<quantityInputs.length);
-    
+    }
 }
-
 main();
 

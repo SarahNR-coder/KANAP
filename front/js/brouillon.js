@@ -25,7 +25,7 @@
 
         const finalStorageArr= setPurchase(LineValue0);
             
-        var itemCart =(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
+        var cartItem =(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap)=>{
             //#1
             const cartItem = document.createElement('article');
             cartItem.classList.add('cart__item');
@@ -114,7 +114,7 @@
         }
 
         const createArticle=(data, finalStorageArr)=>{  
-            const itemsCart = document.getElementById('cart__items');
+            const cartItems = document.getElementById('cart__items');
             //parcours Storage (panier)
             for(let i=0; i<finalStorageArr.length; i++){
             
@@ -167,9 +167,9 @@
                 }while(j<data.length);
 
 
-                var cart = itemCart(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
+                var cart = cartItem(idKanap, color, quantity, nameKanap, priceKanap, imageUrlKanap, altTxtKanap);
 
-                itemsCart.appendChild(cart);
+                cartItems.appendChild(cart);
 
             }
         }
