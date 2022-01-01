@@ -1,0 +1,78 @@
+var QuantityHTMLToStart =(cartItems)=>{
+    const totalQuantityHTML= document.getElementById('totalQuantity');
+    var totalQuantity="";
+    var totalQuantity0 = 0;
+    var productListLength=0;
+    productListLength = cartItems.childElementCount;
+
+    const inputCollection = document.getElementsByName('itemQuantity');
+    
+    for(let i=0; i<productListLength;i++){
+        var input = inputCollection[i];
+        var settingsQuantity=input.parentElement;
+        var contentSettings =settingsQuantity.parentElement;
+        var contentDescription = contentSettings.previousElementSibling;
+        var descriptionTheName = contentDescription.getElementsByTagName('h2')[0];
+        var descriptionTheColor = contentDescription.getElementsByTagName('p')[0];
+
+        var name = descriptionTheName.textContent;
+        var idName = name.substring(6);
+        var color = descriptionTheColor.textContent;
+
+        var res = localStorage.getItem(idName+','+color);
+        var index1 =res.search(/[,]/);
+        var substringNot1 = res.substring(index1+1);
+        var index2 = substringNot1.search(/[,]/);
+        var quantity= substringNot1.substring(index2+1);        
+        var quantity0 = parseInt(quantity);
+
+        totalQuantity0 += quantity0;
+    }
+    
+    totalQuantity= totalQuantity0.toString();
+    totalQuantityHTML.textContent= totalQuantity;
+
+    return totalQuantityHTML;
+}
+
+var PriceHTMLToStart =(cartItems)=>{
+    const totalPriceHTML = document.getElementById('totalPrice');
+
+    var totalPrice0 = 0;
+    var totalPrice = "";
+
+    var productListLength = 0;
+    productListLength = cartItems.childElementCount;
+    
+    const inputCollection = document.getElementsByName('itemQuantity');
+    
+    for(let i=0; i<productListLength;i++){
+        var input = inputCollection[i];
+        var settingsQuantity=input.parentElement;
+        var contentSettings =settingsQuantity.parentElement;
+        var contentDescription = contentSettings.previousElementSibling;
+        var descriptionTheName = contentDescription.getElementsByTagName('h2')[0];
+        var descriptionTheColor = contentDescription.getElementsByTagName('p')[0];
+        var descriptionThePrice = contentDescription.getElementsByTagName('p')[1];
+
+        var name = descriptionTheName.textContent;
+        var idName = name.substring(6);
+        var price = descriptionThePrice.textContent;
+        var price0 = price0GlobCalculator(price);
+        var color = descriptionTheColor.textContent;
+
+        var res = localStorage.getItem(idName+','+color);
+        var index1 =res.search(/[,]/);
+        var substringNot1 = res.substring(index1+1);
+        var index2 = substringNot1.search(/[,]/);
+        var quantity= substringNot1.substring(index2+1);        
+        var quantity0 = parseInt(quantity);
+        
+        totalPrice0 += quantity0*price0;
+    }
+    totalPrice = priceGlobCalculator(totalPrice0);
+    
+    totalPriceHTML.textContent= totalPrice;
+
+    return totalPriceHTML;
+}

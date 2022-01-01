@@ -63,19 +63,19 @@
             itemContent.appendChild(contentSettings);//#1.2.2
 
             //#1.2.1.1
-            const DescriptionTitle = document.createElement('h2');
-            DescriptionTitle.textContent = nameKanap;
+            const descriptionTheName = document.createElement('h2');
+            descriptionTheName.textContent = nameKanap;
             //#1.2.1.2 
-            const DescriptionFirstP = document.createElement('p');
-            DescriptionFirstP.textContent = color;
+            const descriptionTheColor = document.createElement('p');
+            descriptionTheColor.textContent = color;
             //#1.2.1.3
-            const DescriptionSecondP = document.createElement('p');
-            DescriptionSecondP.textContent = priceKanap;
+            const descriptionThePrice = document.createElement('p');
+            descriptionThePrice.textContent = priceKanap;
 
             //#1.2.1
-            contentDescription.appendChild(DescriptionTitle)//   #1.2.1.1
-            contentDescription.appendChild(DescriptionFirstP);//#1.2.1.2
-            contentDescription.appendChild(DescriptionSecondP);// //#1.2.1.3
+            contentDescription.appendChild(descriptionTheName)//   #1.2.1.1
+            contentDescription.appendChild(descriptionTheColor);//#1.2.1.2
+            contentDescription.appendChild(descriptionThePrice);// //#1.2.1.3
 
             //#1.2.2.1
             const settingsQuantity = document.createElement('div');
