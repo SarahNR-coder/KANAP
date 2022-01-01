@@ -339,18 +339,24 @@ const main =async()=>{
     document.addEventListener("DOMContentLoaded", function(_e){
 
         var totalQuantityHTML = document.getElementById('totalQuantity');
+        var totalPriceHTML =document.getElementById('totalPrice');
+
         var totalQuantity = "";
         var totalQuantity0 = 0;
-
-        totalQuantityHTML.addEventListener('change',function(e){
-            totalQuantity = e.target.value;
-            totalQuantityHTML.textContent = Quantity;
-            console.log('e.target.value Qtt= '+e.target.value);
-            totalQuantity0 = parseInt(totalQuantity);
-        })
-        var totalPriceHTML =document.getElementById('totalPrice');
+        var quantityX ="";
+        var quantiyX0 = 0;
         var totalPrice = "";
         var totalPrice0 = 0;
+
+
+        totalQuantityHTML.addEventListener('change',function(e){
+            
+            totalQuantity = totalQuantityHTML.textContent
+            var totalQuantityC= "";
+            totalQuantityC = e.target.value;
+
+            totalQuantity0 = parseInt(totalQuantity);
+        })
 
         totalPriceHTML.addEventListener('change', function(e){
             totalPrice = e.target.value;
@@ -390,14 +396,17 @@ const main =async()=>{
             var quantityX0 =0;
 
             quantityInputX.addEventListener('change', function(e){
-                quantityX = e.target.value;
-                var quantityX0 = parseInt(quantityX);
-                var totalQuantity0= 
+                var quantityXC = "";
+                quantityXC = e.target.value;
+                var quantityX0C = 0;
+                quantityX0C = parseInt(quantityX);
+                var totalQuantity0C= 0;
+                totalQuantity0C = totalQuantity0 - quantityX0 + quantityX0C;
 
-                var totalPrice0Changed = totalPrice0 +(quantityX0Changed - quantityX0)*priceKanapX0;
+                var totalPrice0C = "";
+                totalPrice0C = totalPrice0 + (-quantityX0 + quantityX0C)*priceKanapX0;
 
                 localStorage.setItem(idNameX+','+colorX,idX+','+colorX+','+quantityXChanged);
-
 
             })
 
