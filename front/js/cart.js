@@ -12,7 +12,6 @@ const retrieveData = () =>fetch("http://localhost:3000/api/products")
     return data;})
 .catch (err => console.log('erreur suivante:'+ err))
 
-//récupération dans le tableau-panier (localStorage)des produits commandés d'un certain id et parmi ceux qui ont cet id, d'une certaine couleur; Un article pour une combinaison id-couleur
 const LineValue0 = localStorage.getItem(localStorage.key(0));
 var finalStorageArr =new Array([""]);
 var setPurchase=()=> {
@@ -23,7 +22,8 @@ var setPurchase=()=> {
     }
     return finalStorageArr;
 }
-var finalStorageArr = setPurchase();
+
+
 //fonctions de calcul de prix string à partir de prix nombres et l'inverse
 
 var priceGlobCalculator =(priceNPQ0)=>{
@@ -154,8 +154,6 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
 
 const totalQuantityHTML = document.getElementById('totalQuantity');
 const totalPriceHTML = document.getElementById('totalPrice');
-var totalQuantity = totalQuantityHTML.textContent;
-var totalPrice = totalPriceHTML.textContent;
 //création d'une section d'items comportant une fiche/article par produit commandé
 var createArticlesAndAppendToSection=(data)=>{
     var totalQuantity0 =0;
@@ -229,9 +227,9 @@ var createArticlesAndAppendToSection=(data)=>{
             j++;    
         }while(j<data.length);
     }
-    totalQuantity = totalQuantity0.toString();
+    var totalQuantity = totalQuantity0.toString();
     totalQuantityHTML.textContent= totalQuantity;
-    totalPrice = priceGlobCalculator(totalPrice0);
+    var totalPrice = priceGlobCalculator(totalPrice0);
     totalPriceHTML.textContent= totalPrice;
 
     return cartItems;
@@ -239,61 +237,72 @@ var createArticlesAndAppendToSection=(data)=>{
 //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
-var totalQuantity0 =0;
-var totalPrice0 = 0;
- 
 const main =async()=>{
+    const finalStorageArr = await setPurchase();
     const data = await retrieveData();
-    const cartItems = createArticlesAndAppendToSection(data);
+    const cartItems = createArticlesAndAppendToSection(data, finalStorageArr);
+  
+//vRvY
+    var cartItemCollection = cartItems.querySelectorAll("article");
 
-    let i=0;
-    var item_i = cartItems.children[i].querySelector('article');
-    var input_i = cartItems.children[i].getElementsByTagName('input')[0];
-    var suppr_i = cartItems.children[i].getElementsByTagName('p')[3];
-    var descriptionTheName_i = cartItems.children[i].getElementsByTagName('h2')[0];
-    var descriptionThePrice_i = cartItems.children[i].getElementsByTagName('p')[1];
+    var totalQuantity = totalQuantityHTML.textContent
+    var totalQuantity0 = parseInt(totalQuantity);
+    var totalPrice = totalPriceHTML.textContent;
+    var totalPrice0 = price0GlobCalculator(totalPrice + ' €');
+    
 
-    var id_i ="";
-    var color_i ="";
-    var name_i="";    
-    var idName_i="";
-    var price_i="";
-    var price0_i=0;   
-    var quantity_i = "";   
-    var quantity0_i=0;
+    cartItemCollection.forEach(item => {
+        var inputHTML = item.querySelector("input");
+        var color = item.dataset.color;
+        var id = item.dataset.id;
+        var name =item.querySelector('h2').textContent;
+        var idName = name.substring(6);       
+        var price = item.querySelector('.cart__item__content__description').querySelectorAll('p').textContent;
+        var price0 = price0GlobCalculator(price);
 
-    for(cartItems.children[i] of cartItems.children)
-    {
-        id_i = cartItems.children[i].querySelector('article').dataset.id;
-        color_i = cartItems.children[i].querySelector('article').dataset.color;
-        name_i = cartItems.children[i].getElementsByTagName('input')[0].textContent;
-        idName_i = name_i.substring(6);
-        price_i = descriptionThePrice_i.textContent;
-        price0_i = price0GlobCalculator(price_i);
-        quantity_i = input_i.getAttribute('value');
-        quantity0_i = parseInt(quantity_i);
+        var LineValue = localStorage.getItem(idName +','+ color);
+        var strAFHereStrGZ =LineValue.search(/[,]/);
+        var strGZ = LineValue.substring(strAFHereStrGZ+1);
+        var strGNHerestrOZ = strGZ.search(/[,]/);
+        var strOZ= strGZ.substring(strGNHerestrOZ+1);        
+        var quantity0 = parseInt(strOZ);
 
-        input_i.addEventListener('change', function(e){
-            quantity_i = e.target.value;
-            quantity0_i =parseInt(quantity_i);
-            localStorage.setItem(idName_i+','+color_i, [id_i,color_i,quantity_i])
-        });
+        inputHTML.addEventListener('change', function (e) {
+            var quantityNow0 = 0;
+            quantityNow0 =parseInt(e.target.value);
 
-        totalQuantity0 += quantity0_i;
-        totalPrice0 += quantity0_i*price0_i;
+            var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
+            var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
 
-        suppr_i.addEventListener('click', function(e){
-            cartItems.removeChild(item_i);
-            localStorage.removeItem(idName_i+','+color_i);
+            var quantity = quantityNow0.toString();
+            localStorage.setItem(idName+','+color, [id,color,quantity])
+            
         })
-              
-    }
+        var erasor = item.querySelector(".deleteItem");
+    
+        erasor.addEventListener('click', (_e) =>{
+            totalQuantityNow0 = totalQuantity0 -quantity0;
+            totalPriceNow0 = totalPrice0 - quantity0*price0;
 
-    totalQuantity = totalQuantity0.toString();
-    totalQuantityHTML.textContent = totalQuantity;
-    totalPrice = priceGlobCalculator(totalPrice0);
-    totalPriceHTML.textContent = totalPrice; 
+            totalQuantity = totalQuantityNow0.toString();
+            totalPrice = priceGlobCalculator(totalPriceNow0);
+
+            totalQuantityHTML.textContent=totalQuantity;
+            totalPriceHTML.textContent = totalPrice;
+ 
+            cartItems.removeChild(item);
+            
+            localStorage.removeItem(idName+','+color)
+        })
+    })   
 }
+
+
+//vRvY              
+    
+
+    
+
 
 main();
 

@@ -1,0 +1,178 @@
+var QuantityHTMLToStart =(cartItems)=>{
+    const totalQuantityHTML= document.getElementById('totalQuantity');
+    var totalQuantity="";
+    var totalQuantity0 = 0;
+    var productListLength=0;
+    productListLength = cartItems.childElementCount;
+
+    const inputCollection = document.getElementsByName('itemQuantity');
+    
+    for(let i=0; i<productListLength;i++){
+        var input = inputCollection[i];
+        var settingsQuantity=input.parentElement;
+        var contentSettings =settingsQuantity.parentElement;
+        var contentDescription = contentSettings.previousElementSibling;
+        var descriptionTheName = contentDescription.getElementsByTagName('h2')[0];
+        var descriptionTheColor = contentDescription.getElementsByTagName('p')[0];
+
+        var name = descriptionTheName.textContent;
+        var idName = name.substring(6);
+        var color = descriptionTheColor.textContent;
+
+        var res = localStorage.getItem(idName+','+color);
+        var index1 =res.search(/[,]/);
+        var substringNot1 = res.substring(index1+1);
+        var index2 = substringNot1.search(/[,]/);
+        var quantity= substringNot1.substring(index2+1);        
+        var quantity0 = parseInt(quantity);
+
+        totalQuantity0 += quantity0;
+    }
+    
+    totalQuantity= totalQuantity0.toString();
+    totalQuantityHTML.textContent= totalQuantity;
+
+    return totalQuantityHTML;
+}
+
+var PriceHTMLToStart =(cartItems)=>{
+    const totalPriceHTML = document.getElementById('totalPrice');
+
+    var totalPrice0 = 0;
+    var totalPrice = "";
+
+    var productListLength = 0;
+    productListLength = cartItems.childElementCount;
+    
+    const inputCollection = document.getElementsByName('itemQuantity');
+    
+    for(let i=0; i<productListLength;i++){
+        var input = inputCollection[i];
+        var settingsQuantity=input.parentElement;
+        var contentSettings =settingsQuantity.parentElement;
+        var contentDescription = contentSettings.previousElementSibling;
+        var descriptionTheName = contentDescription.getElementsByTagName('h2')[0];
+        var descriptionTheColor = contentDescription.getElementsByTagName('p')[0];
+        var descriptionThePrice = contentDescription.getElementsByTagName('p')[1];
+
+        var name = descriptionTheName.textContent;
+        var idName = name.substring(6);
+        var price = descriptionThePrice.textContent;
+        var price0 = price0GlobCalculator(price);
+        var color = descriptionTheColor.textContent;
+
+        var res = localStorage.getItem(idName+','+color);
+        var index1 =res.search(/[,]/);
+        var substringNot1 = res.substring(index1+1);
+        var index2 = substringNot1.search(/[,]/);
+        var quantity= substringNot1.substring(index2+1);        
+        var quantity0 = parseInt(quantity);
+        
+        totalPrice0 += quantity0*price0;
+    }
+    totalPrice = priceGlobCalculator(totalPrice0);
+    
+    totalPriceHTML.textContent= totalPrice;
+
+    return totalPriceHTML;
+}
+
+--------------------------------------------------------------------------------------------------------
+
+//vRvY
+
+    var id_i ="";
+    var color_i ="";
+    var name_i="";    
+    var idName_i="";
+    var price_i="";
+    var price0_i=0;   
+    var quantity_i = "";   
+    var quantity0_i=0;
+
+
+        var input_i = cartItems.children[i].getElementsByTagName('input')[0];
+        var suppr_i = cartItems.children[i].getElementsByTagName('p')[3];
+        id_i = cartItems.children[i].querySelector('article').dataset.id.value;
+        color_i = cartItems.children[i].querySelector('article').dataset.color.value;
+        name_i = cartItems.children[i].getElementsByTagName('input')[0].textContent;
+        idName_i = name_i.substring(6);
+        price_i = cartItems.children[i].getElementsByTagName('p')[1].textContent;
+        price0_i = price0GlobCalculator(price_i);
+        quantity_i = input_i.value;
+        quantity0_i = parseInt(quantity_i);
+
+        input_i.addEventListener('change', function(e){
+            quantity_i = e.target.value;
+            quantity0_i =parseInt(quantity_i);
+            localStorage.setItem(idName_i+','+color_i, [id_i,color_i,quantity_i])
+        });
+
+        totalQuantity0 += quantity0_i;
+        totalPrice0 += quantity0_i*price0_i;
+
+        suppr_i.addEventListener('click', function(e){
+            cartItems.removeChild(item_i);
+            localStorage.removeItem(idName_i+','+color_i);
+        })
+
+//vRvY
+
+//vRvY
+        var quantity = item.nodeValue;
+        var quantity0 = parseInt(quantity);
+
+        var article =item.closest('article');
+        var color = article.dataset.color;
+        var name =item.closest('h2').nodeValue;
+        var idName = name.substring(6);
+        var id = article.dataset.id;
+        var price = item.closest('.cart__item__content__description > p:last').nodeValue;
+        var price0 = price0GlobCalculator(price);
+        
+        item.addEventListener('change', (e) =>{
+            var quantityNow = e.target.value;
+            var quantityNow0 =parseInt(quantityNow);
+
+            totalQuantity0 = totalQuantity0 - quantity0 +quantityNow0;
+            totalPrice0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
+
+            var totalQuantityNow = totalQuantity0.toString();
+            var totalPriceNow = priceGlobCalculator(totalPrice0);
+            localStorage.setItem(idName+','+color, [id,color,quantityNow])
+            
+            totalQuantityHTML.textContent=totalQuantityNow;
+            totalPriceHTML.textContent =totalPriceNow;
+        })
+    })
+
+    var erasors = document.querySelectorAll('.deleteItem');
+
+    erasors.forEach(item => {
+        var article =item.closest('article');
+        var input = article.querySelector('input');
+        var quantity = input.value;
+        var quantity0 = parseInt(quantity);
+        var article =item.closest('.cart__item');
+        var color = article.dataset.color;
+        var name = item.closest('h2').nodeValue;
+        var idName = name.substring(6);
+        var price = item.closest('.cart__item__content__description p:last').nodeValue;
+        var price0 = price0GlobCalculator(price);
+
+        item.addEventListener('click', (e) =>{
+            totalQuantity0 = totalQuantity0 -quantity0;
+            totalPrice0 = totalPrice0 - quantity0*price0;
+
+            var totalQuantityNow = totalQuantity0.toString();
+            var totalPriceNow = priceGlobCalculator(totalPrice0);
+            
+            totalQuantityHTML.textContent=totalQuantityNow;
+            totalPriceHTML.textContent =totalPriceNow;
+
+            article.parentNode.removeChild(article);
+            
+            localStorage.removeItem(idName+','+color)
+        })
+    })
+//vRvY
