@@ -27,53 +27,55 @@ var setPurchase=()=> {
 //fonctions de calcul de prix string à partir de prix nombres et l'inverse
 
 
-var priceGlobCalculator =(price0)=>{
-    var price0_str ="";
-    price0_str= price0.toString();
-    var price0StringLength = price0_str.length;
+var toPriceString =(price0)=>{
+    var string ="";
+    string= price0.toString();
+    var stringLength = string.length;
     var price ="";
 
-    if(price0StringLength <4){
-        price = price0_str +',00'
+    if(stringLength <4){
+        price = string;
     }else{
                     
-        var lastCharPlace = price0StringLength -1;
-        var NbTrios = Math.floor(price0StringLength/3);
-        var NbCharInTrios =NbTrios*3;
-        var priceNoA ="";
+        var lastCharIndex = stringLength -1;
+        var numberOfCharTrios = Math.floor(stringLength/3);
+        var totalCharsTrios =numberOfCharTrios*3;
+        var string1stPart ="";
 
-        var charBeforeFirstTrioPlace = price0StringLength - NbCharInTrios;
+        var end1stPartIndex = stringLength - totalCharsTrios;
 
-        priceNoA =price0_str.substring(0, charBeforeFirstTrioPlace);
-        var charBeforeLastTrioPlace = lastCharPlace - 3;
-        var priceNoZ = price0_str.substring(charBeforeLastTrioPlace,lastCharPlace);
+        string1stPart =string.substring(0, end1stPartIndex);
+        var startLastPartIndex = lastCharIndex - 3;
+        var stringLastPart = string.substring(startLastPartIndex,lastCharIndex);
 
-        price = priceNoA;
+        price = string1stPart;
 
-        for(let i=0;charBeforeFirstTrioPlace+i<charBeforeLastTrioPlace; i+=3 ){
-            var subPriceI = price0_str.substring(charBeforeFirstTrioPlace+i,charBeforeFirstTrioPlace+i+3);
-            var subPriceNoBY = ' '+ subPriceI;
-            price += subPriceNoBY;
+        for(let i=0;end1stPartIndex+i<startLastPartIndex; i+=3 ){
+            var stringMiddlePart = string.substring(end1stPartIndex+i,end1stPartIndex+i+3);
+
+            var stringAllMiddleParts = ' '+ stringMiddlePart;
+            price += stringAllMiddleParts;
 
         }
-        price +=' '+priceNoZ+',00';
+        price +=' '+stringLastPart;
     } 
     return price;
 }
 
 const blip = 123456678890;
-const blop = priceGlobCalculator(blip);
-console.log('blop' + blop);
+const blop = toPriceString(blip);
+console.log('toPriceString(123456678890)' + blop);
 
 
-var price0GlobCalculator =(price)=>{
-    var price = "";
-    var priceLength = price.length;
-    var pToComa = price.toString().substring(0, priceLength -1 -3);
-    var pTCLessSpaces = pToComa.replace(/[]/,'');
-    var price0 = parseInt(pTCLessSpaces);
+var toPriceNumber =(price)=>{
+    var priceOffSpaces = "";
+    priceOffSpaces = price.replace(/[]/,'');
+    var price0 = parseInt(priceOffSpaces);
     return price0;
 }
+const blap = '1 234 567 890'
+const blup = toPriceNumber(blap);
+console.log("toPriceNumber('1 234 567 890')" + blup);
 
 //Fonctions création de contenu---------------------
 
@@ -113,7 +115,8 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
     descriptionTheColor.textContent = color;
     //#.1.3
     const descriptionThePrice = document.createElement('p');
-    descriptionThePrice.textContent = priceKanap   +' E';
+    var string = priceKanap +',00 €' 
+    descriptionThePrice.textContent = string ;
 
     //#.1
     contentDescription.appendChild(descriptionTheName)//#.1.1
@@ -209,7 +212,7 @@ var createArticlesAndAppendToSection=(data)=>{
 
                 totalPrice0 += priceKanap0*quantity0;
 
-                priceKanap = priceGlobCalculator(priceKanap0)+' €';
+                priceKanap = toPriceString(priceKanap0);
 
                 nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
@@ -234,8 +237,9 @@ var createArticlesAndAppendToSection=(data)=>{
     }
     var totalQuantity = totalQuantity0.toString();
     totalQuantityHTML.textContent= totalQuantity;
-    var totalPrice = priceGlobCalculator(totalPrice0);
-    totalPriceHTML.textContent= totalPrice;
+    var totalPrice = toPriceString(totalPrice0);
+    var string = totalPrice + ',00';
+    totalPriceHTML.textContent= string;
 
     return cartItems;
 }
@@ -252,8 +256,9 @@ const main =async()=>{
 
     var totalQuantity = totalQuantityHTML.textContent
     var totalQuantity0 = parseInt(totalQuantity);
-    var totalPrice = totalPriceHTML.textContent;
-    var totalPrice0 = price0GlobCalculator(totalPrice + ' €');
+    var string = totalPriceHTML.textContent;
+    var totalPrice = string.substring(0, string.length - 3);
+    var totalPrice0 = toPriceNumber(totalPrice);
     
 
     cartItemCollection.forEach(item => {
@@ -261,32 +266,48 @@ const main =async()=>{
         var color = item.dataset.color;
         var id = item.dataset.id;
         var name =item.querySelector('h2').textContent;
-        var idName = name.substring(6);       
-        var price = item.querySelector('.cart__item__content__description').querySelectorAll('p').textContent;
-        console.log('price : ' + price);    
-        var price0 = price0GlobCalculator(price);
-        console.log('price0 : ' + price0);
+        var idName = name.substring(6);
+        var string = item.querySelector('.cart__item__content__description').querySelectorAll('p')[1].textContent;
+        var price = string.substring(0, string.length - 5);
+        var price0 = toPriceNumber(price);
+        
+        var line = localStorage.getItem(idName +','+ color);
+        var part1 =line.search(/[,]/);
+        var part2 = line.substring(part1+1);
+        var part2FirstPart = part2.search(/[,]/);
+        var part2LastPart= part2.substring(part2FirstPart+1);        
+        var quantity0 = parseInt(part2LastPart);
 
-        var LineValue = localStorage.getItem(idName +','+ color);
-        var strAFHereStrGZ =LineValue.search(/[,]/);
-        var strGZ = LineValue.substring(strAFHereStrGZ+1);
-        var strGNHerestrOZ = strGZ.search(/[,]/);
-        var strOZ= strGZ.substring(strGNHerestrOZ+1);        
-        var quantity0 = parseInt(strOZ);
+        console.log('idName foreach item = '+idName);
+        console.log('color foreach item = '+color);        
+        console.log('id foreach item = '+id);
+        console.log('price foreach item = '+price);
+        console.log('price0 foreach item: '+ price0); 
+        console.log('quantity0 foreach item ='+quantity0)
 
         inputHTML.addEventListener('change', function (e) {
             var quantityNow0 = 0;
-            quantityNow0 =parseInt(e.target.value);
+            var quantity = e.target.value;
+            quantityNow0 =parseInt(quantity);
 
             var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
             var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
 
             totalQuantityHTML.textContent=totalQuantityNow0.toString();
-            totalPriceHTML.textContent = price0GlobCalculator(totalPriceNow0);
+            totalPriceHTML.textContent = toPriceNumber(totalPriceNow0);
 
             var quantity = quantityNow0.toString();
             localStorage.setItem(idName+','+color, [id,color,quantity])
             
+            console.log('totalQuantityNow0 foreach item -listen quantityinput-= '+totalQuantityNow0);
+            console.log('totalPriceNow0 foreach item -listen quantityinput-= '+totalPriceNow0);
+            console.log('idName foreach item -listen quantityinput-= '+idName);
+            console.log('color foreach item -listen quantityinput- = '+color);        
+            console.log('id foreach item  -listen quantityinput-= '+id);
+            console.log('price foreach item -listen quantityinput- = '+price);
+            console.log('price0 foreach item -listen quantityinput- = '+ price0);
+            console.log('quantityNow0 foreach item -listen quantityinput- ='+quantityNow0) 
+            console.log('quantity0 foreach item -listen quantityinput- ='+quantity0)
         })
         var erasor = item.querySelector(".deleteItem");
     
@@ -295,13 +316,23 @@ const main =async()=>{
             totalPriceNow0 = totalPrice0 - quantity0*price0;
 
             totalQuantity = totalQuantityNow0.toString();
-            totalPrice = priceGlobCalculator(totalPriceNow0);
+            totalPrice = toPriceString(totalPriceNow0);
 
             totalQuantityHTML.textContent=totalQuantity;
-            totalPriceHTML.textContent = totalPrice;
+            totalPriceHTML.textContent = totalPrice  + ',00';
  
             cartItems.removeChild(item);
             
+            console.log('totalQuantityNow0 foreach item -listen erasor-= '+totalQuantityNow0);
+            console.log('totalPriceNow0 foreach item -listen erasor-= '+totalPriceNow0);
+            console.log('totalQuantity foreach item -listen erasor-= '+totalQuantity);
+            console.log('totalPrice foreach item -listen erasor-= '+totalPrice);
+            console.log('idName foreach item -listen erasor- = '+idName);
+            console.log('color foreach item -listen erasor- = '+color);
+            console.log('price foreach item -listen erasor- = '+price);
+            console.log('price0 foreach item -listen erasor- = '+ price0); 
+            console.log('quantity0 foreach item -listen erasor- = '+quantity0)  
+
             localStorage.removeItem(idName+','+color)
         })
     })   

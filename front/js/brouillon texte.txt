@@ -58,7 +58,7 @@ var PriceHTMLToStart =(cartItems)=>{
         var name = descriptionTheName.textContent;
         var idName = name.substring(6);
         var price = descriptionThePrice.textContent;
-        var price0 = price0GlobCalculator(price);
+        var price0 = toPriceNumber(price);
         var color = descriptionTheColor.textContent;
 
         var res = localStorage.getItem(idName+','+color);
@@ -70,7 +70,7 @@ var PriceHTMLToStart =(cartItems)=>{
         
         totalPrice0 += quantity0*price0;
     }
-    totalPrice = priceGlobCalculator(totalPrice0);
+    totalPrice = toPriceString(totalPrice0);
     
     totalPriceHTML.textContent= totalPrice;
 
@@ -98,7 +98,7 @@ var PriceHTMLToStart =(cartItems)=>{
         name_i = cartItems.children[i].getElementsByTagName('input')[0].textContent;
         idName_i = name_i.substring(6);
         price_i = cartItems.children[i].getElementsByTagName('p')[1].textContent;
-        price0_i = price0GlobCalculator(price_i);
+        price0_i = toPriceNumber(price_i);
         quantity_i = input_i.value;
         quantity0_i = parseInt(quantity_i);
 
@@ -128,7 +128,7 @@ var PriceHTMLToStart =(cartItems)=>{
         var idName = name.substring(6);
         var id = article.dataset.id;
         var price = item.closest('.cart__item__content__description > p:last').nodeValue;
-        var price0 = price0GlobCalculator(price);
+        var price0 = toPriceNumber(price);
         
         item.addEventListener('change', (e) =>{
             var quantityNow = e.target.value;
@@ -138,7 +138,7 @@ var PriceHTMLToStart =(cartItems)=>{
             totalPrice0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
 
             var totalQuantityNow = totalQuantity0.toString();
-            var totalPriceNow = priceGlobCalculator(totalPrice0);
+            var totalPriceNow = toPriceString(totalPrice0);
             localStorage.setItem(idName+','+color, [id,color,quantityNow])
             
             totalQuantityHTML.textContent=totalQuantityNow;
@@ -158,14 +158,14 @@ var PriceHTMLToStart =(cartItems)=>{
         var name = item.closest('h2').nodeValue;
         var idName = name.substring(6);
         var price = item.closest('.cart__item__content__description p:last').nodeValue;
-        var price0 = price0GlobCalculator(price);
+        var price0 = toPriceNumber(price);
 
         item.addEventListener('click', (e) =>{
             totalQuantity0 = totalQuantity0 -quantity0;
             totalPrice0 = totalPrice0 - quantity0*price0;
 
             var totalQuantityNow = totalQuantity0.toString();
-            var totalPriceNow = priceGlobCalculator(totalPrice0);
+            var totalPriceNow = toPriceString(totalPrice0);
             
             totalQuantityHTML.textContent=totalQuantityNow;
             totalPriceHTML.textContent =totalPriceNow;
