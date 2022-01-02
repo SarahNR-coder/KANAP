@@ -246,24 +246,32 @@ const main =async()=>{
     const data = await retrieveData();
     const cartItems = createArticlesAndAppendToSection(data);
 
-    var item_i = cartItems.children[i].getElementsByTagName('article')[0];
+    let i=0;
+    var item_i = cartItems.children[i].querySelector('article');
     var input_i = cartItems.children[i].getElementsByTagName('input')[0];
     var suppr_i = cartItems.children[i].getElementsByTagName('p')[3];
     var descriptionTheName_i = cartItems.children[i].getElementsByTagName('h2')[0];
     var descriptionThePrice_i = cartItems.children[i].getElementsByTagName('p')[1];
 
-    var id_i = item_i.dataset.id;
-    var color_i = item_i.dataset.color;
-    var name_i = descriptionTheName_i.textContent;
-    var idName_i = name_i.substring(6);
-    var price_i = descriptionThePrice_i.textContent;
-    var price0_i = price0GlobCalculator(price_i);
-    
-    var quantity_i = input_i.getAttribute('value');
-    var quantity0_i = parseInt(quantity_i);
+    var id_i ="";
+    var color_i ="";
+    var name_i="";    
+    var idName_i="";
+    var price_i="";
+    var price0_i=0;   
+    var quantity_i = "";   
+    var quantity0_i=0;
 
     for(cartItems.children[i] of cartItems.children)
     {
+        id_i = cartItems.children[i].querySelector('article').dataset.id;
+        color_i = cartItems.children[i].querySelector('article').dataset.color;
+        name_i = cartItems.children[i].getElementsByTagName('input')[0].textContent;
+        idName_i = name_i.substring(6);
+        price_i = descriptionThePrice_i.textContent;
+        price0_i = price0GlobCalculator(price_i);
+        quantity_i = input_i.getAttribute('value');
+        quantity0_i = parseInt(quantity_i);
 
         input_i.addEventListener('change', function(e){
             quantity_i = e.target.value;
