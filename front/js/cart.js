@@ -26,48 +26,53 @@ var setPurchase=()=> {
 
 //fonctions de calcul de prix string à partir de prix nombres et l'inverse
 
-var priceGlobCalculator =(priceNPQ0)=>{
-    var priceNPQ1 ="";
-    priceNPQ1= priceNPQ0.toString();
-    var PriceNPQ0StringLength = priceNPQ1.length;
-    var priceNPQ ="";
 
-    if(PriceNPQ0StringLength <4){
-        priceNPQ = priceNPQ1 +',00'
+var priceGlobCalculator =(price0)=>{
+    var price0_str ="";
+    price0_str= price0.toString();
+    var price0StringLength = price0_str.length;
+    var price ="";
+
+    if(price0StringLength <4){
+        price = price0_str +',00'
     }else{
                     
-        var lastCharPlace = PriceNPQ0StringLength -1;
-        var NbTrios = Math.floor(PriceNPQ0StringLength/3);
+        var lastCharPlace = price0StringLength -1;
+        var NbTrios = Math.floor(price0StringLength/3);
         var NbCharInTrios =NbTrios*3;
-        var priceNPQNoA ="";
+        var priceNoA ="";
 
-        var charBeforeFirstTrioPlace = PriceNPQ0StringLength - NbCharInTrios;
+        var charBeforeFirstTrioPlace = price0StringLength - NbCharInTrios;
 
-        priceNPQNoA =priceNPQ1.substring(0, charBeforeFirstTrioPlace);
+        priceNoA =price0_str.substring(0, charBeforeFirstTrioPlace);
         var charBeforeLastTrioPlace = lastCharPlace - 3;
-        var priceNPQNoZ = priceNPQ1.substring(charBeforeLastTrioPlace,lastCharPlace);
+        var priceNoZ = price0_str.substring(charBeforeLastTrioPlace,lastCharPlace);
 
-        priceNPQ = priceNPQNoA;
+        price = priceNoA;
 
         for(let i=0;charBeforeFirstTrioPlace+i<charBeforeLastTrioPlace; i+=3 ){
-            var subPriceNPQI = priceNPQ1.substring(charBeforeFirstTrioPlace+i,charBeforeFirstTrioPlace+i+3);
-            var subPriceNPQNoBY = ' '+ subPriceNPQI;
-            priceNPQ += subPriceNPQNoBY;
+            var subPriceI = price0_str.substring(charBeforeFirstTrioPlace+i,charBeforeFirstTrioPlace+i+3);
+            var subPriceNoBY = ' '+ subPriceI;
+            price += subPriceNoBY;
 
         }
-        priceNPQ +=' '+priceNPQNoZ+',00';
+        price +=' '+priceNoZ+',00';
     } 
-    return priceNPQ;
+    return price;
 }
 
+const blip = 123456678890;
+const blop = priceGlobCalculator(blip);
+console.log('blop' + blop);
 
-var price0GlobCalculator =(priceNPQ)=>{
-    var priceNPQ = "";
-    var PriceNPQLength = priceNPQ.length;
-    var pNPQToComa = priceNPQ.substring(0, PriceNPQLength -1 -5);
-    var pNPQTCLessSpaces = pNPQToComa.replace(/[]/,'');
-    var priceNPQ0 = parseInt(pNPQTCLessSpaces);
-    return priceNPQ0;
+
+var price0GlobCalculator =(price)=>{
+    var price = "";
+    var priceLength = price.length;
+    var pToComa = price.toString().substring(0, priceLength -1 -3);
+    var pTCLessSpaces = pToComa.replace(/[]/,'');
+    var price0 = parseInt(pTCLessSpaces);
+    return price0;
 }
 
 //Fonctions création de contenu---------------------
@@ -108,7 +113,7 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
     descriptionTheColor.textContent = color;
     //#.1.3
     const descriptionThePrice = document.createElement('p');
-    descriptionThePrice.textContent = priceKanap;
+    descriptionThePrice.textContent = priceKanap   +' E';
 
     //#.1
     contentDescription.appendChild(descriptionTheName)//#.1.1
@@ -258,7 +263,9 @@ const main =async()=>{
         var name =item.querySelector('h2').textContent;
         var idName = name.substring(6);       
         var price = item.querySelector('.cart__item__content__description').querySelectorAll('p').textContent;
+        console.log('price : ' + price);    
         var price0 = price0GlobCalculator(price);
+        console.log('price0 : ' + price0);
 
         var LineValue = localStorage.getItem(idName +','+ color);
         var strAFHereStrGZ =LineValue.search(/[,]/);
@@ -273,6 +280,9 @@ const main =async()=>{
 
             var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
             var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
+
+            totalQuantityHTML.textContent=totalQuantityNow0.toString();
+            totalPriceHTML.textContent = price0GlobCalculator(totalPriceNow0);
 
             var quantity = quantityNow0.toString();
             localStorage.setItem(idName+','+color, [id,color,quantity])
