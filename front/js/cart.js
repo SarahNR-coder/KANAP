@@ -149,22 +149,25 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
     settingsQuantity.appendChild(QuantityInput);//#.2.1.2
 
     //#.2.2.1
-    const DeleteP = document.createElement('p');
-    DeleteP.classList.add('deleteItem');
-    DeleteP.textContent='Supprimer';
+    const suppr = document.createElement('p');
+    suppr.classList.add('deleteItem');
+    suppr.textContent='Supprimer';
 
     //#.2.2
-    settingsDelete.appendChild(DeleteP);//#.2.2.1
+    settingsDelete.appendChild(suppr);//#.2.2.1
 
     return itemContent;
 }
 
-const cartItems = document.getElementById('cart__items');
-var totalQuantity0 =0;
-var totalPrice0 =0;
 //création d'une section d'items comportant une fiche/article par produit commandé
 var createArticlesAndAppendToSection=(data)=>{
-    
+    var totalQuantity0 =0;
+    var totalPrice0 =0;
+    var totalQuantity ="";
+    var totalPrice ="";
+    const totalQuantityHTML = document.getElementById('totalQuantity');
+    const totalPriceHTML = document.getElementById('totalPrice');
+    const cartItems = document.getElementById('cart__items');    
     for(let i=0; i<finalStorageArr.length; i++){
         
         const cartItem = document.createElement('article');
@@ -185,7 +188,6 @@ var createArticlesAndAppendToSection=(data)=>{
         var quantity0 = parseInt(quantity);
 
         totalQuantity0 += quantity0;
-        totalQuantity = 
         
         console.log('id ='+id);
         console.log('color ='+color);
@@ -211,8 +213,6 @@ var createArticlesAndAppendToSection=(data)=>{
 
                 totalPrice0 += priceKanap0*quantity0;
 
-                totalPrice = priceGlobCalculator(totalPrice0);
-
                 priceKanap = priceGlobCalculator(priceKanap0)+' €';
 
                 nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
@@ -235,93 +235,80 @@ var createArticlesAndAppendToSection=(data)=>{
             }
             j++;    
         }while(j<data.length);
-        return cartItems, totalQuantity0, totalPrice0;
+        return cartItems;
     }
+    totalQuantity = totalQuantity0.toString();
+    totalQuantityHTML.textContent= totalQuantity;
+    totalPrice = priceGlobCalculator(totalPrice0);
+    totalPriceHTML.textContent= totalPrice;
 }
 //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
-var totalPrice="";
-var totalQuantity ="";
-const totalQuantityHTML = document.getElementById('totalQuantity');
-const totalPriceHTML = document.getElementById('totalPrice');
-const retrieveCart =(data)=>{
-    var totalQuantity="";
-    var totalPrice="";
-    createArticlesAndAppendToSection(data);
-    totalQuantity = totalQuantity0.toString();
-    totalPrice = priceGlobCalculator(totalPrice0);  
-    totalQuantityHTML.textContent= totalQuantity;
-    totalPriceHTML.textContent= totalPrice;
-    return cartItems, totalQuantityHTML, totalPriceHTML;
-}
-
-var totalQuantity0 =0;
-var totalQuantity="";
-var totalPrice0 =0;
-var totalPrice="";
 
 const main =async()=>{
     const data = await retrieveData();
-    retrieveCart(data);
+    const cartItems = createArticlesAndAppendToSection(data);
+    const totalQuantityHTML = getElementById('totalQuantity');
+    const totalPriceHTML = getElementById('totalPrice');
+    var count = cartItems.childElementCount;
 
-    totalQuantity = totalQuantityHTML.textContent;
-    totalPrice = totalPriceHTML.textContent;
-    totalQuantity0 = parseInt(totalQuantity);
-    totalPrice0 = price0GlobCalculator(totalPrice);
-
-    var productListLength = cartItems.childElementCount;
-
-    var inputCollection = document.getElementsByName('itemQuantity');
-    var price0=0;
-
-    for(let i=0; i<productListLength; i++)
+    for(let i=0; i<count; i++)
     {
-        var input = inputCollection[i];
-        var settingsQuantity=input.parentElement;
-        var settingsDelete = settingsQuantity.nextElementSibling;
-        var deleteP = settingsDelete.getElementsByTagName('p')[0];
-        var contentSettings =settingsQuantity.parentElement;
-        var contentDescription = contentSettings.previousElementSibling;
-        var descriptionTheName = contentDescription.getElementsByTagName('h2')[0];
-        var descriptionTheColor = contentDescription.getElementsByTagName('p')[0];
-        var descriptionThePrice = contentDescription.getElementsByTagName('p')[1];
+        var totalQuantity0 =0;
+        var totalPrice0 = 0;
+        var item_i = cartItems.getElementsByTagName('article')[i];
+        var input_i = item_i.getElementsByTagName('input')[0];
+        var suppr_i = item_i.getElementsByTagName('p')[3];
+        var descriptionTheName_i = item_i.getElementsByTagName('h2')[0];
+        var descriptionThePrice_i = item_i.getElementsByTagName('p')[1];
 
-        var name1 = descriptionTheName.textContent;
-        var idName = name1.substring(6);
-        var price = descriptionThePrice.textContent;
-        price0 = price0GlobCalculator(price);
-        var color = descriptionTheColor.textContent;
+        var id_i = item_i.dataset.id;
+        var color_i = item_i.dataset.color;
+        var name_i = descriptionTheName_i.textContent;
+        var idName_i = name_i.substring(6);
+        var price_i = descriptionThePrice_i.textContent;
+        var price0_i = price0GlobCalculator(price_i);
+        
+        var quantity_i = input_i.getAttribute('value');
+        var quantity0_i = parseInt(quantity_i);
 
-        var quantity = input.getAttribute('value');   
-        var quantityUpToDate =input.getAttribute('value');
-    
-        input.addEventListener('change', function(e){
-            quantityUpToDate = e.target.value;
-            localStorage.setItem(idName+','+color, [id,color,quantityUpToDate])
+        totalQuantity0 += quantity0_i;
+        totalPrice0 += quantity0_i*price0_i;
+
+        var totalQuantity = "";
+        var totalPrice ="";
+
+        var quantityUpToDate_i =input_i.getAttribute('value');   
+        var quantityUpToDate0_i=0; 
+        input_i.addEventListener('change', function(e){
+            quantityUpToDate_i = e.target.value;
+            quantityUpToDate0_i =parseInt(quantityUpToDate_i);
+
+            totalQuantity0 = totalQuantity0 - quantity0_i + quantityUpToDate0_i;
+            totalQuantity = totalQuantity0.toString();
+            totalQuantityHTML.textContent = totalQuantity;
+
+            totalPrice0 = totalPrice0 - quantity0_i*price0_i + quantityUpToDate0_i*price0_i;
+            totalPrice = priceGlobCalculator(totalPrice0);
+            totalPriceHTML.textContent = totalPrice;
+
+            localStorage.setItem(idName_i+','+color_i, [id_i,color_i,quantityUpToDate_i])
         });
 
-        var quantity0 = parseInt(quantity);
-        var quantityUpToDate0 =parseInt(quantityUpToDate);
+        suppr_i.addEventListener('click', function(e){
+            cartItems.removeChild(item_i);
 
-        deleteP.addEventListener('click', function(e){
-            localStorage.removeItem(idName+''+color);
-            cartItems.removeChild(cartItems.children[i]);
-            quantityUpToDate0 = 0;
-        })
-        
-        totalQuantityHTML.addEventListener('change', function(e){
-            totalQuantity0 = totalQuantity0 + quantityUpToDate0 - quantity0;
+            totalQuantity0 = totalQuantity0 - quantity0_i;
             totalQuantity = totalQuantity0.toString();
-
             totalQuantityHTML.textContent = totalQuantity;
-        })
 
-        totalPriceHTML.addEventListener('change', function(e){
-            totalPrice0 = totalPrice0 + quantityUpToDate0*price0 - quantity0*price0;
-            totalPrice=priceGlobCalculator(totalPrice0);
-
+            totalPrice0 = totalPrice0 - quantity0_i*price0_i
+            totalPrice = priceGlobCalculator(totalPrice0);
             totalPriceHTML.textContent = totalPrice;
+
+            quantityUpToDate0_i = 0;
+            localStorage.removeItem(idName_i+''+color_i);            
         })
     }
 }
