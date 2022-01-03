@@ -12,13 +12,13 @@ const retrieveData = () =>fetch("http://localhost:3000/api/products")
     return data;})
 .catch (err => console.log('erreur suivante:'+ err))
 
-const LineValue0 = localStorage.getItem(localStorage.key(0));
-var finalStorageArr =new Array([""]);
-var setPurchase=()=> {
-    finalStorageArr[0] = LineValue0;      
+function setPurchase(){
+    var lineValue0 = localStorage.getItem(localStorage.key(0));
+    var finalStorageArr =new Array("");
+    finalStorageArr[0] = lineValue0;      
     for(let i=1; i<localStorage.length; i++){ 
-        var LineValue= localStorage.getItem(localStorage.key(i));            
-        finalStorageArr[i]=LineValue;
+        var line= localStorage.getItem(localStorage.key(i));            
+        finalStorageArr[i]=line;
     }
     return finalStorageArr;
 }
@@ -27,7 +27,7 @@ var setPurchase=()=> {
 //fonctions de calcul de prix string à partir de prix nombres et l'inverse
 
 
-var toPriceString =(price0)=>{
+function toPriceString (price0){
     var string ="";
     string= price0.toString();
     var stringLength = string.length;
@@ -62,21 +62,6 @@ var toPriceString =(price0)=>{
     return price;
 }
 
-const blip = 123456678890;
-const blop = toPriceString(blip);
-console.log('toPriceString(123456678890)' + blop);
-
-
-var toPriceNumber =(price)=>{
-    var priceOffSpaces = "";
-    priceOffSpaces = price.replace(/[]/,'');
-    var price0 = parseInt(priceOffSpaces);
-    return price0;
-}
-const blap = '1 234 567 890'
-const blup = toPriceNumber(blap);
-console.log("toPriceNumber('1 234 567 890')" + blup);
-
 //Fonctions création de contenu---------------------
 
 //création de l'image de la vignette produit-panier à partir d'une variable qui est un block div itemImage où l'on insére l'url de l'image et son texte alternatif, block image que l'on retourne;
@@ -93,7 +78,7 @@ var addImageTocartItem =(imageUrlKanap, altTxtKanap)=>
 }
 //création du contenu de la vignette produit-panier à partir d'une variable qui est un block div itemContent, où l'on insère la couleur, le nom, et le prix du produit-panier dans un block div description et sa quantité dans un élément input (quantité changeable), block content que l'on retourne;
 
-var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
+var addContentTocartItem =(color, quantity, nameKanap, price) =>
 {
     const itemContent = document.createElement('div');
     //#.1
@@ -115,8 +100,10 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
     descriptionTheColor.textContent = color;
     //#.1.3
     const descriptionThePrice = document.createElement('p');
-    var string = priceKanap +',00 €' 
+    var string = price+',00 €'; 
     descriptionThePrice.textContent = string ;
+    console.log('descriptionThePrice utilise pour son textContent (string), price = '+price);
+    console.log('descriptionThePrice donne: textContent (string) = '+string);
 
     //#.1
     contentDescription.appendChild(descriptionTheName)//#.1.1
@@ -160,10 +147,102 @@ var addContentTocartItem =(color, quantity, nameKanap, priceKanap) =>
     return itemContent;
 }
 
-const totalQuantityHTML = document.getElementById('totalQuantity');
-const totalPriceHTML = document.getElementById('totalPrice');
+const seekTotalQuantityElement=()=>{
+    const totalQuantityHTML = document.getElementById('totalQuantity');
+    return totalQuantityHTML;
+}
+const seekTotalPriceElement =()=>{
+    const totalPriceHTML = document.getElementById('totalPrice');
+    return totalPriceHTML;
+}
+
 //création d'une section d'items comportant une fiche/article par produit commandé
-var createArticlesAndAppendToSection=(data)=>{
+const createArticlesAndAppendToSection =()=> 
+function(){
+    const totalQuantityHTML=
+    seekTotalQuantityElement();
+    return totalQuantityHTML
+}
+.then(function(){
+    const totalPriceHTML = seekTotalPriceElement();
+    return totalPriceHTML;
+})
+.then(function(){
+    const cart = document.getElementsByClassName("cart")[0];
+    return cart;
+})
+.then(function(){
+    const cartItems = document.getElementById("cat__items");
+    return cartItems;
+})
+.then(fetch("http://localhost:3000/api/products"))
+.then(res =>{
+    if (res.ok){
+        return res.json();
+    }
+})
+.then (data => {
+    var dataArr = new Array();
+    dataArr = data;
+    console.log('dataArr = '+dataArr);
+    return dataArr;
+})
+.then(function() 
+{   var finalStorageArr = setPurchase();
+    return finalStorageArr
+})
+.then(dataArr => dataArr)
+.then(dataArr, finalStorageArr => {
+    finalStorageArr.forEach(line =>{
+        var part1EndIndex =line.search(/[,]/);
+        var part2 = line.substring(part1EndIndex+1);
+        var part2FirstPartEndIndex = part2.search(/[,]/);
+        var quantity= part2.substring(part2FirstPartEndIndex+1);
+        
+        var id = line.substring(0,part1EndIndex);
+        var color= part2.substring(0,part2FirstPartEndIndex);
+
+        var quantity0 = parseInt(quantity);
+        totalQuantity0 += quantity0;
+
+        dataArr.forEach(item => {
+            if(item._id == id){
+                var price0 = item.price;
+
+                totalPrice0 += price0*quantity0;
+
+                price = toPriceString(price0);
+                console.log('price0 from data = '+price0)
+                console.log('from price0 from data : price = '+price);
+
+                nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
+                altTxtKanap = data[j].altTxt;
+
+                const image=(line)=>
+                {
+                    var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
+                    itemImage.classList.add('cart__item__img');
+                    return itemImage;
+                }
+                
+                const content=(line)=>{
+                var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
+                itemContent.classList.add('cart__item__content');
+                return itemContent;
+                }
+            }  
+        var itemImage = image(line);
+        var itemContent = content(line)
+        return itemImage, itemContent;
+        })     
+    })   
+})
+.catch (err => console.log('erreur suivante:'+ err))
+
+    
+
+    const totalQuantityHTML = document.getElementById('totalQuantity');
+    const totalPriceHTML = document.getElementById('totalPrice');
     var totalQuantity0 =0;
     var totalPrice0 =0;
     const cartItems = document.getElementById('cart__items');    
@@ -173,29 +252,27 @@ var createArticlesAndAppendToSection=(data)=>{
         cartItem.classList.add('cart__item');
         cartItems.appendChild(cartItem);
 
-        var LineValue ="";
-        LineValue = finalStorageArr[i];
-    
-        var index1 =LineValue.search(/[,]/);
-        var substringNot1 = LineValue.substring(index1+1);
-        var index2 = substringNot1.search(/[,]/);
+        var line ="";
+        line = finalStorageArr[i];
+        var part1EndIndex =line.search(/[,]/);
+        var part2 = line.substring(part1EndIndex+1);
+        var part2FirstPartEndIndex = part2.search(/[,]/);
+        var quantity= part2.substring(part2FirstPartEndIndex+1);
         
-        var id = LineValue.substring(0,index1);
-        console.log('id ='+id);
-        var color= substringNot1.substring(0,index2);
-        var quantity= substringNot1.substring(index2+1);        
+        var id = line.substring(0,part1EndIndex);
+        var color= part2.substring(0,part2FirstPartEndIndex);              
         var quantity0 = parseInt(quantity);
 
         totalQuantity0 += quantity0;
         
-        console.log('id ='+id);
-        console.log('color ='+color);
-        console.log('quantity ='+quantity);
-        console.log('quantity0 = '+ quantity0);
+        console.log('id arr ='+id);
+        console.log('color arr ='+color);
+        console.log('quantity arr = '+ quantity);
+        console.log('quantity0, from quantity arr, ='+quantity0);
 
         var nameKanap="";
-        var priceKanap0 = 0;
-        var priceKanap = "";
+        var price0 = 0;
+        var price = "";
         var imageUrlKanap = "";
         var altTxtKanap = "";
 
@@ -208,11 +285,13 @@ var createArticlesAndAppendToSection=(data)=>{
         var j=0;
         do{//***
             if(data[j]._id == id){
-                priceKanap0 = data[j].price;
+                price0 = data[j].price;
 
-                totalPrice0 += priceKanap0*quantity0;
+                totalPrice0 += price0*quantity0;
 
-                priceKanap = toPriceString(priceKanap0);
+                price = toPriceString(price0);
+                console.log('price0 from data = '+price0)
+                console.log('from price0 from data : price = '+price);
 
                 nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
                 altTxtKanap = data[j].altTxt;
@@ -220,7 +299,7 @@ var createArticlesAndAppendToSection=(data)=>{
                 var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
                 itemImage.classList.add('cart__item__img');
             
-                var itemContent =addContentTocartItem(color, quantity, nameKanap, priceKanap);
+                var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
                 itemContent.classList.add('cart__item__content');
                 
                 cartItem.appendChild(itemImage);
@@ -247,57 +326,56 @@ var createArticlesAndAppendToSection=(data)=>{
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
 const main =async()=>{
-    const finalStorageArr = await setPurchase();
     const data = await retrieveData();
-    const cartItems = createArticlesAndAppendToSection(data, finalStorageArr);
-  
-//vRvY
+    var finalStorageArr =setPurchase();
+    var cartItems = createArticlesAndAppendToSection(data, finalStorageArr);
+
     var cartItemCollection = cartItems.querySelectorAll("article");
 
     var totalQuantity = totalQuantityHTML.textContent
     var totalQuantity0 = parseInt(totalQuantity);
     var string = totalPriceHTML.textContent;
-    var totalPrice = string.substring(0, string.length - 3);
-    var totalPrice0 = toPriceNumber(totalPrice);
-    
+    var totalPrice = string.substring(0,string.match(/\s/g).length -1 -3);
+    var totalPrice0 = parseInt(totalPrice);
 
     cartItemCollection.forEach(item => {
-        var inputHTML = item.querySelector("input");
+        var inputHTML = item.closest("input");
         var color = item.dataset.color;
         var id = item.dataset.id;
         var name =item.querySelector('h2').textContent;
         var idName = name.substring(6);
         var string = item.querySelector('.cart__item__content__description').querySelectorAll('p')[1].textContent;
-        var price = string.substring(0, string.length - 5);
-        var price0 = toPriceNumber(price);
-        
-        var line = localStorage.getItem(idName +','+ color);
-        var part1 =line.search(/[,]/);
-        var part2 = line.substring(part1+1);
-        var part2FirstPart = part2.search(/[,]/);
-        var part2LastPart= part2.substring(part2FirstPart+1);        
-        var quantity0 = parseInt(part2LastPart);
+        var price = string.substring(0,string.match(/\s/g).length -1 -4);
+        var price0 = parseInt(price);
+
+        var line = finalStorageArr[i];
+        var part1EndIndex =line.search(/[,]/);
+        var part2 = line.substring(part1EndIndex+1);
+        var part2FirstPartEndIndex = part2.search(/[,]/);
+        var quantity= part2.substring(part2FirstPartEndIndex+1);             
+        var quantity0 = parseInt(quantity);
 
         console.log('idName foreach item = '+idName);
         console.log('color foreach item = '+color);        
         console.log('id foreach item = '+id);
         console.log('price foreach item = '+price);
         console.log('price0 foreach item: '+ price0); 
+        console.log('quantity foreach item ='+quantity)
         console.log('quantity0 foreach item ='+quantity0)
 
         inputHTML.addEventListener('change', function (e) {
             var quantityNow0 = 0;
-            var quantity = e.target.value;
-            quantityNow0 =parseInt(quantity);
+            var quantityNow = e.target.value;
+            quantityNow0 =parseInt(quantityNow);
 
             var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
             var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
 
             totalQuantityHTML.textContent=totalQuantityNow0.toString();
-            totalPriceHTML.textContent = toPriceNumber(totalPriceNow0);
+            totalPriceHTML.textContent = toPriceString(totalPriceNow0) +',00';
 
-            var quantity = quantityNow0.toString();
-            localStorage.setItem(idName+','+color, [id,color,quantity])
+            finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1, [id+','+color+','+quantityNow]);
+            localStorage.setItem(idName+','+color,[id+','+color+','+quantityNow]);
             
             console.log('totalQuantityNow0 foreach item -listen quantityinput-= '+totalQuantityNow0);
             console.log('totalPriceNow0 foreach item -listen quantityinput-= '+totalPriceNow0);
@@ -315,11 +393,8 @@ const main =async()=>{
             totalQuantityNow0 = totalQuantity0 -quantity0;
             totalPriceNow0 = totalPrice0 - quantity0*price0;
 
-            totalQuantity = totalQuantityNow0.toString();
-            totalPrice = toPriceString(totalPriceNow0);
-
-            totalQuantityHTML.textContent=totalQuantity;
-            totalPriceHTML.textContent = totalPrice  + ',00';
+            totalQuantityHTML.textContent= totalQuantityNow0.toString();
+            totalPriceHTML.textContent = toPriceString(totalPriceNow0) + ',00';
  
             cartItems.removeChild(item);
             
@@ -331,9 +406,10 @@ const main =async()=>{
             console.log('color foreach item -listen erasor- = '+color);
             console.log('price foreach item -listen erasor- = '+price);
             console.log('price0 foreach item -listen erasor- = '+ price0); 
-            console.log('quantity0 foreach item -listen erasor- = '+quantity0)  
+            console.log('quantity0 foreach item -listen erasor- = '+quantity0);  
 
-            localStorage.removeItem(idName+','+color)
+            finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1)
+            localStorage.removeItem(idName+','+color);
         })
     })   
 }

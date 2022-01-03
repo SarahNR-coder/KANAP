@@ -176,3 +176,10 @@ var PriceHTMLToStart =(cartItems)=>{
         })
     })
 //vRvY
+
+        var line = localStorage.getItem(idName +','+ color);
+        var part1 =line.search(/[,]/);
+        var part2 = line.substring(part1+1);
+        var part2FirstPart = part2.search(/[,]/);
+        var part2LastPart= part2.substring(part2FirstPart+1);        
+        var quantity0 = parseInt(part2LastPart);
