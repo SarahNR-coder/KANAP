@@ -1,10 +1,10 @@
 //fonctions de récupération de données-------------
 
  var setPurchase=()=>{
-    var lineValue0 = localStorage.getItem(localStorage.key(0));
+    //var lineValue0 = localStorage.getItem(localStorage.key(0));
     var finalStorageArr =new Array("");
-    finalStorageArr[0] = lineValue0;      
-    for(let i=1; i<localStorage.length; i++){ 
+    //finalStorageArr[0] = lineValue0;      
+    for(let i=0; i<localStorage.length; i++){ 
         var line= localStorage.getItem(localStorage.key(i));            
         finalStorageArr[i]=line;
     }
@@ -61,6 +61,7 @@ var addImageTocartItem =(imageUrlKanap, altTxtKanap)=>
     itemImageShown.setAttribute('alt', altTxtKanap);
 
     itemImage.appendChild(itemImageShown);
+    console.log("je passe dans image");
 
     return itemImage;
 }
@@ -115,7 +116,7 @@ var addContentTocartItem =(color, quantity, nameKanap, price) =>
     //#.2.1.2
     const QuantityInput = document.createElement('input');
     QuantityInput.setAttribute('type','number');
-    QuantityInput.setAttribute('name', 'ItemQuantity');
+    QuantityInput.setAttribute('name', 'itemQuantity');
     QuantityInput.setAttribute('min', '1');
     QuantityInput.setAttribute('max','100');
     QuantityInput.setAttribute('value', quantity);
@@ -152,33 +153,43 @@ var colorInLine = (line)=>{
 
 var quantityInLine = (line)=>{
     var location =  line.search(/[,]/);
+    //console.log("location : " + location);
     var colorAndQuantity = line.substring(
     location +1, line.length-1);
-    var location2 = colorAndQuantity.search(/[,]/) + location;
+    //console.log("colorAndQuantity : " + colorAndQuantity);
+    var location2 = colorAndQuantity.search(/[,]/) + location + 1;
+    //console.log("location2 : " + location2);
     var quantity = line.substring(location2 + 1, line.length-1);
-
+    //console.log("quantity : " + quantity);
     return quantity;
 }
 
 var totalPriceCalc=()=>{
     var totalPrice0 = 0;
     var totalPriceHTML = document.getElementById("totalPrice");
-    var inputs = document.getElementsByTagName('input');
-    var itemColl = document.getElementsByClassName('cart__item');
+    //console.log("totalPriceHTML : " + totalPriceHTML.nodeName);
+    var inputs = document.getElementsByName("itemQuantity");
+    //console.log("inputs : " + inputs.length);
+    // var itemColl = document.getElementsByClassName('cart__item');
  
-    for(let i=0; i<itemColl.length; i++){      
-        var item = itemColl[i];
-        if(inputs[i].name == 'itemQuantity'){
-            var input = inputs[i];
-            item = input.closest("article");
-            var quantity = input.value;
-            var quantity0 = parseInt(quantity);
-            var priceElement = item.getElementsByClassName('item__cart__content__description')[0].getElementsByTagName('p')[1];
-            var string = priceElement.textContent;
-            var price = string.substring(0,string.match(/\s/g).length -1 -4);
-            var price0 = parseInt(price); 
-            totalPrice0 += quantity0*price0
-        }
+    for(let i=0; i<inputs.length; i++){
+        // var item = itemColl[i];
+        var input = inputs[i];
+        //var item = input.closest("article");
+        var quantity = input.value;
+        //console.log("quantity s'il te plait avec value : " + quantity);
+        var quantity0 = parseInt(quantity);
+        //console.log("quantity0 : " + quantity0);
+        var priceElement = document.getElementsByClassName('cart__item__content__description')[i].getElementsByTagName('p')[1];
+        //console.log("priceElement : " + priceElement.nodeName);
+        var string = priceElement.textContent;
+        //console.log("string : " + string);
+        var price = string.substring(0,string.length - string.match(/\s/g).length -3);
+        //console.log("price : " + price);
+        price = price.replace(/ /g, "");
+        //console.log("price : " + price);
+        var price0 = parseInt(price); 
+        totalPrice0 += quantity0*price0;
     }
     var totalPrice = toPriceString(totalPrice0) 
     +',00';
@@ -213,6 +224,7 @@ var createCollection =(data)=>{
     finalStorageArr.forEach(line =>{       
         var color = colorInLine(line);
         var quantity = quantityInLine(line);
+        console.log('quantity : ' + quantity);
         var id = idInLine(line);
         var price0 = 0;
         var price ="";
@@ -225,13 +237,14 @@ var createCollection =(data)=>{
             if(data[i]._id == id){
                 price0 = data[i].price;
                 price = toPriceString(price0);
-                nameKanap = data[i].name;        imageUrlKanap = data[i].imageUrl;
+                nameKanap = data[i].name;        
+                imageUrlKanap = data[i].imageUrl;
                 altTxtKanap = data[i].altTxt;
             }
             i++;
         }while(i < data.length)
 
-        var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
+        var itemImage = addImageTocartItem(imageUrlKanap, altTxtKanap);
         itemImage.classList.add('cart__item__img');
         var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
         itemContent.classList.add('cart__item__content');
@@ -278,30 +291,39 @@ fetch("http://localhost:3000/api/products")
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
 const main =async()=>{
-    var cartItems = await create();  
-    var totalPrice0 =totalPriceCalc();
-    var totalQuantity0 = totalQuantityCalc();
+    var cartItems = await create();
     var totalQuantityHTML = document.getElementById("totalQuantity");
     var totalPriceHTML = document.getElementById("totalPrice");
+    var totalPrice0 = totalPriceCalc();
+    //console.log("totalPrice0 : " + totalPrice0);
+    var totalQuantity0 = totalQuantityCalc();
+    //console.log("totalQuantity0 : " + totalQuantity0);
     var inputs = document.getElementsByName('itemQuantity');
-    var deletes = document.getElementsByClassName('deleteItem');
+    //var deletes = document.getElementsByClassName('deleteItem');
 
-    inputs.forEach(input =>{
-        var item = input.closest("article");
+    //inputs.forEach(input =>{
+        //var item = input.closest("article");
+    for(let i=0; i<inputs.length; i++){
+        var item = document.getElementsByClassName("cart__item")[i];
         var id = item.dataset.id;
+        //console.log("id : " + id);
         var color = item.dataset.color;
-        var quantity = input.getAttribute("value");
+        var quantity = inputs[i].getAttribute("value");
         var quantity0 = parseInt(quantity);
         var theName = item.getElementsByTagName('h2')[0];
         var idName = theName.textContent.substring(6);
         var thePrice = item
             .getElementsByClassName('cart__item__content__description')[0]
             .getElementsByTagName('p')[1];
+        //console.log('thePrice : ' + thePrice);
         var string = thePrice.textContent;
-        var price = string.substring(0,string.length -1 -3);
+        //console.log('string : ' + string);
+        var price = string.substring(0,string.length -5);
+        price = price.replace(/ /g, "");
+        //console.log('price : ' + price);
         var price0 = parseInt(price);
 
-        input.addEventListener('change', function (e) {
+        inputs[i].addEventListener('change', function (e) {
             var quantityNow0 = 0;
             var quantityNow = e.target.value;
             quantityNow0 =parseInt(quantityNow);
@@ -355,7 +377,7 @@ const main =async()=>{
             finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1)
             localStorage.removeItem(idName+','+color);
         })
-    })
+    }
 }
 
 main();
