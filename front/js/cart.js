@@ -191,16 +191,31 @@ function(){
 {   var finalStorageArr = setPurchase();
     return finalStorageArr
 })
+.then( function totalQuantityCart(finalStorageArr){
+    var totalQuantity0 = 0
+    finalStorageArr.forEach(line =>{
+
+        function calcQuantity (line){
+            var part1EndIndex = 0;
+            part1EndIndex = line.search(/[,]/);
+            var part2 = line.substring(part1EndIndex+1);
+            var part2FirstPartEndIndex = part2.search(/[,]/);
+            var quantity= part2.substring(part2FirstPartEndIndex+1);
+
+            return quantity;
+        }
+    })
+    totalQuantity0 += quantity0;    
+    var quantity0 = parseInt(quantity);
+})
 .then(dataArr => dataArr)
 .then(dataArr, finalStorageArr => {
     finalStorageArr.forEach(line =>{
         var part1EndIndex =line.search(/[,]/);
-        var part2 = line.substring(part1EndIndex+1);
-        var part2FirstPartEndIndex = part2.search(/[,]/);
-        var quantity= part2.substring(part2FirstPartEndIndex+1);
-        
+        var part2 = line.substring(part1EndIndex+1); 
+        var quantity = calcQuantity(line);       
         var id = line.substring(0,part1EndIndex);
-        var color= part2.substring(0,part2FirstPartEndIndex);
+        var color= part2.substring(0,part2.length - quantity.length);
 
         var quantity0 = parseInt(quantity);
         totalQuantity0 += quantity0;
