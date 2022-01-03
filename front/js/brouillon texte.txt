@@ -265,3 +265,75 @@ var PriceHTMLToStart =(cartItems)=>{
 
     return cartItems;
 }
+
+---------------------------------------------------------------------------------------------------------
+
+    itemCollection.forEach(item => {
+        var inputHTML = item.closest("input");
+        var quantity = inputHTML.value;
+        var quantity0 = parseInt(quantity);
+        var color = item.dataset.color;
+        var id = item.dataset.id;
+        var name =item.querySelector('h2').textContent;
+        var idName = name.substring(6);
+        var string = item.querySelector('.cart__item__content__description').querySelectorAll('p')[1].textContent;
+        var price = string.substring(0,string.match(/\s/g).length -1 -4);
+        var price0 = parseInt(price);
+
+        console.log('idName foreach item = '+idName);
+        console.log('color foreach item = '+color);        
+        console.log('id foreach item = '+id);
+        console.log('price foreach item = '+price);
+        console.log('price0 foreach item: '+ price0); 
+        console.log('quantity foreach item ='+quantity)
+        console.log('quantity0 foreach item ='+quantity0)
+
+        inputHTML.addEventListener('change', function (e) {
+            var quantityNow0 = 0;
+            var quantityNow = e.target.value;
+            quantityNow0 =parseInt(quantityNow);
+
+            var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
+            var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
+
+            totalQuantityHTML.textContent=totalQuantityNow0.toString();
+            totalPriceHTML.textContent = toPriceString(totalPriceNow0) +',00';
+
+            finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1, [id+','+color+','+quantityNow]);
+            localStorage.setItem(idName+','+color,[id+','+color+','+quantityNow]);
+            
+            console.log('totalQuantityNow0 foreach item -listen quantityinput-= '+totalQuantityNow0);
+            console.log('totalPriceNow0 foreach item -listen quantityinput-= '+totalPriceNow0);
+            console.log('idName foreach item -listen quantityinput-= '+idName);
+            console.log('color foreach item -listen quantityinput- = '+color);        
+            console.log('id foreach item  -listen quantityinput-= '+id);
+            console.log('price foreach item -listen quantityinput- = '+price);
+            console.log('price0 foreach item -listen quantityinput- = '+ price0);
+            console.log('quantityNow0 foreach item -listen quantityinput- ='+quantityNow0) 
+            console.log('quantity0 foreach item -listen quantityinput- ='+quantity0)
+        })
+        var erasor = item.querySelector(".deleteItem");
+    
+        erasor.addEventListener('click', (_e) =>{
+            totalQuantityNow0 = totalQuantity0 -quantity0;
+            totalPriceNow0 = totalPrice0 - quantity0*price0;
+
+            totalQuantityHTML.textContent= totalQuantityNow0.toString();
+            totalPriceHTML.textContent = toPriceString(totalPriceNow0) + ',00';
+ 
+            cartItems.removeChild(item);
+            
+            console.log('totalQuantityNow0 foreach item -listen erasor-= '+totalQuantityNow0);
+            console.log('totalPriceNow0 foreach item -listen erasor-= '+totalPriceNow0);
+            console.log('totalQuantity foreach item -listen erasor-= '+totalQuantity);
+            console.log('totalPrice foreach item -listen erasor-= '+totalPrice);
+            console.log('idName foreach item -listen erasor- = '+idName);
+            console.log('color foreach item -listen erasor- = '+color);
+            console.log('price foreach item -listen erasor- = '+price);
+            console.log('price0 foreach item -listen erasor- = '+ price0); 
+            console.log('quantity0 foreach item -listen erasor- = '+quantity0);  
+
+            finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1)
+            localStorage.removeItem(idName+','+color);
+        })
+    }) 

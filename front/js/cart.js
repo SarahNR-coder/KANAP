@@ -1,17 +1,5 @@
 //fonctions de récupération de données-------------
 
-//récupération des données de catalogue de canapés (API)
-const retrieveData = () =>fetch("http://localhost:3000/api/products")
-.then(res =>{
-    if (res.ok){
-        return res.json();
-    }
-})
-.then (data => {
-    console.log(data);
-    return data;})
-.catch (err => console.log('erreur suivante:'+ err))
-
  var setPurchase=()=>{
     var lineValue0 = localStorage.getItem(localStorage.key(0));
     var finalStorageArr =new Array("");
@@ -148,71 +136,89 @@ var addContentTocartItem =(color, quantity, nameKanap, price) =>
 }
 
 var idInLine = (line)=>{
-    var part1 = line.substring(0,
-    line.search(/[,]/)   +1);
-    var id = part1;
+    var location = line.search(/[,]/);
+    var id = line.substring(0,
+    location);
     return id; 
 }
 var colorInLine = (line)=>{
-    var part2 = line.substring(
-    line.search(/[,]/)    +1);
-    var color= part2.substring(0,
-    line.search(/[,]/)    +1);
+    var location = line.search(/[,]/);
+    var colorAndQuantity = line.substring(
+    location +1, line.length-1);
+    var location2 = colorAndQuantity.search(/[,]/) + location;
+    var color= line.substring(location +1, +location2 +1 );
     return color;
 }
 
 var quantityInLine = (line)=>{
-    var part2 = line.substring(
-    line.search(/[,]/)    +1);
-    var quantity= part2.substring(
-    line.search(/[,]/)    +1);
+    var location =  line.search(/[,]/);
+    var colorAndQuantity = line.substring(
+    location +1, line.length-1);
+    var location2 = colorAndQuantity.search(/[,]/) + location;
+    var quantity = line.substring(location2 + 1, line.length-1);
 
     return quantity;
 }
+
+var totalPriceCalc=()=>{
+    var totalPrice0 = 0;
+    var totalPriceHTML = document.getElementById("totalPrice");
+    var inputs = document.getElementsByTagName('input');
+    var itemColl = document.getElementsByClassName('cart__item');
+ 
+    for(let i=0; i<itemColl.length; i++){      
+        var item = itemColl[i];
+        if(inputs[i].name == 'itemQuantity'){
+            var input = inputs[i];
+            item = input.closest("article");
+            var quantity = input.value;
+            var quantity0 = parseInt(quantity);
+            var priceElement = item.getElementsByClassName('item__cart__content__description')[0].getElementsByTagName('p')[1];
+            var string = priceElement.textContent;
+            var price = string.substring(0,string.match(/\s/g).length -1 -4);
+            var price0 = parseInt(price); 
+            totalPrice0 += quantity0*price0
+        }
+    }
+    var totalPrice = toPriceString(totalPrice0) 
+    +',00';
+    totalPriceHTML.textContent = totalPrice;
+    return totalPrice0;
+}
+
 var totalQuantityCalc=()=>{
-    var totalQuantity0 = 0
-
-    var finalStorageArr = setPurchase();
-    finalStorageArr.forEach(line =>{
-        var quantity = quantityInLine(line);
-        var quantity0 = parseInt(quantity);
-        totalQuantity0 += quantity0; 
-    })
-    var totalQuantity= totalQuantity0.toString();
-    return totalQuantity;
-}
-var totalPriceCalc=(data) =>{
-    var totalPrice0 =0;
-    var finalStorageArr = setPurchase();
-    finalStorageArr.forEach(line =>{
-        var quantity = quantityInLine(line);
-        var quantity0 = parseInt(quantity);
-        var id = idInLine(line);
-        var price0=0
-        i=0;
-        
-        do{
-            if(data[i]._id == id){
-                price0 = dataArr[i].price;
-            }
-            i++;
-        }while(i < data.length)
-       
-        totalPrice0 += quantity0*price0;
-    })
-    var totalPrice = totalPrice0.toString();
-    return totalPrice;
+    var totalQuantity0 = 0;
+    var totalQuantityHTML = document.getElementById("totalQuantity");
+    var inputs = document.getElementsByTagName('input');
+ 
+    for(let i=0; i<inputs.length; i++){      
+        if(inputs[i].name == 'itemQuantity'){
+            var input = inputs[i];
+            item = input.closest("article");
+            var quantity = input.value;
+            var quantity0 = parseInt(quantity);
+            totalQuantity0 += quantity0
+        }
+    }
+    var totalQuantity = totalQuantity0.toString();
+    totalQuantityHTML.textContent = totalQuantity;
+    return totalQuantity0;
 }
 
-var createCollection =(data)=>{
-    var itemCollection = new HTMLCollection();
+var createCollection =(data)=>{  
     i = 0;
     var finalStorageArr = setPurchase();
-    finalStorageArr.forEach(line =>{
-        
+    var cartItems = document.getElementById("cart__items");
+
+    finalStorageArr.forEach(line =>{       
         var color = colorInLine(line);
         var quantity = quantityInLine(line);
         var id = idInLine(line);
+        var price0 = 0;
+        var price ="";
+        var nameKanap ="";
+        var imageUrlKanap ="";
+        var altTxtKanap ="";
         i=0;
         
         do{
@@ -230,15 +236,15 @@ var createCollection =(data)=>{
         var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
         itemContent.classList.add('cart__item__content');
         var item = document.createElement("section");
-        item.classList.add('cart__item');
+        item.classList.add('cart__item');        
         item.dataset.id = id;
         item.dataset.color = color;
         item.appendChild(itemImage);
         item.appendChild(itemContent);
-        itemCollection[i]=item;
+        cartItems.appendChild(item);
         i++;
     })
-    return itemCollection; 
+    return cartItems; 
 }           
 //création d'une section d'items comportant une fiche/article par produit commandé
 
@@ -252,82 +258,66 @@ fetch("http://localhost:3000/api/products")
         return res.json();
     }
 })
-.then (data => {
+.then(data => {
     return data;
 })
 .then(data =>{
-    var itemCollection = createCollection(data);
-    return itemCollection;
+    var cartItems = createCollection(data);
+    return cartItems;
 })
-.catch (err => console.log('erreur suivante:'+ err))
+.catch (err => {
+    console.log('erreur suivante:'+ err);
+    return err;
+})
 
 
-var totalPrice = totalPriceCalc(data)
-    var cart = document.querySelector(".cart");
     
-    cart.removeChild(cart.querySelector("#cart__items"));
-    cart.querySelector("#cart__items").append(itemCollection);
-    cart.appendChid(cart.querySelector("#cart__items"));
-    var totalQuantity = totalQuantityCalc();
-    ;
-    cart.querySelector('#totalQuantity').textContent = totalQuantity;
-    cart.querySelector('#totalPrice').textContent
-    = totalPrice;
-    return cart;   
-
 
 
 //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
 const main =async()=>{
-    var cart = await create();
-    var finalStorageArr =setPurchase();
-    var itemCollection = cart.querySelectorAll("article.item__cart");
+    var cartItems = await create();  
+    var totalPrice0 =totalPriceCalc();
+    var totalQuantity0 = totalQuantityCalc();
+    var totalQuantityHTML = document.getElementById("totalQuantity");
+    var totalPriceHTML = document.getElementById("totalPrice");
+    var inputs = document.getElementsByName('itemQuantity');
+    var deletes = document.getElementsByClassName('deleteItem');
 
-    var totalQuantity = totalQuantityHTML.textContent
-    var totalQuantity0 = parseInt(totalQuantity);
-    var string = totalPriceHTML.textContent;
-    var totalPrice = string.substring(0,string.match(/\s/g).length -1 -3);
-    var totalPrice0 = parseInt(totalPrice);
-
-    cartItemCollection.forEach(item => {
-        var inputHTML = item.closest("input");
-        var color = item.dataset.color;
+    inputs.forEach(input =>{
+        var item = input.closest("article");
         var id = item.dataset.id;
-        var name =item.querySelector('h2').textContent;
-        var idName = name.substring(6);
-        var string = item.querySelector('.cart__item__content__description').querySelectorAll('p')[1].textContent;
-        var price = string.substring(0,string.match(/\s/g).length -1 -4);
+        var color = item.dataset.color;
+        var quantity = input.getAttribute("value");
+        var quantity0 = parseInt(quantity);
+        var theName = item.getElementsByTagName('h2')[0];
+        var idName = theName.textContent.substring(6);
+        var thePrice = item
+            .getElementsByClassName('cart__item__content__description')[0]
+            .getElementsByTagName('p')[1];
+        var string = thePrice.textContent;
+        var price = string.substring(0,string.length -1 -3);
         var price0 = parseInt(price);
 
-        var line = finalStorageArr[i];
-        var part1EndIndex =line.search(/[,]/);
-        var part2 = line.substring(part1EndIndex+1);
-        var part2FirstPartEndIndex = part2.search(/[,]/);
-        var quantity= part2.substring(part2FirstPartEndIndex+1);             
-        var quantity0 = parseInt(quantity);
-
-        console.log('idName foreach item = '+idName);
-        console.log('color foreach item = '+color);        
-        console.log('id foreach item = '+id);
-        console.log('price foreach item = '+price);
-        console.log('price0 foreach item: '+ price0); 
-        console.log('quantity foreach item ='+quantity)
-        console.log('quantity0 foreach item ='+quantity0)
-
-        inputHTML.addEventListener('change', function (e) {
+        input.addEventListener('change', function (e) {
             var quantityNow0 = 0;
             var quantityNow = e.target.value;
             quantityNow0 =parseInt(quantityNow);
 
             var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
-            var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0
+            var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0;
 
             totalQuantityHTML.textContent=totalQuantityNow0.toString();
+
             totalPriceHTML.textContent = toPriceString(totalPriceNow0) +',00';
 
-            finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1, [id+','+color+','+quantityNow]);
+            finalStorageArr.splice(
+                finalStorageArr.indexOf(
+                    id+','+color+','+quantity),1, 
+                    [id+','+color+','+quantityNow]);
+
             localStorage.setItem(idName+','+color,[id+','+color+','+quantityNow]);
             
             console.log('totalQuantityNow0 foreach item -listen quantityinput-= '+totalQuantityNow0);
@@ -347,6 +337,7 @@ const main =async()=>{
             totalPriceNow0 = totalPrice0 - quantity0*price0;
 
             totalQuantityHTML.textContent= totalQuantityNow0.toString();
+
             totalPriceHTML.textContent = toPriceString(totalPriceNow0) + ',00';
  
             cartItems.removeChild(item);
@@ -364,15 +355,8 @@ const main =async()=>{
             finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1)
             localStorage.removeItem(idName+','+color);
         })
-    })   
+    })
 }
-
-
-//vRvY              
-    
-
-    
-
 
 main();
 
