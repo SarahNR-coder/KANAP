@@ -12,7 +12,7 @@ const retrieveData = () =>fetch("http://localhost:3000/api/products")
     return data;})
 .catch (err => console.log('erreur suivante:'+ err))
 
-function setPurchase(){
+ var setPurchase=()=>{
     var lineValue0 = localStorage.getItem(localStorage.key(0));
     var finalStorageArr =new Array("");
     finalStorageArr[0] = lineValue0;      
@@ -147,110 +147,131 @@ var addContentTocartItem =(color, quantity, nameKanap, price) =>
     return itemContent;
 }
 
-const seekTotalQuantityElement=()=>{
-    const totalQuantityHTML = document.getElementById('totalQuantity');
-    return totalQuantityHTML;
+var idInLine = (line)=>{
+    var part1 = line.substring(0,
+    line.search(/[,]/)   +1);
+    var id = part1;
+    return id; 
 }
-const seekTotalPriceElement =()=>{
-    const totalPriceHTML = document.getElementById('totalPrice');
-    return totalPriceHTML;
+var colorInLine = (line)=>{
+    var part2 = line.substring(
+    line.search(/[,]/)    +1);
+    var color= part2.substring(0,
+    line.search(/[,]/)    +1);
+    return color;
+}
+
+var quantityInLine = (line)=>{
+    var part2 = line.substring(
+    line.search(/[,]/)    +1);
+    var quantity= part2.substring(
+    line.search(/[,]/)    +1);
+
+    return quantity;
+}
+const image=(line)=>
+{
+    var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
+    itemImage.classList.add('cart__item__img');
+    return itemImage;
+}
+
+const content=(line)=>{
+var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
+itemContent.classList.add('cart__item__content');
+return itemContent;
 }
 
 //création d'une section d'items comportant une fiche/article par produit commandé
+
+//**************************************************
+
+
 const createArticlesAndAppendToSection =()=> 
-function(){
-    const totalQuantityHTML=
-    seekTotalQuantityElement();
-    return totalQuantityHTML
-}
-.then(function(){
-    const totalPriceHTML = seekTotalPriceElement();
-    return totalPriceHTML;
-})
-.then(function(){
-    const cart = document.getElementsByClassName("cart")[0];
-    return cart;
-})
-.then(function(){
-    const cartItems = document.getElementById("cat__items");
-    return cartItems;
-})
-.then(fetch("http://localhost:3000/api/products"))
+fetch("http://localhost:3000/api/products")
 .then(res =>{
     if (res.ok){
         return res.json();
     }
 })
 .then (data => {
-    var dataArr = new Array();
-    dataArr = data;
-    console.log('dataArr = '+dataArr);
-    return dataArr;
+    return data;
 })
-.then(function() 
-{   var finalStorageArr = setPurchase();
-    return finalStorageArr
-})
-.then( function totalQuantityCart(finalStorageArr){
-    var totalQuantity0 = 0
+.then(data=> {
+    i = 0;
+    var finalStorageArr = setPurchase();
     finalStorageArr.forEach(line =>{
-
-        function calcQuantity (line){
-            var part1EndIndex = 0;
-            part1EndIndex = line.search(/[,]/);
-            var part2 = line.substring(part1EndIndex+1);
-            var part2FirstPartEndIndex = part2.search(/[,]/);
-            var quantity= part2.substring(part2FirstPartEndIndex+1);
-
-            return quantity;
-        }
-    })
-    totalQuantity0 += quantity0;    
-    var quantity0 = parseInt(quantity);
-})
-.then(dataArr => dataArr)
-.then(dataArr, finalStorageArr => {
-    finalStorageArr.forEach(line =>{
-        var part1EndIndex =line.search(/[,]/);
-        var part2 = line.substring(part1EndIndex+1); 
-        var quantity = calcQuantity(line);       
-        var id = line.substring(0,part1EndIndex);
-        var color= part2.substring(0,part2.length - quantity.length);
-
-        var quantity0 = parseInt(quantity);
-        totalQuantity0 += quantity0;
-
-        dataArr.forEach(item => {
-            if(item._id == id){
-                var price0 = item.price;
-
-                totalPrice0 += price0*quantity0;
-
+        
+        var color = colorInLine(line);
+        var quantity = quantityInLine(line);
+        var id = idInLine(line);
+        i=0;
+        
+        do{
+            if(data[i]._id == id){
+                price0 = data[i].price;
                 price = toPriceString(price0);
-                console.log('price0 from data = '+price0)
-                console.log('from price0 from data : price = '+price);
-
-                nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
-                altTxtKanap = data[j].altTxt;
-
-                const image=(line)=>
-                {
-                    var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
-                    itemImage.classList.add('cart__item__img');
-                    return itemImage;
-                }
-                
-                const content=(line)=>{
-                var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
-                itemContent.classList.add('cart__item__content');
-                return itemContent;
-                }
-            }  
+                nameKanap = data[i].name;        imageUrlKanap = data[i].imageUrl;
+                altTxtKanap = data[i].altTxt;
+            }
+            i++;
+        }while(i < data.length)
+  
         var itemImage = image(line);
         var itemContent = content(line)
-        return itemImage, itemContent;
-        })     
-    })   
+        var item = document.createElement("section");
+        item.classList.add('cart__item');
+        item.dataset.id = id;
+        item.dataset.color = color;
+        item.appendChild(itemImage);
+        item.appendChild(itemContent);
+        var itemCollection = new HTMLCollection(item);
+        i++;
+    })
+    return itemCollection;         
+})
+.then(  ()=>{
+    var totalQuantity0 = 0
+
+    var finalStorageArr = setPurchase();
+    finalStorageArr.forEach(line =>{
+        var quantity = quantityInLine(line);
+        var quantity0 = parseInt(quantity);
+        totalQuantity0 += quantity0; 
+    })
+    var totalQuantity= totalQuantity0.toString();
+    return totalQuantity;    
+})
+.then( data =>{
+    var totalPrice0 =0;
+    var finalStorageArr = setPurchase();
+    finalStorageArr.forEach(line =>{
+        var quantity = quantityInLine(line);
+        var quantity0 = parseInt(quantity);
+        var id = idInLine(line);
+        var price0=0
+        i=0;
+        
+        do{
+            if(data[i]._id == id){
+                price0 = dataArr[i].price;
+            }
+            i++;
+        }while(i < data.length)
+       
+        totalPrice0 += quantity0*price0;
+        var totalPrice = totalPrice0.toString();
+        return totalPrice;
+    }
+)})
+.then(itemCollection =>{
+    cart.removeChild(cart.querySelector("#cart__items"));
+    cart.querySelector("#cart__items").append(itemCollection);
+    cart.appendChid(cart.querySelector("#cart__items"));
+    cart.querySelector('#totalQuantity').textContent = totalQuantity;
+    cart.querySelector('#totalPrice').textContent
+    = totalPrice;
+    return cart;   
 })
 .catch (err => console.log('erreur suivante:'+ err))
 
