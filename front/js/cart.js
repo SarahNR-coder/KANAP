@@ -169,35 +169,43 @@ var quantityInLine = (line)=>{
 
     return quantity;
 }
-const image=(line)=>
-{
-    var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
-    itemImage.classList.add('cart__item__img');
-    return itemImage;
+var totalQuantityCalc=()=>{
+    var totalQuantity0 = 0
+
+    var finalStorageArr = setPurchase();
+    finalStorageArr.forEach(line =>{
+        var quantity = quantityInLine(line);
+        var quantity0 = parseInt(quantity);
+        totalQuantity0 += quantity0; 
+    })
+    var totalQuantity= totalQuantity0.toString();
+    return totalQuantity;
+}
+var totalPriceCalc=(data) =>{
+    var totalPrice0 =0;
+    var finalStorageArr = setPurchase();
+    finalStorageArr.forEach(line =>{
+        var quantity = quantityInLine(line);
+        var quantity0 = parseInt(quantity);
+        var id = idInLine(line);
+        var price0=0
+        i=0;
+        
+        do{
+            if(data[i]._id == id){
+                price0 = dataArr[i].price;
+            }
+            i++;
+        }while(i < data.length)
+       
+        totalPrice0 += quantity0*price0;
+    })
+    var totalPrice = totalPrice0.toString();
+    return totalPrice;
 }
 
-const content=(line)=>{
-var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
-itemContent.classList.add('cart__item__content');
-return itemContent;
-}
-
-//création d'une section d'items comportant une fiche/article par produit commandé
-
-//**************************************************
-
-
-const createArticlesAndAppendToSection =()=> 
-fetch("http://localhost:3000/api/products")
-.then(res =>{
-    if (res.ok){
-        return res.json();
-    }
-})
-.then (data => {
-    return data;
-})
-.then(data=> {
+var createCollection =(data)=>{
+    var itemCollection = new HTMLCollection();
     i = 0;
     var finalStorageArr = setPurchase();
     finalStorageArr.forEach(line =>{
@@ -216,157 +224,66 @@ fetch("http://localhost:3000/api/products")
             }
             i++;
         }while(i < data.length)
-  
-        var itemImage = image(line);
-        var itemContent = content(line)
+
+        var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
+        itemImage.classList.add('cart__item__img');
+        var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
+        itemContent.classList.add('cart__item__content');
         var item = document.createElement("section");
         item.classList.add('cart__item');
         item.dataset.id = id;
         item.dataset.color = color;
         item.appendChild(itemImage);
         item.appendChild(itemContent);
-        var itemCollection = new HTMLCollection(item);
+        itemCollection[i]=item;
         i++;
     })
-    return itemCollection;         
-})
-.then(  ()=>{
-    var totalQuantity0 = 0
+    return itemCollection; 
+}           
+//création d'une section d'items comportant une fiche/article par produit commandé
 
-    var finalStorageArr = setPurchase();
-    finalStorageArr.forEach(line =>{
-        var quantity = quantityInLine(line);
-        var quantity0 = parseInt(quantity);
-        totalQuantity0 += quantity0; 
-    })
-    var totalQuantity= totalQuantity0.toString();
-    return totalQuantity;    
-})
-.then( data =>{
-    var totalPrice0 =0;
-    var finalStorageArr = setPurchase();
-    finalStorageArr.forEach(line =>{
-        var quantity = quantityInLine(line);
-        var quantity0 = parseInt(quantity);
-        var id = idInLine(line);
-        var price0=0
-        i=0;
-        
-        do{
-            if(data[i]._id == id){
-                price0 = dataArr[i].price;
-            }
-            i++;
-        }while(i < data.length)
-       
-        totalPrice0 += quantity0*price0;
-        var totalPrice = totalPrice0.toString();
-        return totalPrice;
+//**************************************************
+
+
+var create =()=> 
+fetch("http://localhost:3000/api/products")
+.then(res =>{
+    if (res.ok){
+        return res.json();
     }
-)})
-.then(itemCollection =>{
+})
+.then (data => {
+    return data;
+})
+.then(data =>{
+    var itemCollection = createCollection(data);
+    return itemCollection;
+})
+.catch (err => console.log('erreur suivante:'+ err))
+
+
+var totalPrice = totalPriceCalc(data)
+    var cart = document.querySelector(".cart");
+    
     cart.removeChild(cart.querySelector("#cart__items"));
     cart.querySelector("#cart__items").append(itemCollection);
     cart.appendChid(cart.querySelector("#cart__items"));
+    var totalQuantity = totalQuantityCalc();
+    ;
     cart.querySelector('#totalQuantity').textContent = totalQuantity;
     cart.querySelector('#totalPrice').textContent
     = totalPrice;
     return cart;   
-})
-.catch (err => console.log('erreur suivante:'+ err))
 
-    
 
-    const totalQuantityHTML = document.getElementById('totalQuantity');
-    const totalPriceHTML = document.getElementById('totalPrice');
-    var totalQuantity0 =0;
-    var totalPrice0 =0;
-    const cartItems = document.getElementById('cart__items');    
-    for(let i=0; i<finalStorageArr.length; i++){
-        
-        const cartItem = document.createElement('article');
-        cartItem.classList.add('cart__item');
-        cartItems.appendChild(cartItem);
 
-        var line ="";
-        line = finalStorageArr[i];
-        var part1EndIndex =line.search(/[,]/);
-        var part2 = line.substring(part1EndIndex+1);
-        var part2FirstPartEndIndex = part2.search(/[,]/);
-        var quantity= part2.substring(part2FirstPartEndIndex+1);
-        
-        var id = line.substring(0,part1EndIndex);
-        var color= part2.substring(0,part2FirstPartEndIndex);              
-        var quantity0 = parseInt(quantity);
-
-        totalQuantity0 += quantity0;
-        
-        console.log('id arr ='+id);
-        console.log('color arr ='+color);
-        console.log('quantity arr = '+ quantity);
-        console.log('quantity0, from quantity arr, ='+quantity0);
-
-        var nameKanap="";
-        var price0 = 0;
-        var price = "";
-        var imageUrlKanap = "";
-        var altTxtKanap = "";
-
-        cartItem.setAttribute('data-id',id);
-        cartItem.setAttribute('data-color',color); 
-    
-        //*Boucle for : à chaque ligne du LocalStorage (panier) on extrait l'id, la couleur et la quantité;
-        //***recherche de l'élement du panier dans le catalogue (data) grâce à l'id
-        //**je crée une vignette cartItem 'article.cart__item' pour chaque produit-panier correspondant chacunes à une ligne du tableau-panier (localStorage)
-        var j=0;
-        do{//***
-            if(data[j]._id == id){
-                price0 = data[j].price;
-
-                totalPrice0 += price0*quantity0;
-
-                price = toPriceString(price0);
-                console.log('price0 from data = '+price0)
-                console.log('from price0 from data : price = '+price);
-
-                nameKanap = data[j].name;        imageUrlKanap = data[j].imageUrl;
-                altTxtKanap = data[j].altTxt;
-
-                var itemImage =addImageTocartItem(imageUrlKanap, altTxtKanap);
-                itemImage.classList.add('cart__item__img');
-            
-                var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
-                itemContent.classList.add('cart__item__content');
-                
-                cartItem.appendChild(itemImage);
-                //**
-                cartItem.appendChild(itemContent);
-                //***
-
-                //*pour chaque produit-panier que l'on ajoute le prix global augmente du prix correspondant à ce seul produit panier: la quantité d'occurences de ce produit panier (quantité de ce même produit)*le prix unitaire de ce produit-panier;
-                //**à un id donné correspond une section image donnée
-                //***à un id donné correspond une section content donnée
-            }
-            j++;    
-        }while(j<data.length);
-    }
-    var totalQuantity = totalQuantity0.toString();
-    totalQuantityHTML.textContent= totalQuantity;
-    var totalPrice = toPriceString(totalPrice0);
-    var string = totalPrice + ',00';
-    totalPriceHTML.textContent= string;
-
-    return cartItems;
-}
 //à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
 //on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
 
 const main =async()=>{
-    const data = await retrieveData();
+    var cart = await create();
     var finalStorageArr =setPurchase();
-    var cartItems = createArticlesAndAppendToSection(data, finalStorageArr);
-
-    var cartItemCollection = cartItems.querySelectorAll("article");
+    var itemCollection = cart.querySelectorAll("article.item__cart");
 
     var totalQuantity = totalQuantityHTML.textContent
     var totalQuantity0 = parseInt(totalQuantity);
