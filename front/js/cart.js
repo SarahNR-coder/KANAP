@@ -61,7 +61,7 @@ var addImageTocartItem =(imageUrlKanap, altTxtKanap)=>
     itemImageShown.setAttribute('alt', altTxtKanap);
 
     itemImage.appendChild(itemImageShown);
-    console.log("je passe dans image");
+    //console.log("je passe dans image");
 
     return itemImage;
 }
@@ -148,46 +148,49 @@ var colorInLine = (line)=>{
     location +1, line.length-1);
     var location2 = colorAndQuantity.search(/[,]/) + location;
     var color= line.substring(location +1, +location2 +1 );
+    // console.log("color : '" + color + "'");
     return color;
 }
 
 var quantityInLine = (line)=>{
+    // console.log("line : " + line);
     var location =  line.search(/[,]/);
-    //console.log("location : " + location);
-    var colorAndQuantity = line.substring(
-    location +1, line.length-1);
-    //console.log("colorAndQuantity : " + colorAndQuantity);
-    var location2 = colorAndQuantity.search(/[,]/) + location + 1;
-    //console.log("location2 : " + location2);
-    var quantity = line.substring(location2 + 1, line.length-1);
-    //console.log("quantity : " + quantity);
+    // console.log("location : " + location);
+    var colorAndQuantity = line.substring(location +1, line.length);
+    // console.log("colorAndQuantity : '" + colorAndQuantity + "'");
+    // var location2 = colorAndQuantity.search(/[,]/) + location + 1;
+    var locationSecond = colorAndQuantity.search(/[,]/) +1;
+    // console.log("locationSecond : " + locationSecond);
+    // var quantity = line.substring(location2 + 1, line.length-1);
+    var quantity = colorAndQuantity.substring(locationSecond, colorAndQuantity.length);
+    // console.log("quantity : " + quantity);
     return quantity;
 }
 
 var totalPriceCalc=()=>{
     var totalPrice0 = 0;
     var totalPriceHTML = document.getElementById("totalPrice");
-    //console.log("totalPriceHTML : " + totalPriceHTML.nodeName);
+    // console.log("totalPriceHTML : " + totalPriceHTML.nodeName);
     var inputs = document.getElementsByName("itemQuantity");
-    //console.log("inputs : " + inputs.length);
+    // console.log("inputs : " + inputs.length);
     // var itemColl = document.getElementsByClassName('cart__item');
  
     for(let i=0; i<inputs.length; i++){
         // var item = itemColl[i];
         var input = inputs[i];
-        //var item = input.closest("article");
+        // var item = input.closest("article");
         var quantity = input.value;
         //console.log("quantity s'il te plait avec value : " + quantity);
         var quantity0 = parseInt(quantity);
-        //console.log("quantity0 : " + quantity0);
+        // console.log("quantity0 : " + quantity0);
         var priceElement = document.getElementsByClassName('cart__item__content__description')[i].getElementsByTagName('p')[1];
-        //console.log("priceElement : " + priceElement.nodeName);
+        // console.log("priceElement : " + priceElement.nodeName);
         var string = priceElement.textContent;
-        //console.log("string : " + string);
+        // console.log("string : " + string);
         var price = string.substring(0,string.length - string.match(/\s/g).length -3);
-        //console.log("price : " + price);
+        // console.log("price : " + price);
         price = price.replace(/ /g, "");
-        //console.log("price : " + price);
+        // console.log("price : " + price);
         var price0 = parseInt(price); 
         totalPrice0 += quantity0*price0;
     }
@@ -200,7 +203,9 @@ var totalPriceCalc=()=>{
 var totalQuantityCalc=()=>{
     var totalQuantity0 = 0;
     var totalQuantityHTML = document.getElementById("totalQuantity");
+    // console.log('totalQuantityHTML : ' + totalQuantityHTML.nodeName);
     var inputs = document.getElementsByTagName('input');
+    // console.log('inputs : ' + inputs.length);
  
     for(let i=0; i<inputs.length; i++){      
         if(inputs[i].name == 'itemQuantity'){
@@ -223,9 +228,12 @@ var createCollection =(data)=>{
 
     finalStorageArr.forEach(line =>{       
         var color = colorInLine(line);
+        //console.log("color : " + color);
         var quantity = quantityInLine(line);
-        console.log('quantity : ' + quantity);
+        //console.log('quantity : ' + quantity);
         var id = idInLine(line);
+        //console.log("id : " + id);
+
         var price0 = 0;
         var price ="";
         var nameKanap ="";
@@ -297,7 +305,7 @@ const main =async()=>{
     var totalPrice0 = totalPriceCalc();
     //console.log("totalPrice0 : " + totalPrice0);
     var totalQuantity0 = totalQuantityCalc();
-    //console.log("totalQuantity0 : " + totalQuantity0);
+    console.log("totalQuantity0 : " + totalQuantity0);
     var inputs = document.getElementsByName('itemQuantity');
     //var deletes = document.getElementsByClassName('deleteItem');
 
@@ -326,15 +334,22 @@ const main =async()=>{
         inputs[i].addEventListener('change', function (e) {
             var quantityNow0 = 0;
             var quantityNow = e.target.value;
-            quantityNow0 =parseInt(quantityNow);
+            quantityNow0 = parseInt(quantityNow);
+            console.log("quantityNow0 : " + quantityNow0);
 
             var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
+            console.log("totalQuantityNow0 : " + totalQuantityNow0);
             var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0;
+            console.log("totalPriceNow0 : " + totalPriceNow0);
 
             totalQuantityHTML.textContent=totalQuantityNow0.toString();
+            console.log("totalQuantityHTML : " + totalQuantityHTML.textContent);
 
-            totalPriceHTML.textContent = toPriceString(totalPriceNow0) +',00';
+            // totalPriceHTML.textContent = toPriceString(totalPriceNow0) +',00';
+            totalPriceHTML.textContent = totalPriceNow0.toString() + ',00';
+            console.log("totalPriceHTML : " + totalPriceHTML.textContent);
 
+            var finalStorageArr = setPurchase();
             finalStorageArr.splice(
                 finalStorageArr.indexOf(
                     id+','+color+','+quantity),1, 
@@ -374,6 +389,7 @@ const main =async()=>{
             console.log('price0 foreach item -listen erasor- = '+ price0); 
             console.log('quantity0 foreach item -listen erasor- = '+quantity0);  
 
+            var finalStorageArr = setPurchase();
             finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1)
             localStorage.removeItem(idName+','+color);
         })
