@@ -177,7 +177,7 @@ var totalPriceCalc=()=>{
  * Calcul de la quantité totale
  */
 var totalQuantityCalc=()=>{
-    var totalQuantity0 = 0;
+    var totalQuantityInt = 0;
     var totalQuantityHTML = document.getElementById("totalQuantity");
     var inputs = document.getElementsByTagName('input');
 
@@ -186,14 +186,14 @@ var totalQuantityCalc=()=>{
             var input = inputs[i];
             item = input.closest("article");
             var quantity = input.value;
-            var quantity0 = parseInt(quantity);
-            totalQuantity0 += quantity0
+            var quantityInt = parseInt(quantity);
+            totalQuantityInt += quantityInt
         }
     }
 
-    var totalQuantity = totalQuantity0.toString();
+    var totalQuantity = totalQuantityInt.toString();
     totalQuantityHTML.textContent = totalQuantity;
-    return totalQuantity0;
+    return totalQuantityInt;
 }
 
 /**
