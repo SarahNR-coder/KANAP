@@ -1,72 +1,46 @@
-//fonctions de récupération de données-------------
+// Fichier de gestion de la page panier
 
+/**
+ * @returns {string[]}
+ * Aquisition des données du localStorage
+ */
  var setPurchase=()=>{
-    //var lineValue0 = localStorage.getItem(localStorage.key(0));
-    var finalStorageArr =new Array("");
-    //finalStorageArr[0] = lineValue0;      
-    for(let i=0; i<localStorage.length; i++){ 
-        var line= localStorage.getItem(localStorage.key(i));            
-        finalStorageArr[i]=line;
-    }
-    return finalStorageArr;
-}
-
-
-//fonctions de calcul de prix string à partir de prix nombres et l'inverse
-
-
-function toPriceString (price0){
-    var string ="";
-    string= price0.toString();
-    var stringLength = string.length;
-    var price ="";
-
-    if(stringLength <4){
-        price = string;
-    }else{
-                    
-        var lastCharIndex = stringLength -1;
-        var numberOfCharTrios = Math.floor(stringLength/3);
-        var totalCharsTrios =numberOfCharTrios*3;
-        var string1stPart ="";
-
-        var end1stPartIndex = stringLength - totalCharsTrios;
-
-        string1stPart =string.substring(0, end1stPartIndex);
-        var startLastPartIndex = lastCharIndex - 3;
-        var stringLastPart = string.substring(startLastPartIndex,lastCharIndex);
-
-        price = string1stPart;
-
-        for(let i=0;end1stPartIndex+i<startLastPartIndex; i+=3 ){
-            var stringMiddlePart = string.substring(end1stPartIndex+i,end1stPartIndex+i+3);
-
-            var stringAllMiddleParts = ' '+ stringMiddlePart;
-            price += stringAllMiddleParts;
-
+    var cartArray =null;
+    if(localStorage.length != 0){
+        cartArray =new Array("");
+        for(let i=0; i<localStorage.length; i++){ 
+            var line= localStorage.getItem(localStorage.key(i));            
+            cartArray[i]=line;
         }
-        price +=' '+stringLastPart;
-    } 
-    return price;
+        return cartArray;
+    }
+    return cartArray;
 }
 
-//Fonctions création de contenu---------------------
-
-//création de l'image de la vignette produit-panier à partir d'une variable qui est un block div itemImage où l'on insére l'url de l'image et son texte alternatif, block image que l'on retourne;
+/**
+ * @param {any} imageUrlKanap 
+ * @param {any} altTxtKanap 
+ * @returns {HTMLDivElement}
+ * Création de l'image de la fiche produit panier
+ */
 var addImageTocartItem =(imageUrlKanap, altTxtKanap)=>
 {
     const itemImage = document.createElement('div');
     const itemImageShown = document.createElement('img');
     itemImageShown.setAttribute('src', imageUrlKanap);
     itemImageShown.setAttribute('alt', altTxtKanap);
-
     itemImage.appendChild(itemImageShown);
-    //console.log("je passe dans image");
-
     return itemImage;
 }
-//création du contenu de la vignette produit-panier à partir d'une variable qui est un block div itemContent, où l'on insère la couleur, le nom, et le prix du produit-panier dans un block div description et sa quantité dans un élément input (quantité changeable), block content que l'on retourne;
 
+/**
+ * @param {any} color 
+ * @param {any} quantity 
+ * @param {any} nameKanap 
+ * @param {any} price 
+ * @returns {HTMLDivElement}
+ * Création du contenu de la fiche produit panier
+ */
 var addContentTocartItem =(color, quantity, nameKanap, price) =>
 {
     const itemContent = document.createElement('div');
@@ -91,8 +65,6 @@ var addContentTocartItem =(color, quantity, nameKanap, price) =>
     const descriptionThePrice = document.createElement('p');
     var string = price+',00 €'; 
     descriptionThePrice.textContent = string ;
-    console.log('price : ' + price);
-    console.log('string : ' + string);
 
     //#.1
     contentDescription.appendChild(descriptionTheName)//#.1.1
@@ -136,77 +108,79 @@ var addContentTocartItem =(color, quantity, nameKanap, price) =>
     return itemContent;
 }
 
+/**
+ * @param {any} line 
+ * @returns {any}
+ * Extraction de l'identifiant
+ */
 var idInLine = (line)=>{
     var location = line.search(/[,]/);
     var id = line.substring(0,
     location);
     return id; 
 }
+
+/**
+ * @param {any} line 
+ * @returns {any}
+ * Extraction de la couleur
+ */
 var colorInLine = (line)=>{
     var location = line.search(/[,]/);
     var colorAndQuantity = line.substring(
     location +1, line.length-1);
-    var location2 = colorAndQuantity.search(/[,]/) + location;
-    var color= line.substring(location +1, +location2 +1 );
-    // console.log("color : '" + color + "'");
+    var locationSecond = colorAndQuantity.search(/[,]/) + location;
+    var color= line.substring(location +1, +locationSecond +1 );
     return color;
 }
 
+/**
+ * @param {any} line 
+ * @returns {any}
+ * Extraction de la quantité
+ */
 var quantityInLine = (line)=>{
-    // console.log("line : " + line);
     var location =  line.search(/[,]/);
-    // console.log("location : " + location);
     var colorAndQuantity = line.substring(location +1, line.length);
-    // console.log("colorAndQuantity : '" + colorAndQuantity + "'");
-    // var location2 = colorAndQuantity.search(/[,]/) + location + 1;
     var locationSecond = colorAndQuantity.search(/[,]/) +1;
-    // console.log("locationSecond : " + locationSecond);
-    // var quantity = line.substring(location2 + 1, line.length-1);
     var quantity = colorAndQuantity.substring(locationSecond, colorAndQuantity.length);
-    // console.log("quantity : " + quantity);
     return quantity;
 }
 
+/**
+ * @returns {int}
+ * Calcul du prix total
+ */
 var totalPriceCalc=()=>{
-    var totalPrice0 = 0;
+    var totalPriceInt = 0;
     var totalPriceHTML = document.getElementById("totalPrice");
-    // console.log("totalPriceHTML : " + totalPriceHTML.nodeName);
     var inputs = document.getElementsByName("itemQuantity");
-    // console.log("inputs : " + inputs.length);
-    // var itemColl = document.getElementsByClassName('cart__item');
  
     for(let i=0; i<inputs.length; i++){
-        // var item = itemColl[i];
         var input = inputs[i];
-        // var item = input.closest("article");
         var quantity = input.value;
-        //console.log("quantity s'il te plait avec value : " + quantity);
-        var quantity0 = parseInt(quantity);
-        // console.log("quantity0 : " + quantity0);
+        var quantityInt = parseInt(quantity);
         var priceElement = document.getElementsByClassName('cart__item__content__description')[i].getElementsByTagName('p')[1];
-        // console.log("priceElement : " + priceElement.nodeName);
         var string = priceElement.textContent;
-        // console.log("string : " + string);
         var price = string.substring(0,string.length - string.match(/\s/g).length -3);
-        // console.log("price : " + price);
         price = price.replace(/ /g, "");
-        // console.log("price : " + price);
-        var price0 = parseInt(price); 
-        totalPrice0 += quantity0*price0;
+        var priceInt = parseInt(price); 
+        totalPriceInt += quantityInt*priceInt;
     }
-    var totalPrice = toPriceString(totalPrice0) 
-    +',00';
+    var totalPrice = totalPriceInt.toString() +',00';
     totalPriceHTML.textContent = totalPrice;
-    return totalPrice0;
+    return totalPriceInt;
 }
 
+/**
+ * @returns {int}
+ * Calcul de la quantité totale
+ */
 var totalQuantityCalc=()=>{
     var totalQuantity0 = 0;
     var totalQuantityHTML = document.getElementById("totalQuantity");
-    // console.log('totalQuantityHTML : ' + totalQuantityHTML.nodeName);
     var inputs = document.getElementsByTagName('input');
-    // console.log('inputs : ' + inputs.length);
- 
+
     for(let i=0; i<inputs.length; i++){      
         if(inputs[i].name == 'itemQuantity'){
             var input = inputs[i];
@@ -216,26 +190,30 @@ var totalQuantityCalc=()=>{
             totalQuantity0 += quantity0
         }
     }
+
     var totalQuantity = totalQuantity0.toString();
     totalQuantityHTML.textContent = totalQuantity;
     return totalQuantity0;
 }
 
+/**
+ * @param {any} data 
+ * @returns {HTMLElement}
+ * Recupération des données du store
+ * Création de toutes les fiches produit panier
+ */
 var createCollection =(data)=>{  
     i = 0;
-    var finalStorageArr = setPurchase();
+    var cartArray = setPurchase();
     var cartItems = document.getElementById("cart__items");
 
-    finalStorageArr.forEach(line =>{       
+    cartArray.forEach(line =>{       
         var color = colorInLine(line);
-        //console.log("color : " + color);
         var quantity = quantityInLine(line);
-        //console.log('quantity : ' + quantity);
         var id = idInLine(line);
-        //console.log("id : " + id);
 
-        var price0 = 0;
-        var price ="";
+        var priceInt = 0;
+        var priceString ="";
         var nameKanap ="";
         var imageUrlKanap ="";
         var altTxtKanap ="";
@@ -243,18 +221,18 @@ var createCollection =(data)=>{
         
         do{
             if(data[i]._id == id){
-                price0 = data[i].price;
-                price = toPriceString(price0);
+                priceInt = data[i].priceString;
+                priceString = priceInt.toString();
                 nameKanap = data[i].name;        
                 imageUrlKanap = data[i].imageUrl;
                 altTxtKanap = data[i].altTxt;
             }
             i++;
-        }while(i < data.length)
+        } while(i < data.length)
 
         var itemImage = addImageTocartItem(imageUrlKanap, altTxtKanap);
         itemImage.classList.add('cart__item__img');
-        var itemContent =addContentTocartItem(color, quantity, nameKanap, price);
+        var itemContent =addContentTocartItem(color, quantity, nameKanap, priceString);
         itemContent.classList.add('cart__item__content');
         var item = document.createElement("section");
         item.classList.add('cart__item');        
@@ -266,12 +244,11 @@ var createCollection =(data)=>{
         i++;
     })
     return cartItems; 
-}           
-//création d'une section d'items comportant une fiche/article par produit commandé
+}
 
-//**************************************************
-
-
+/**
+ * Création d'un ensemble de fiches produit panier
+ */
 var create =()=> 
 fetch("http://localhost:3000/api/products")
 .then(res =>{
@@ -291,115 +268,42 @@ fetch("http://localhost:3000/api/products")
     return err;
 })
 
-
-    
-
-
-//à chaque ligne de tableau-panier (localStorage), correspondant à un Kanapé donné avec une couleur donnée, correspond une vignette produit cartItem 'article.item__cart', que l'on ajoute (appendChild())sous la 'section.items__cart' nommée cartItems;
-//on renvoie la section remplie par les vignettes produit qui est une variable car une fois établie elle peut changer puisque l'on peut supprimer des vignettes cartItem;
-
+/**
+ * Fonction principale
+ * Gestion des evenements de modification et suppression
+ */
 const main =async()=>{
     var cartItems = await create();
-    var totalQuantityHTML = document.getElementById("totalQuantity");
-    var totalPriceHTML = document.getElementById("totalPrice");
-    var totalPrice0 = totalPriceCalc();
-    //console.log("totalPrice0 : " + totalPrice0);
-    var totalQuantity0 = totalQuantityCalc();
-    console.log("totalQuantity0 : " + totalQuantity0);
+    totalPriceCalc();
+    totalQuantityCalc();
     var inputs = document.getElementsByName('itemQuantity');
-    //var deletes = document.getElementsByClassName('deleteItem');
-    //var finalStorageArr = setPurchase();
+    var deletes = document.getElementsByClassName('deleteItem');
 
-    //inputs.forEach(input =>{
-        //var item = input.closest("article");
     for(let i=0; i<inputs.length; i++){
-        var item = document.getElementsByClassName("cart__item")[i];
-        var id = item.dataset.id;
-        //console.log("id : " + id);
-        var color = item.dataset.color;
-        var quantity = inputs[i].getAttribute("value");
-        var quantity0 = parseInt(quantity);
-        var theName = item.getElementsByTagName('h2')[0];
-        var idName = theName.textContent.substring(6);
-        var thePrice = item
-            .getElementsByClassName('cart__item__content__description')[0]
-            .getElementsByTagName('p')[1];
-        //console.log('thePrice : ' + thePrice);
-        var string = thePrice.textContent;
-        //console.log('string : ' + string);
-        var price = string.substring(0,string.length -5);
-        price = price.replace(/ /g, "");
-        //console.log('price : ' + price);
-        var price0 = parseInt(price);
-
         inputs[i].addEventListener('change', function (e) {
-            var quantityNow0 = 0;
+            var item = document.getElementsByClassName("cart__item")[i];
+            var id = item.dataset.id;
+            var color = item.dataset.color;
+            var theName = item.getElementsByTagName('h2')[0];
+            var idName = theName.textContent.substring(6);
             var quantityNow = e.target.value;
-            quantityNow0 = parseInt(quantityNow);
-            //console.log("quantityNow0 : " + quantityNow0);
-
-            var totalQuantityNow0 = totalQuantity0 - quantity0 +quantityNow0;
-            //console.log("totalQuantityNow0 : " + totalQuantityNow0);
-            var totalPriceNow0 = totalPrice0 -quantity0*price0 + quantityNow0*price0;
-            //console.log("totalPriceNow0 : " + totalPriceNow0);
-
-            totalQuantityHTML.textContent=totalQuantityNow0.toString();
-            //console.log("totalQuantityHTML : " + totalQuantityHTML.textContent);
-
-            // totalPriceHTML.textContent = toPriceString(totalPriceNow0) +',00';
-            totalPriceHTML.textContent = totalPriceNow0.toString() + ',00';
-            console.log("totalPriceHTML : " + totalPriceHTML.textContent);
-
-            var finalStorageArr = setPurchase();
-            console.log("finalStorageArr set avant : " + finalStorageArr.toString());
-            finalStorageArr.splice(
-                finalStorageArr.indexOf(
-                    id+','+color+','+quantity),1, 
-                    [id+','+color+','+quantityNow]);
-
+            totalQuantityCalc();
+            totalPriceCalc();
             localStorage.setItem(idName+','+color,[id+','+color+','+quantityNow]);
-            console.log("finalStorageArr set apres : " + finalStorageArr.toString());
-        /*    
-        console.log('totalQuantityNow0 foreach item -listen quantityinput-= '+totalQuantityNow0);
-        console.log('totalPriceNow0 foreach item -listen quantityinput-= '+totalPriceNow0);
-        console.log('idName foreach item -listen quantityinput-= '+idName);
-        console.log('color foreach item -listen quantityinput- = '+color);        
-        console.log('id foreach item  -listen quantityinput-= '+id);
-        console.log('price foreach item -listen quantityinput- = '+price);
-        console.log('price0 foreach item -listen quantityinput- = '+ price0);
-        console.log('quantityNow0 foreach item -listen quantityinput- ='+quantityNow0);
-        console.log('quantity0 foreach item -listen quantityinput- ='+quantity0);
-        */
         })
-        var erasor = item.querySelector(".deleteItem");
     
-        erasor.addEventListener('click', (_e) =>{
-            totalQuantityNow0 = totalQuantity0 -quantity0;
-            totalPriceNow0 = totalPrice0 - quantity0*price0;
-
-            totalQuantityHTML.textContent= totalQuantityNow0.toString();
-
-            totalPriceHTML.textContent = toPriceString(totalPriceNow0) + ',00';
- 
+        deletes[i].addEventListener('click', (_e) =>{
+            var item = document.getElementsByClassName("cart__item")[i];
             cartItems.removeChild(item);
-            
-            console.log("totalQuantityNow0 = '"+totalQuantityNow0+"'");
-            console.log("totalPriceNow0 = '" + totalPriceNow0 + "'");
-            console.log("totalQuantity : '" + totalQuantity + "'");
-            console.log("totalPrice : '" + totalPrice + "'");
-            console.log("idName : '" + idName + "'");
-            console.log("color : '" + color + "'");
-            console.log("price : '" + price + "'");
-            console.log("price0 : '" + price0 + "'"); 
-            console.log("quantity0 : '" + quantity0 + "'");  
-
-            var finalStorageArr = setPurchase();
-            console.log("finalStorageArr errasor : " + finalStorageArr.toString());
-            finalStorageArr.splice(finalStorageArr.indexOf(id+','+color+','+quantity),1)
+            var color = item.dataset.color;
+            var theName = item.getElementsByTagName('h2')[0];
+            var idName = theName.textContent.substring(6);
+            totalQuantityCalc();
+            totalPriceCalc();
             localStorage.removeItem(idName+','+color);
+            location.reload();
         })
     }
 }
 
 main();
-
