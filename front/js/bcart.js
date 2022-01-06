@@ -326,6 +326,10 @@ const urlIdValue =()=>{
     }
 }
 
+/** 
+ * @returns {HTMLElement}
+ * Après chargement, dans confirmation.html, ajout de l'id de commande au contenu
+ */
 const onLoad =()=>{
     
     if(document.getElementById("orderId") !== null && document.getElementById("orderId") !== undefined){
@@ -341,35 +345,151 @@ const onLoad =()=>{
 }
 
 
+
+
+
+var firstNameErrorMsgHTML = document.getElementById("firstNameErrorMsg");
+var lastNameErrorMsgHTML = document.getElementById("lastNameErrorMsg");
+var addressErrorMsgHTML = document.getElementById("addressErrorMsg");
+var cityErrorMsgHTML = document.getElementById("cityErrorMsg");
+var emailErrorMsgHTML = document.getElementById("emailErrorMsg");
+
+var firstNameValue = "";
+const validationFirstName=(e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+        firstNameValue = saisie.replace(regexCorrespondance, 
+        function ($0,$1,$2,$3) {
+            return $1.toUpperCase() + $2.toLowerCase(); 
+        });
+
+        order.contact.firstName = firstNameValue;
+
+        console.log("Listen change/firstNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));       
+        firstNameErrorMsgHTML.textContent = null;
+    }else{
+        firstNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer" 
+    }
+};
+
+
+var lastNameValue = "";
+const validationLastName =(e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+
+        lastNameValue = saisie.replace(regexCorrespondance, 
+        function ($0,$1,$2,$3) {
+            return $1.toUpperCase() + $2.toLowerCase(); 
+        });
+        order.contact.lastName = lastNameValue;
+
+        console.log("Listen change/lastNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));
+
+        lastNameErrorMsgHTML.textContent = null;
+    }else{
+        lastNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer";
+    }     
+}
+
+var addressValue = "";
+const validationAddress = (e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][^_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+
+        addressValue = saisie.replace(regexCorrespondance, 
+        function ($0,$1,$2,$3) {
+            return $1.toUpperCase() + $2.toLowerCase(); 
+        });
+        order.contact.address = addressValue;
+
+        console.log("Listen change/addressHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+    
+        addressErrorMsgHTML.textContent = null;
+    }else{
+        addressErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
+    }
+}
+
+var cityValue = "";
+const validationCity = (e)=>{
+   var saisie = e.target.value;
+   var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+   if(regexTest.test(saisie) == true){
+
+       var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+
+       cityValue = saisie.replace(regexCorrespondance, 
+       function ($0,$1,$2,$3) {
+           return $1.toUpperCase() + $2.toLowerCase(); 
+       });
+       order.contact.city = cityValue;
+
+       console.log("Listen change/cityHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");    
+
+       cityErrorMsgHTML.textContent = null;
+   }else{
+       cityErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
+   }
+}
+
+var emailValue = "";
+const validationEmail =(e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^([\w.]+)@([\w]+)([a-zA-Z]{2,})/i;
+
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /([A-Za-z])/gi;
+
+        emailValue = saisie.replace(regexCorrespondance, 
+        function ($0) {
+            return $0.toLowerCase(); 
+        });
+        order.contact.email = emailValue;
+
+        console.log("Listen change/emailHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+    
+        emailErrorMsgHTML.textContent = null;
+    }else{
+        emailErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
+    };
+}
+
+
+
 /**
  * Fonction principale
- * Gestion des evenements de modification et suppression
+ * Gestion des événements de modification et suppression
  */
 const main =async()=>{
     window.onload = onLoad;
 
     var cartItems = await create();
+    order.products = idArrayConstructor(cartItems);
     totalPriceCalc();
     totalQuantityCalc();
     
     var inputs = document.getElementsByName('itemQuantity');
     var deletes = document.getElementsByClassName('deleteItem');
-    order.products = idArrayConstructor(cartItems);
-
     var firstNameHTML = document.getElementById("firstName");
     var lastNameHTML = document.getElementById("lastName");
     var addressHTML = document.getElementById("address");
     var cityHTML = document.getElementById("city");
-    var emailHTML = document.getElementById("email");
-    var firstNameErrorMsgHTML = document.getElementById("firstNameErrorMsg");
-    var lastNameErrorMsgHTML = document.getElementById("lastNameErrorMsg");
-    var addressErrorMsgHTML = document.getElementById("addressErrorMsg");
-    var cityErrorMsgHTML = document.getElementById("cityErrorMsg");
-    var emailErrorMsgHTML = document.getElementById("emailErrorMsg");
+    var emailHTML = document.getElementById("email");   
     var orderHTML = document.getElementById("order");
 
     for(let i=0; i<inputs.length; i++){
-        inputs[i].addEventListener('change', function (e) {
+        const quantityChange=(e)=>{
             var item = document.getElementsByClassName("cart__item")[i];
             var id = item.dataset.id;
             var color = item.dataset.color;
@@ -379,9 +499,9 @@ const main =async()=>{
             totalQuantityCalc();
             totalPriceCalc();
             localStorage.setItem(idName+','+color,[id+','+color+','+quantityNow]);
-        })
-    
-        deletes[i].addEventListener('click', (_e) =>{
+        }
+
+        const deletion=(_e)=>{
             var item = document.getElementsByClassName("cart__item")[i];
             cartItems.removeChild(item);
             var color = item.dataset.color;
@@ -391,122 +511,18 @@ const main =async()=>{
             totalPriceCalc();
             localStorage.removeItem(idName+','+color);
             location.reload();
-        })
+        }
+
+        inputs[i].addEventListener('change', quantityChange);
+        deletes[i].addEventListener('click', deletion);
     }
-
-    var firstNameValue = "";
-    firstNameHTML.addEventListener('change', function (e){
-        var saisie = e.target.value;
-        var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
-        if(regexTest.test(saisie) == true){
-    
-            var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
-            firstNameValue = saisie.replace(regexCorrespondance, 
-            function ($0,$1,$2,$3) {
-                return $1.toUpperCase() + $2.toLowerCase(); 
-            });
-    
-            order.contact.firstName = firstNameValue;
-    
-            console.log("Listen change/firstNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));       
-            firstNameErrorMsgHTML.textContent = null;
-        }else{
-            firstNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer" 
-        }
-    });
-
-    var lastNameValue = "";
-    lastNameHTML.addEventListener('change', function (e){
-        var saisie = e.target.value;
-        var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
-        if(regexTest.test(saisie) == true){
-    
-            var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
-    
-            lastNameValue = saisie.replace(regexCorrespondance, 
-            function ($0,$1,$2,$3) {
-                return $1.toUpperCase() + $2.toLowerCase(); 
-            });
-            order.contact.lastName = lastNameValue;
-   
-            console.log("Listen change/lastNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));
-   
-            lastNameErrorMsgHTML.textContent = null;
-        }else{
-            lastNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer";
-        }     
-    });
-    
-    var addressValue = "";
-    addressHTML.addEventListener('change', function (e){
-        var saisie = e.target.value;
-        var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][^_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
-        if(regexTest.test(saisie) == true){
-    
-            var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
-    
-            addressValue = saisie.replace(regexCorrespondance, 
-            function ($0,$1,$2,$3) {
-                return $1.toUpperCase() + $2.toLowerCase(); 
-            });
-            order.contact.address = addressValue;
-
-            console.log("Listen change/addressHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
-        
-            addressErrorMsgHTML.textContent = null;
-        }else{
-            addressErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
-        }
-    });
-
-    var cityValue = "";
-    cityHTML.addEventListener('change', function (e){
-        var saisie = e.target.value;
-        var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
-        if(regexTest.test(saisie) == true){
-    
-            var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
-    
-            cityValue = saisie.replace(regexCorrespondance, 
-            function ($0,$1,$2,$3) {
-                return $1.toUpperCase() + $2.toLowerCase(); 
-            });
-            order.contact.city = cityValue;
-
-            console.log("Listen change/cityHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");    
-
-            cityErrorMsgHTML.textContent = null;
-        }else{
-            cityErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
-        }
-    });
-
-    var emailValue = "";
-    emailHTML.addEventListener('change', function (e){
-        var saisie = e.target.value;
-        var regexTest = /^([\w.]+)@([\w]+)([a-zA-Z]{2,})/i;
-    
-        if(regexTest.test(saisie) == true){
-    
-            var regexCorrespondance = /([A-Za-z])/gi;
-    
-            emailValue = saisie.replace(regexCorrespondance, 
-            function ($0) {
-                return $0.toLowerCase(); 
-            });
-            order.contact.email = emailValue;
-    
-            console.log("Listen change/emailHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
-        
-            emailErrorMsgHTML.textContent = null;
-        }else{
-            emailErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
-        };
-    });
-
+    firstNameHTML.addEventListener('change',validationFirstName);
+    lastNameHTML.addEventListener('change',validationLastName);
+    addressHTML.addEventListener('change', validationAddress);
+    cityHTML.addEventListener('change',validationCity);  
+    emailHTML.addEventListener('change', validationEmail);
     var commandeId = "";
-
-    orderHTML.addEventListener('click', function(e){
+    orderHTML.addEventListener('click', function ordering(e){
         e.preventDefault();
         if(!order.products){
             alert("Votre panier est vide");
