@@ -167,6 +167,11 @@ const main = async () => {
         console.log('quantity ='+quantity);
         if(color!="" && quantity!=""){      
             localStorage.setItem(idName+','+color, [idUrl, color, quantity]);
+            if(quantity > 1){
+                alert(quantity+" articles ajoutés au panier")
+            }else{
+                alert("Article ajouté au panier")
+            }
         }
     })
 }

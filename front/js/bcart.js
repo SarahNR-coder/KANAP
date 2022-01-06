@@ -270,9 +270,16 @@ fetch("http://localhost:3000/api/products")
 })
 
 /**
- * Création d'un objet contact
+ * Création d'un objet order
+ * contact: {
+ *   firstName : {string},
+ *   lastName: {string},
+ *   address: {string},
+ *   city: {string},
+ *   email: {string}
+ * }
+ * products: [string]
  */
-
 var order = {
     contact  : {
         firstName : "",
@@ -287,16 +294,18 @@ var order = {
 /**
  * @param {any} cartItems 
  * @returns {string[]}
- * Création d'un tableau produits par id
+ * Tableau de produit par id
  */
 var idArrayConstructor =(cartItems)=>{
-    var numberOfArticles = cartItems.childElementCount;
+
+    var numberOfArticles = 0
+    numberOfArticles = cartItems.childElementCount;
     var array = new Array("");
     for(let i=0; i<numberOfArticles;i++){
         var item = document.getElementsByClassName("cart__item")[i];
         array[i]= item.dataset.id;
 
-        var filteredArray = array.filter(function(ele , pos){
+        var filteredArray = array.filter(function(ele , pos){            
             return array.indexOf(ele) == pos;
         })         
     }
@@ -304,15 +313,49 @@ var idArrayConstructor =(cartItems)=>{
 }
 
 /**
+ * @returns {string}
+ * recherche d'id dans l'url de la page
+ */
+const urlIdValue =()=>{
+    var str = window.location.href;
+    var url = new URL(str);
+    var search_params = new URLSearchParams(url.search);
+    if (search_params.has("id")) {
+        var id = search_params.get("id");
+        return id;
+    }
+}
+
+const onLoad =()=>{
+    
+    if(document.getElementById("orderId") !== null && document.getElementById("orderId") !== undefined){
+
+        console.log("document.getElementById('orderId') : '" + document.getElementById("orderId").nodeName + "'");
+        var orderIdHTML = document.getElementById("orderId");
+        var id = urlIdValue();
+        console.log("fonction onLoad :\nid : '"+id+"'");
+        orderIdHTML.textContent = id;
+
+        return orderIdHTML;
+    }  
+}
+
+
+/**
  * Fonction principale
  * Gestion des evenements de modification et suppression
  */
 const main =async()=>{
+    window.onload = onLoad;
+
     var cartItems = await create();
     totalPriceCalc();
     totalQuantityCalc();
+    
     var inputs = document.getElementsByName('itemQuantity');
     var deletes = document.getElementsByClassName('deleteItem');
+    order.products = idArrayConstructor(cartItems);
+
     var firstNameHTML = document.getElementById("firstName");
     var lastNameHTML = document.getElementById("lastName");
     var addressHTML = document.getElementById("address");
@@ -323,8 +366,6 @@ const main =async()=>{
     var addressErrorMsgHTML = document.getElementById("addressErrorMsg");
     var cityErrorMsgHTML = document.getElementById("cityErrorMsg");
     var emailErrorMsgHTML = document.getElementById("emailErrorMsg");
-    
-    order.products = idArrayConstructor(cartItems);
     var orderHTML = document.getElementById("order");
 
     for(let i=0; i<inputs.length; i++){
@@ -350,9 +391,6 @@ const main =async()=>{
             totalPriceCalc();
             localStorage.removeItem(idName+','+color);
             location.reload();
-
-
-
         })
     }
 
@@ -370,10 +408,10 @@ const main =async()=>{
     
             order.contact.firstName = firstNameValue;
     
-            console.log("Listen change/firstNameHTML : \ntest validé? :"+regexTest.test(saisie) +"\nsaisie : '" + saisie +"'"+"\nfirstNameValue : '"+ firstNameValue +"'"+"\norder.contact.firstName : '"+ order.contact.firstName +"'"+"\nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");       
+            console.log("Listen change/firstNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));       
             firstNameErrorMsgHTML.textContent = null;
         }else{
-            firstNameErrorMsgHTML.textContent = "Veuillez saisir votre prénom" 
+            firstNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer" 
         }
     });
 
@@ -391,11 +429,11 @@ const main =async()=>{
             });
             order.contact.lastName = lastNameValue;
    
-            console.log("Listen change/lastNameHTML : \ntest validé? :"+regexTest.test(saisie) +"\nsaisie : '" + saisie +"'"+"\nlastNameValue : '"+ lastNameValue+"\nfirstNameValue : '"+ firstNameValue +"\norder.contact.lastName : '"+ order.contact.lastName +"'"+"\nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+            console.log("Listen change/lastNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));
    
             lastNameErrorMsgHTML.textContent = null;
         }else{
-            lastNameErrorMsgHTML.textContent = "Veuillez saisir votre nom de famille";
+            lastNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer";
         }     
     });
     
@@ -413,11 +451,11 @@ const main =async()=>{
             });
             order.contact.address = addressValue;
 
-            console.log("Listen change/addressHTML : \ntest validé? :"+regexTest.test(saisie) +"\nsaisie : '" + saisie +"'"+"\nlastNameValue : '"+ lastNameValue+"\nfirstNameValue : '"+ firstNameValue +"\naddressValue : '"+ addressValue+"\norder.contact.address : '"+ order.contact.address +"'"+"\nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+            console.log("Listen change/addressHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
         
             addressErrorMsgHTML.textContent = null;
         }else{
-            addressErrorMsgHTML.textContent = "Veuillez saisir votre adresse"
+            addressErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
         }
     });
 
@@ -435,11 +473,11 @@ const main =async()=>{
             });
             order.contact.city = cityValue;
 
-            console.log("Listen change/cityHTML : \ntest validé? :"+regexTest.test(saisie) +"\nsaisie : '" + saisie +"'"+"\ncityValue : '"+ cityValue +"\norder.contact.city : '"+ order.contact.city +"'"+"\nlastNameValue : '"+ lastNameValue+"'"+"\nfirstNameValue : '"+ "'"+firstNameValue +"\naddressValue : '"+ addressValue+"'"+"\ncityValue : '"+ cityValue+"\norder.contact.address : '"+ order.contact.address +"'"+"\nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");    
+            console.log("Listen change/cityHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");    
 
             cityErrorMsgHTML.textContent = null;
         }else{
-            cityErrorMsgHTML.textContent = "Veuillez saisir votre ville"
+            cityErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
         }
     });
 
@@ -458,37 +496,54 @@ const main =async()=>{
             });
             order.contact.email = emailValue;
     
-            console.log("Listen change/emailHTML : \ntest validé? :"+regexTest.test(saisie) +"\nsaisie : '" + saisie +"'"+"\nemailValue : '"+ emailValue +"\norder.contact.email : '"+ order.contact.email +"'"+"\nlastNameValue : '"+ lastNameValue+"'"+"\nfirstNameValue : '"+ "'"+firstNameValue+"'" +"\naddressValue : '"+ addressValue+"'"+"\ncityValue : '"+ cityValue+"'"+"\nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+            console.log("Listen change/emailHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
         
             emailErrorMsgHTML.textContent = null;
         }else{
-            emailErrorMsgHTML.textContent = "Veuillez saisir votre adresse email"
+            emailErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
         };
     });
 
-    orderHTML.addEventListener('click',function send(e){
+    var commandeId = "";
+
+    orderHTML.addEventListener('click', function(e){
         e.preventDefault();
+        if(!order.products){
+            alert("Votre panier est vide");
+        }else{
+            if (!order.contact ||
+                !order.contact.firstName ||
+                !order.contact.lastName ||
+                !order.contact.address ||
+                !order.contact.city ||
+                !order.contact.email){
+                    alert("Veuillez compléter tous les champs du formulaire");
+            }else{
+                fetch("http://localhost:3000/api/products/order",{
+                    method :"POST",
+                    headers : {
+                        'Accept' : 'application/json',
+                        'Content-type' : 'application/json'
+                    },
+                    body : JSON.stringify(order),
+                })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                })
+                .then(data => {
+                    console.log("JSON.stringify(data) :'"+JSON.stringify(data)+"'");
+                    commandeId = data.orderId;
+                    console.log("commandeId : '" + commandeId + "'");
+                    
+                    window.location.assign(`./bconfirmation.html?id=${commandeId}`);
 
-        fetch("http://localhost:3000/api/products/order",{
-            method :"POST",
-            headers : {
-                'Accept' : 'application/json',
-                'Content-type' : 'application/json'
-            },
-            body : JSON.stringify(order),
-        })
-        .then(res =>{
-            if (res.ok){
-                return res.json();
+                    return data;
+                })
             }
-        })
-        .then(requestDetails =>{
-            console.log("requestDetails :\n  '"+JSON.stringify(requestDetails)+"'");
-        })
-    
-        console.log("Fonction send utilisée in submit/orderHTML : \n(emailValue : '"+ emailValue +"')"+"\norder.contact.email : '"+ order.contact.email +"',"+"\n(lastNameValue : '"+ lastNameValue+"')"+"\n(firstNameValue : '"+ "'"+firstNameValue+"')" +"\n(addressValue : '"+ addressValue+"')"+"\n(cityValue : '"+ cityValue+"')"+"\nJSON.stringify(order), l'objet envoyé est : '"+ JSON.stringify(order) +"'"+"\norder.contact: '"+ order.contact +"'");
-    });    
-
+        }
+    });
 }
 
 main();
