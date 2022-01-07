@@ -1,4 +1,5 @@
-// Fichier de gestion de la page panier
+
+// Fichier de gestion de la page panier et la page confirmation
 
 /**
  * @returns {string[]}
@@ -248,6 +249,7 @@ var createCollection =(data)=>{
 
 /**
  * Création d'un ensemble de fiches produit panier
+ * @returns {HTMLElement} || error
  */
 var create =()=> 
 fetch("http://localhost:3000/api/products")
@@ -269,18 +271,260 @@ fetch("http://localhost:3000/api/products")
 })
 
 /**
+ * Création d'un objet order
+ * contact: {
+ *   firstName : {string},
+ *   lastName: {string},
+ *   address: {string},
+ *   city: {string},
+ *   email: {string}
+ * }
+ * products: [string]
+ */
+var order = {
+    contact  : {
+        firstName : "",
+        lastName : "",
+        address : "",
+        city : "", 
+        email : ""
+    },
+    products : [""]
+}
+
+/**
+ * @param {any} cartItems 
+ * @returns {string[]}
+ * Tableau de produit par id
+ * Valeur associée à la propriété products de l'objet order
+ */
+var idArrayConstructor =(cartItems)=>{
+
+    var numberOfArticles = 0
+    numberOfArticles = cartItems.childElementCount;
+    var array = new Array("");
+    for(let i=0; i<numberOfArticles;i++){
+        var item = document.getElementsByClassName("cart__item")[i];
+        array[i]= item.dataset.id;
+
+        var filteredArray = array.filter(function(ele , pos){            
+            return array.indexOf(ele) == pos;
+        })         
+    }
+    return filteredArray;
+}
+
+/**
+ * @returns {string}
+ * recherche d'id dans l'url de la page
+ */
+const urlIdValue =()=>{
+    var str = window.location.href;
+    var url = new URL(str);
+    var search_params = new URLSearchParams(url.search);
+    if (search_params.has("id")) {
+        var id = search_params.get("id");
+        return id;
+    }
+}
+
+/** 
+ * @returns {HTMLElement}
+ * Après chargement, dans confirmation.html, ajout de l'id de commande au contenu
+ */
+const onLoad =()=>{
+    
+    if(document.getElementById("orderId") !== null && document.getElementById("orderId") !== undefined){
+
+        console.log("document.getElementById('orderId') : '" + document.getElementById("orderId").nodeName + "'");
+        var orderIdHTML = document.getElementById("orderId");
+        var id = urlIdValue();
+        console.log("fonction onLoad :\nid : '"+id+"'");
+        orderIdHTML.textContent = id;
+
+        return orderIdHTML;
+    }  
+}
+
+/**
+ * Obtention des éléments de message d'erreur du formulaire
+ */
+var firstNameErrorMsgHTML = document.getElementById("firstNameErrorMsg");
+var lastNameErrorMsgHTML = document.getElementById("lastNameErrorMsg");
+var addressErrorMsgHTML = document.getElementById("addressErrorMsg");
+var cityErrorMsgHTML = document.getElementById("cityErrorMsg");
+var emailErrorMsgHTML = document.getElementById("emailErrorMsg");
+
+var firstNameValue = "";
+/**
+ * Vérification, rectification de la saisie Prénom
+ * Si saisie valide : constitution de l'objet contact
+ * Si erronée : message d'erreur
+ * @param {Event} e 
+ */
+const validationFirstName=(e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+        firstNameValue = saisie.replace(regexCorrespondance, 
+        function ($0,$1,$2,$3) {
+            return $1.toUpperCase() + $2.toLowerCase(); 
+        });
+
+        order.contact.firstName = firstNameValue;
+
+        console.log("Listen change/firstNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));       
+        firstNameErrorMsgHTML.textContent = null;
+    }else{
+        firstNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer" 
+    }
+};
+
+
+var lastNameValue = "";
+/**
+ * Vérification, rectification de la saisie Nom
+ * Si saisie valide : constitution de l'objet contact
+ * Si erronée : message d'erreur
+ * @param {Event} e 
+ */
+const validationLastName =(e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+
+        lastNameValue = saisie.replace(regexCorrespondance, 
+        function ($0,$1,$2,$3) {
+            return $1.toUpperCase() + $2.toLowerCase(); 
+        });
+        order.contact.lastName = lastNameValue;
+
+        console.log("Listen change/lastNameHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact));
+
+        lastNameErrorMsgHTML.textContent = null;
+    }else{
+        lastNameErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer";
+    }     
+}
+
+var addressValue = "";
+/**
+ * Vérification, rectification de la saisie Adresse
+ * Si saisie valide : constitution de l'objet contact
+ * Si erronée : message d'erreur
+ * @param {Event} e 
+ */
+const validationAddress = (e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9][^_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+
+        addressValue = saisie.replace(regexCorrespondance, 
+        function ($0,$1,$2,$3) {
+            return $1.toUpperCase() + $2.toLowerCase(); 
+        });
+        order.contact.address = addressValue;
+
+        console.log("Listen change/addressHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+    
+        addressErrorMsgHTML.textContent = null;
+    }else{
+        addressErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
+    }
+}
+
+var cityValue = "";
+/**
+ * Vérification, rectification de la saisie Ville
+ * Si saisie valide : constitution de l'objet contact
+ * Si erronée : message d'erreur
+ * @param {Event} e 
+ */
+const validationCity = (e)=>{
+   var saisie = e.target.value;
+   var regexTest = /^[A-Za-zÀ-ÖØ-öø-ÿ][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/;
+   if(regexTest.test(saisie) == true){
+
+       var regexCorrespondance = /(^[A-Za-zÀ-ÖØ-öø-ÿ])([A-Za-zÀ-ÖØ-öø-ÿ]*(\s)*)/gi;
+
+       cityValue = saisie.replace(regexCorrespondance, 
+       function ($0,$1,$2,$3) {
+           return $1.toUpperCase() + $2.toLowerCase(); 
+       });
+       order.contact.city = cityValue;
+
+       console.log("Listen change/cityHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");    
+
+       cityErrorMsgHTML.textContent = null;
+   }else{
+       cityErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
+   }
+}
+
+var emailValue = "";
+/**
+ * Vérification, rectification de la saisie Email
+ * Si saisie valide : constitution de l'objet contact
+ * Si erronée : message d'erreur
+ * @param {Event} e 
+ */
+const validationEmail =(e)=>{
+    var saisie = e.target.value;
+    var regexTest = /^([\w.]+)@([\w]+)([a-zA-Z]{2,})/i;
+
+    if(regexTest.test(saisie) == true){
+
+        var regexCorrespondance = /([A-Za-z])/gi;
+
+        emailValue = saisie.replace(regexCorrespondance, 
+        function ($0) {
+            return $0.toLowerCase(); 
+        });
+        order.contact.email = emailValue;
+
+        console.log("Listen change/emailHTML : \nJSON.stringify(order.contact) : '"+ JSON.stringify(order.contact) +"'"+"\norder.contact: '"+ order.contact +"'");
+    
+        emailErrorMsgHTML.textContent = null;
+    }else{
+        emailErrorMsgHTML.textContent = "Saisie non valide, veuillez recommencer"
+    };
+}
+
+
+
+/**
  * Fonction principale
- * Gestion des evenements de modification et suppression
+ * Gestion des événements de modification et suppression
+ * Prise en compte du changement de quantité et suppression produit
+ * Gestion des événements de saisie du formulaire et commande
+ * Requête POST abouttissant à redirection sur confirmation.html
+ * Affichage du numéro de commande
  */
 const main =async()=>{
+    window.onload = onLoad;
+
     var cartItems = await create();
+    order.products = idArrayConstructor(cartItems);
     totalPriceCalc();
     totalQuantityCalc();
+    
     var inputs = document.getElementsByName('itemQuantity');
     var deletes = document.getElementsByClassName('deleteItem');
+    var firstNameHTML = document.getElementById("firstName");
+    var lastNameHTML = document.getElementById("lastName");
+    var addressHTML = document.getElementById("address");
+    var cityHTML = document.getElementById("city");
+    var emailHTML = document.getElementById("email");   
+    var orderHTML = document.getElementById("order");
 
     for(let i=0; i<inputs.length; i++){
-        inputs[i].addEventListener('change', function (e) {
+        const quantityChange=(e)=>{
             var item = document.getElementsByClassName("cart__item")[i];
             var id = item.dataset.id;
             var color = item.dataset.color;
@@ -290,9 +534,9 @@ const main =async()=>{
             totalQuantityCalc();
             totalPriceCalc();
             localStorage.setItem(idName+','+color,[id+','+color+','+quantityNow]);
-        })
-    
-        deletes[i].addEventListener('click', (_e) =>{
+        }
+
+        const deletion=(_e)=>{
             var item = document.getElementsByClassName("cart__item")[i];
             cartItems.removeChild(item);
             var color = item.dataset.color;
@@ -302,8 +546,60 @@ const main =async()=>{
             totalPriceCalc();
             localStorage.removeItem(idName+','+color);
             location.reload();
-        })
+        }
+
+        inputs[i].addEventListener('change', quantityChange);
+        deletes[i].addEventListener('click', deletion);
     }
+    firstNameHTML.addEventListener('change',validationFirstName);
+    lastNameHTML.addEventListener('change',validationLastName);
+    addressHTML.addEventListener('change', validationAddress);
+    cityHTML.addEventListener('change',validationCity);  
+    emailHTML.addEventListener('change', validationEmail);
+    var commandeId = "";
+    orderHTML.addEventListener('click', function ordering(e){
+        e.preventDefault();
+        if(!order.products){
+            alert("Votre panier est vide");
+        }else{
+            if (!order.contact ||
+                !order.contact.firstName ||
+                !order.contact.lastName ||
+                !order.contact.address ||
+                !order.contact.city ||
+                !order.contact.email){
+                    alert("Veuillez compléter tous les champs du formulaire");
+            }else{
+                fetch("http://localhost:3000/api/products/order",{
+                    method :"POST",
+                    headers : {
+                        'Accept' : 'application/json',
+                        'Content-type' : 'application/json'
+                    },
+                    body : JSON.stringify(order),
+                })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                })
+                .then(data => {
+                    console.log("JSON.stringify(data) :'"+JSON.stringify(data)+"'");
+                    commandeId = data.orderId;
+                    console.log("commandeId : '" + commandeId + "'");
+                    
+                    window.location.assign(`./confirmation.html?id=${commandeId}`);
+
+                    return data;
+                })
+            }
+        }
+    });
 }
 
 main();
+
+
+
+
+

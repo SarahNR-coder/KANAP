@@ -1,19 +1,26 @@
+// Fichier de gestion de la page product
 
-
-//Récupérer les caractéristiques du produit à partir de la valeur id="" dans l'url de la page
-
-const urlIdValue =()=>{
+/**
+ * @returns {string}
+ * Récupération de l'identifiant produit dans l'url 
+ */
+ const urlIdValue =()=>{
     var str = window.location.href;
     var url = new URL(str);
     var search_params = new URLSearchParams(url.search);
     if (search_params.has("id")) {
         var id = search_params.get("id");
+        console.log("id : '"+id+"'");
         return id;
     }
 }
 
 const idUrl= urlIdValue();
 
+/**
+ * @returns {any}
+ *  Récupérer les données produit par id
+ */
 const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
     .then(res =>{
         if (res.ok) {
@@ -21,7 +28,8 @@ const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
         }
     })
     .then(data => {
-      return data;
+       console.log("JSON.stringify(data) : \n\n"+JSON.stringify(data)+"\n\n l' API findOneProduct n'est pas utilsée")
+        return data;
     })
     .then(retrieveItem =(data) =>{        
 
@@ -32,7 +40,7 @@ const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
             for(let j=0;j<values.length; j++) {
                 let value = values[j];
                 if (value === idUrl){
-                    console.log(item);
+                    console.log("JSON.stringify(item) : \n\n"+JSON.stringify(item)+"\n\n l' API findOneProduct n'est pas utilsée");
                     return item;
                 }
             }
@@ -44,14 +52,22 @@ const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
 
 const productImage = document.createElement("img");
 
-//Adapter la page au produit
-function setImageAttributes (item){
+/**
+ * @param {any} item
+ * attribuer les caractéristiques produit à l'image 
+ */
+const setImageAttributes =(item)=>{
   
     productImage.setAttribute("src", item.imageUrl);
     productImage.setAttribute("alt", item.altTxt);
 
 };
 
+/**
+ * @param {any} item 
+ * @returns {Element}
+ * Incorper l'image dans un bloc div
+ */
 const fillImageDiv =(item)=>{
 
     setImageAttributes(item);
@@ -62,6 +78,11 @@ const fillImageDiv =(item)=>{
     return productDivImage;
 };
 
+/**
+ * Constitution de la section de titre
+ * @param {any} item 
+ * @returns {HTMLElement}
+ */
 const showTitle = (item) => {
     const productTitle = document.getElementById('title');
     productTitle.textContent = item.name;
@@ -69,6 +90,11 @@ const showTitle = (item) => {
     return productTitle;
 };
 
+/**
+ * Constitution de la section de prix
+ * @param {any} item 
+ * @returns {HTMLElement}
+ */
 const showPrice = (item) => {
 
     const productPrice = document.getElementById(
@@ -78,7 +104,11 @@ const showPrice = (item) => {
     return productPrice;
 };
 
-
+/**
+ * Constitution de la section de description
+ * @param {any} item 
+ * @returns {HTMLElement}
+ */
 const showDescription =(item)=>{
 
     const productDescription = document.getElementById('description');
@@ -89,18 +119,23 @@ const showDescription =(item)=>{
 
 
 
+/**
+ * Constitution du menu déroulant des couleurs
+ * @param {any} item 
+ * @returns {HTMLSelectElement}
+ * note : une option de couleur indéfinie étant déjà présente  par défaut dans le HTML, les options comportent ce choix de couleur indéfinie en plus des couleurs du produit
+ */
 const showColors = (item) =>{
     const productColors = document.querySelector('select');
     var colorChoice = new Array(); 
     colorChoice = item.colors;
     var options = productColors.querySelectorAll('option');
-    //options[0]
 
     for(let i=0; i<colorChoice.length; i++){
 
         let color = colorChoice[i];
 
-        var option = options[i+1];//valeur d'index à partir de 1, il y a i couleurs (couleurs de l'item) et i + une option("SVP selectionnez une couleur...")
+        var option = options[i+1];
 
         option = document.createElement('option');
         option.setAttribute('value', color);
@@ -114,39 +149,24 @@ const showColors = (item) =>{
 
 const quantityElement = document.querySelector('input');
 
-//****************************MAIN************************
 
+/**
+ * Fonction principale
+ * Gestion des événements de modification
+ * Envoi des articles au panier
+ */
 const main = async () => {
 
     const item = await retrieveItemData();
-    //l'item est récupéré
 
-    //rappel const productImage = document.createElement('img');
     setImageAttributes(item);
-    //ajuste à item
     fillImageDiv(item);
-    // ajuste la div supérieure à productImage (donc à item)
-
-    //rappel const productTitle = document.getElementById('title')
     showTitle(item);
-    //ajuste à item
-
-    //rappel const productPrice = document.getElementById('price');
     showPrice(item);
-    //ajuste à item
-
-    //rappel const productDescription = document.getElementById('description')
     showDescription(item);
-    //ajuste à item
-
-    //rappel var productColors = document.querySelector('select')
-    const productColors = showColors(item);
-    //retourne  const productColors ajusté à l'item   
-    
-    //page HTML
+    const productColors = showColors(item);    
     const name = item.name;
     const idName= name.substring(6);
-
     var color="";
     var quantity="";
 
@@ -167,6 +187,11 @@ const main = async () => {
         console.log('quantity ='+quantity);
         if(color!="" && quantity!=""){      
             localStorage.setItem(idName+','+color, [idUrl, color, quantity]);
+            if(quantity > 1){
+                alert(quantity+" articles ajoutés au panier")
+            }else{
+                alert("Article ajouté au panier")
+            }
         }
     })
 }
