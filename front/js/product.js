@@ -21,34 +21,19 @@ const idUrl= urlIdValue();
  * @returns {any}
  *  Récupérer les données produit par id
  */
-const retrieveItemData = () =>fetch("http://localhost:3000/api/products")
-    .then(res =>{
-        if (res.ok) {
-            return res.json();
-        }
-    })
-    .then(data => {
-       console.log("JSON.stringify(data) : \n\n"+JSON.stringify(data)+"\n\n l' API findOneProduct n'est pas utilsée")
-        return data;
-    })
-    .then(retrieveItem =(data) =>{        
-
-        for(let i=0; i<data.length; i++) {
-            var item= data[i];
-            var values = Object.values(item);
-        
-            for(let j=0;j<values.length; j++) {
-                let value = values[j];
-                if (value === idUrl){
-                    console.log("JSON.stringify(item) : \n\n"+JSON.stringify(item)+"\n\n l' API findOneProduct n'est pas utilsée");
-                    return item;
-                }
-            }
-        }
-    })
-    .catch(err =>{ 
-        console.log("erreur suivante:" + err)
-    })
+ const retrieveItemData = () =>fetch("http://localhost:3000/api/products/"+`${idUrl}`)
+ .then(res =>{
+     if (res.ok) {
+         return res.json();
+     }
+ })
+ .then(data => {
+    console.log("JSON.stringify(data) : \n\n"+JSON.stringify(data)+"\n\n utilisation de l' API findOneProduct ")
+     return data;
+ })
+ .catch(err =>{ 
+     console.log("erreur suivante:" + err)
+ })
 
 const productImage = document.createElement("img");
 
