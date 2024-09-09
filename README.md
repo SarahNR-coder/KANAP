@@ -13,15 +13,15 @@ Le projet a été validé par Openclassroom.
 
 
 
-Pour démarrer le projet
+
 _______________________
+###Pour démarrer le projet###
 
-
-### Prérequis Backend ###
+#### Prérequis Backend ####
 
 Vous allez avoir besoin que Node et 'npm' soient installés localement sur votre machine.
 
-### Installation du Backend ###
+#### Installation du Backend ####
 Clonez ce dépôt. Ensuite, à partir du dossier "back" du projet exécutez 'npm install'.
 Exécutez le serveur avec 'node server'.
 Le serveur se mettra en 'localhost' sur le port par défault '3000'.
